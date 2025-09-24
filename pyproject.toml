@@ -1,0 +1,10 @@
+[project]
+name = "mangetamain"
+version = "0.1.0"
+# ... autres champs ...
+
+[tool.uv.dependencies.docs]
+sphinx = ">=7.0.0"
+sphinx-rtd-theme = "*"
+sphinx-autodoc-typehints = "*"
+sphinxcontrib-napoleon = "*"
