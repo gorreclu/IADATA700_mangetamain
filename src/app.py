@@ -2,6 +2,23 @@ from __future__ import (
     annotations,
 )
 
+# Ensure data files are downloaded from S3 if missing
+import sys
+from pathlib import Path as PathLib
+
+# Add parent directory to path to import download_data
+sys.path.insert(0, str(PathLib(__file__).parent.parent))
+
+try:
+    from download_data import ensure_data_files
+    # Download data files if needed (only runs once at startup)
+    ensure_data_files()
+except Exception as e:
+    import streamlit as st
+    st.error(f"⚠️ Error downloading data files: {e}")
+    st.info("Please check your internet connection and refresh the page.")
+    st.stop()
+
 from pathlib import (
     Path,
 )
