@@ -10,11 +10,21 @@ import streamlit as st
 # Ajouter le répertoire parent au chemin Python pour les imports
 sys.path.append(str(Path(__file__).parent))
 
-from components.ingredients_clustering_page import IngredientsClusteringPage
-from components.popularity_analysis_page import PopularityAnalysisPage
-from core.data_explorer import DataExplorer
-from core.data_loader import DataLoader
-from core.logger import get_logger, setup_logging
+# Imports des modules locaux (après modification du sys.path)
+try:
+    from components.ingredients_clustering_page import IngredientsClusteringPage
+    from components.popularity_analysis_page import PopularityAnalysisPage
+    from core.data_explorer import DataExplorer
+    from core.data_loader import DataLoader
+    from core.logger import get_logger, setup_logging
+except ImportError:
+    # Fallback pour les imports absolus depuis le répertoire racine
+    sys.path.append(str(Path(__file__).parent.parent))
+    from src.components.ingredients_clustering_page import IngredientsClusteringPage
+    from src.components.popularity_analysis_page import PopularityAnalysisPage
+    from src.core.data_explorer import DataExplorer
+    from src.core.data_loader import DataLoader
+    from src.core.logger import get_logger, setup_logging
 
 DEFAULT_RECIPES = Path("data/RAW_recipes.csv")
 DEFAULT_INTERACTIONS = Path("data/RAW_interactions.csv")
