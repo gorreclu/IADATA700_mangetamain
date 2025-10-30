@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 import urllib.request
 
 import streamlit as st
+
+# Ajouter le répertoire parent au chemin Python pour les imports
+sys.path.append(str(Path(__file__).parent))
 
 from components.ingredients_clustering_page import IngredientsClusteringPage
 from components.popularity_analysis_page import PopularityAnalysisPage
