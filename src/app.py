@@ -56,8 +56,6 @@ class App:
             )
 
             with urllib.request.urlopen(req, timeout=30) as response:
-                file_size = int(response.headers.get("Content-Length", 0))
-                downloaded = 0
                 chunk_size = 1024 * 1024  # 1MB chunks
 
                 with open(destination, "wb") as f:
@@ -66,7 +64,6 @@ class App:
                         if not chunk:
                             break
                         f.write(chunk)
-                        downloaded += len(chunk)
 
             return True
         except Exception:
@@ -76,36 +73,36 @@ class App:
         """S'assure que tous les fichiers de données sont présents."""
         data_dir = Path("data")
         data_dir.mkdir(exist_ok=True)
-        
+
         required_files = ["RAW_recipes.csv", "RAW_interactions.csv"]
         missing_files = []
-        
+
         for filename in required_files:
             filepath = data_dir / filename
             if not filepath.exists() or filepath.stat().st_size < 1000:
                 missing_files.append(filename)
-        
+
         if not missing_files:
             return True
-            
+
         st.info("📥 Téléchargement des données depuis AWS S3...")
         progress_bar = st.progress(0)
         status_text = st.empty()
-        
+
         total_files = len(missing_files)
-        
+
         for i, filename in enumerate(missing_files):
             status_text.text(f"Téléchargement de {filename}...")
             progress = int((i / total_files) * 100)
             progress_bar.progress(progress)
-            
+
             url = S3_URLS[filename]
             destination = data_dir / filename
-            
+
             if not App._download_file(url, destination):
                 st.error(f"❌ Échec du téléchargement de {filename}")
                 return False
-        
+
         progress_bar.progress(100)
         status_text.text("✅ Téléchargement terminé!")
         st.success("Données téléchargées avec succès!")
