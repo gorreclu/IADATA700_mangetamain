@@ -193,45 +193,6 @@
         <span class="c1"># Create popularity segments</span>
         <span class="n">segmented_data</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">create_popularity_segments</span><span class="p">(</span><span class="n">pop_rating</span><span class="p">)</span>
 
-        <span class="c1"># Get threshold information from analyzer</span>
-        <span class="n">thresholds</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">_popularity_segments_info</span><span class="p">[</span><span class="s2">&quot;thresholds&quot;</span><span class="p">]</span>
-
-        <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-            <span class="c1"># Distribution of segments with precise intervals</span>
-            <span class="n">segment_counts</span> <span class="o">=</span> <span class="n">segmented_data</span><span class="p">[</span><span class="s2">&quot;popularity_segment&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**Distribution des segments avec intervalles précis:**&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Display segments with their exact interaction count ranges</span>
-            <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Viral&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segment_counts</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                    <span class="n">count</span> <span class="o">=</span> <span class="n">segment_counts</span><span class="p">[</span><span class="n">segment</span><span class="p">]</span>
-                    <span class="n">percentage</span> <span class="o">=</span> <span class="p">(</span><span class="n">count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">segmented_data</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
-
-                    <span class="c1"># Define interval text based on segment</span>
-                    <span class="k">if</span> <span class="n">segment</span> <span class="o">==</span> <span class="s2">&quot;Low&quot;</span><span class="p">:</span>
-                        <span class="n">interval</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;1 à </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> fois&quot;</span>
-                    <span class="k">elif</span> <span class="n">segment</span> <span class="o">==</span> <span class="s2">&quot;Medium&quot;</span><span class="p">:</span>
-                        <span class="n">interval</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> à </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;medium_max&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> fois&quot;</span>
-                    <span class="k">elif</span> <span class="n">segment</span> <span class="o">==</span> <span class="s2">&quot;High&quot;</span><span class="p">:</span>
-                        <span class="n">interval</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;medium_max&#39;</span><span class="p">])</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2"> à </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;high_max&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> fois&quot;</span>
-                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Viral</span>
-                        <span class="n">interval</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Plus de </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;high_max&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> fois&quot;</span>
-
-                    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- **</span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2">** (</span><span class="si">{</span><span class="n">interval</span><span class="si">}</span><span class="s2">): </span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> recettes (</span><span class="si">{</span><span class="n">percentage</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%)&quot;</span><span class="p">)</span>
-
-        <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-            <span class="c1"># Average rating by segment</span>
-            <span class="n">segment_ratings</span> <span class="o">=</span> <span class="n">segmented_data</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;popularity_segment&quot;</span><span class="p">)[</span><span class="s2">&quot;avg_rating&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">])</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;**Note moyenne par segment:**&quot;</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;Low&quot;</span><span class="p">,</span> <span class="s2">&quot;Medium&quot;</span><span class="p">,</span> <span class="s2">&quot;High&quot;</span><span class="p">,</span> <span class="s2">&quot;Viral&quot;</span><span class="p">]:</span>
-                <span class="k">if</span> <span class="n">segment</span> <span class="ow">in</span> <span class="n">segment_ratings</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                    <span class="n">mean_rating</span> <span class="o">=</span> <span class="n">segment_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">segment</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">]</span>
-                    <span class="n">std_rating</span> <span class="o">=</span> <span class="n">segment_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">segment</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">]</span>
-                    <span class="n">count</span> <span class="o">=</span> <span class="n">segment_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">segment</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">]</span>
-                    <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- </span><span class="si">{</span><span class="n">segment</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">mean_rating</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> ± </span><span class="si">{</span><span class="n">std_rating</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2"> recettes)&quot;</span><span class="p">)</span>
-
         <span class="c1"># Visualization of segments</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_popularity_segments</span><span class="p">(</span><span class="n">segmented_data</span><span class="p">,</span> <span class="n">analyzer</span><span class="p">)</span>
 
@@ -361,31 +322,28 @@
         <span class="n">thresholds</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">_popularity_segments_info</span><span class="p">[</span><span class="s2">&quot;thresholds&quot;</span><span class="p">]</span>
 
         <span class="c1"># Explication de la distribution observée avec pourcentages dynamiques</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">        **🔍 Lecture de la distribution (graphique de droite) :**</span>
+        <span class="k">with</span> <span class="n">st</span><span class="o">.</span><span class="n">expander</span><span class="p">(</span><span class="s2">&quot;**🔍 Lecture de la distribution (graphique de droite) :**&quot;</span><span class="p">,</span> <span class="n">expanded</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">            Ce graphique révèle la **réalité de l&#39;engagement** sur les plateformes de contenu :</span>
+<span class="s2">            - **Très haute colonne à 1 interaction** : </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% des recettes (~</span><span class="si">{</span><span class="n">low_count</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">1000</span><span class="si">}</span><span class="s2">k) n&#39;ont qu&#39;une seule interaction</span>
+<span class="s2">            - **Décroissance rapide** : Plus le nombre d&#39;interactions augmente, moins il y a de recettes</span>
+<span class="s2">            - **Rareté du viral** : Très peu de recettes dépassent </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;high_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> interactions (seuil viral P95)</span>
 
-<span class="s2">        Ce graphique révèle la **réalité de l&#39;engagement** sur les plateformes de contenu :</span>
-<span class="s2">        - **Très haute colonne à 1 interaction** : </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% des recettes (~</span><span class="si">{</span><span class="n">low_count</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">1000</span><span class="si">}</span><span class="s2">k) n&#39;ont qu&#39;une seule interaction</span>
-<span class="s2">        - **Décroissance rapide** : Plus le nombre d&#39;interactions augmente, moins il y a de recettes</span>
-<span class="s2">        - **Rareté du viral** : Très peu de recettes dépassent </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;high_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> interactions (seuil viral P95)</span>
+<span class="s2">            Cette distribution de type **&quot;longue traîne&quot;** est typique des plateformes de contenu et</span>
+<span class="s2">            **renforce la valeur** de notre analyse : identifier les facteurs qui distinguent les </span><span class="si">{</span><span class="n">viral_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%</span>
+<span class="s2">            de recettes virales des </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% à faible engagement devient d&#39;autant plus précieux !</span>
 
-<span class="s2">        Cette distribution de type **&quot;longue traîne&quot;** est typique des plateformes de contenu et</span>
-<span class="s2">        **renforce la valeur** de notre analyse : identifier les facteurs qui distinguent les </span><span class="si">{</span><span class="n">viral_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">%</span>
-<span class="s2">        de recettes virales des </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% à faible engagement devient d&#39;autant plus précieux !</span>
+<span class="s2">            **📐 Pourquoi pas exactement 25%/50%/75%/95% ?**</span>
 
-<span class="s2">        **📐 Pourquoi pas exactement 25%/50%/75%/95% ?**</span>
+<span class="s2">            Les percentiles P25/P75/P95 sont corrects, mais avec des **données discrètes entières**</span>
+<span class="s2">            (1, 2, 3... interactions), les segments ne peuvent pas être exactement équilibrés :</span>
 
-<span class="s2">        Les percentiles P25/P75/P95 sont corrects, mais avec des **données discrètes entières**</span>
-<span class="s2">        (1, 2, 3... interactions), les segments ne peuvent pas être exactement équilibrés :</span>
-
-<span class="s2">        - **P25 = </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">** : mais </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% des recettes ont exactement </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> interaction</span>
-<span class="s2">        - **Impossible d&#39;avoir exactement 25%** sans utiliser des seuils fractionnaires (1.5, 2.3...)</span>
-<span class="s2">        - **C&#39;est mathématiquement normal** : les percentiles indiquent les valeurs, pas forcément des répartitions égales</span>
-
-<span class="s2">        Cette asymétrie **renforce l&#39;analyse** : elle reflète la vraie nature de l&#39;engagement numérique !</span>
-<span class="s2">        &quot;&quot;&quot;</span>
-        <span class="p">)</span>
+<span class="s2">            - **P25 = </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">** : mais </span><span class="si">{</span><span class="n">low_pct</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% des recettes ont exactement </span><span class="si">{</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2"> interaction</span>
+<span class="s2">            - **Impossible d&#39;avoir exactement 25%** sans utiliser des seuils fractionnaires (1.5, 2.3...)</span>
+<span class="s2">            - **C&#39;est mathématiquement normal** : les percentiles indiquent les valeurs, pas forcément des répartitions égales</span>
+<span class="s2">            &quot;&quot;&quot;</span>
+            <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_render_step_1</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -426,15 +384,12 @@
             <span class="c1"># Analyse des résultats</span>
             <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span>
 <span class="w">                </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">            **� Observations :** La distribution révèle plusieurs clusters de recettes avec des niveaux</span>
-<span class="sd">            d&#39;engagement distincts. Les recettes à haute popularité ne présentent pas systématiquement</span>
-<span class="sd">            les meilleures notes, suggérant l&#39;existence de facteurs additionnels.</span>
-
-<span class="sd">            **� Implication :** Cette distribution non-linéaire indique que la popularité s&#39;organise</span>
+<span class="sd">            Cette distribution non-linéaire indique que la popularité s&#39;organise</span>
 <span class="sd">            en segments distincts plutôt qu&#39;en progression continue. Cependant une grande majorité des recettes possède une bonne note.</span>
 <span class="sd">            Les utilisateurs sont peut-être bienveillant entre eux ou les recettes sont peut-être toutes délicieuses.</span>
-<span class="sd">            Nous allons donc plutôt nous focaliser dans la suite sur l&#39;étude du nombre de fois où une recette a été faite soit sa</span>
-<span class="sd">            popularité pour qualifier son succés tout en gardant un oeil sur sa note.</span>
+<span class="sd">            Nous allons donc plutôt nous focaliser dans la suite sur l&#39;étude du nombre de fois où une recette a été faite évaluant donc</span>
+<span class="sd">            sa popularité pour qualifier son succés avec un autre point de vue que la note moyenne. Quand nous parlerons du nombre d&#39;interactions,</span>
+<span class="sd">            nous parlerons du nombre de fois où la recette a été faite.</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="p">)</span>
 
@@ -461,7 +416,6 @@
         <span class="p">)</span>
 
         <span class="c1"># Segmentation par popularité avec contexte narratif</span>
-        <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;---&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_render_popularity_segmentation</span><span class="p">(</span><span class="n">analyzer</span><span class="p">,</span> <span class="n">pop_rating</span><span class="p">)</span>
 
         <span class="c1"># Obtenir les seuils de segmentation pour l&#39;explication</span>
@@ -482,7 +436,7 @@
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">        **📋 Caractérisation des segments identifiés :**</span>
 
-<span class="s2">        L&#39;analyse révèle quatre segments distincts basés sur le niveau d&#39;engagement :</span>
+<span class="s2">        L&#39;analyse révèle donc quatre segments distincts basés sur le niveau d&#39;engagement :</span>
 
 <span class="s2">        - **Engagement Faible** : 1 à </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">thresholds</span><span class="p">[</span><span class="s1">&#39;low_max&#39;</span><span class="p">])</span><span class="si">}</span><span class="s2"> interactions</span>
 <span class="s2">          (</span><span class="si">{</span><span class="n">segment_percentages</span><span class="p">[</span><span class="s1">&#39;Low&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">% des recettes - souvent de qualité mais visibilité limitée)</span>
@@ -793,20 +747,6 @@
         <span class="c1"># Display the table</span>
         <span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="n">top_viral_display</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="s2">&quot;stretch&quot;</span><span class="p">,</span> <span class="n">hide_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Quick stats</span>
-        <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span><span class="p">,</span> <span class="n">col3</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span>
-                <span class="s2">&quot;🥇 Recette #1&quot;</span><span class="p">,</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">top_viral</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s1">&#39;interaction_count&#39;</span><span class="p">]</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> interactions&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">with</span> <span class="n">col2</span><span class="p">:</span>
-            <span class="n">total_interactions</span> <span class="o">=</span> <span class="n">top_viral</span><span class="p">[</span><span class="s2">&quot;interaction_count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;📊 Total Top 10&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">total_interactions</span><span class="si">:</span><span class="s2">,.0f</span><span class="si">}</span><span class="s2"> interactions&quot;</span><span class="p">)</span>
-        <span class="k">with</span> <span class="n">col3</span><span class="p">:</span>
-            <span class="n">avg_rating_top10</span> <span class="o">=</span> <span class="n">top_viral</span><span class="p">[</span><span class="s2">&quot;avg_rating&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">metric</span><span class="p">(</span><span class="s2">&quot;⭐ Note moyenne&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">avg_rating_top10</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
         <span class="c1"># Recipe selection interface for 3D analysis</span>
         <span class="n">st</span><span class="o">.</span><span class="n">markdown</span><span class="p">(</span><span class="s2">&quot;### 📋 Pattern Commun du Top 3&quot;</span><span class="p">)</span>
 
@@ -877,7 +817,6 @@
 
 <span class="sd">        🔍 **L&#39;effet boule de neige** : démarrage lent, accélération, puis stabilisation/déclin</span>
 
-<span class="sd">        **Note :** La visualisation 3D utilise les données brutes pour préserver toutes les recettes.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="p">)</span>
 
