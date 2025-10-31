@@ -3,11 +3,11 @@ Architecture AWS
 
 Infrastructure de déploiement de l'application Mangetamain sur Amazon Web Services.
 
-.. figure:: Architecture_AWS_Mangetamain.svg
-   :align: center
-   :width: 90%
+.. figure:: /_static/Architecture_AWS_Mangetamain.svg
    :alt: Architecture AWS de Mangetamain
-
+   :align: center
+   :width: 100%
+   
    Schéma d'architecture de déploiement AWS
 
 Vue d'Ensemble
@@ -295,7 +295,7 @@ Les deux environnements sont utilisés **en parallèle** pour évaluer et compar
      - ❌ Limitée (port 8501 fixe)
      - ✅ Complète (ports, services, etc.)
    * - **URL**
-     - https://[app-name].streamlit.app
+     - `Lien <https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app>`_
      - http://13.37.60.84:8501
    * - **Uptime**
      - ✅ Géré par Streamlit (~99%)
