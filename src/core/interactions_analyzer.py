@@ -85,7 +85,7 @@ class InteractionsAnalyzer(CacheableMixin):
 
         # Use optimized CSV cache system
         self._df = self._load_or_compute_merged_data()
-        
+
         # Cache for aggregated data in memory
         self._aggregated_cache = None
 
@@ -142,7 +142,7 @@ class InteractionsAnalyzer(CacheableMixin):
         # Cache miss or invalid - compute data
         self.logger.info("Computing optimized merged data (IQR 5.0 for 95.1% data retention)")
         data = self._compute_preprocessed_data()
-        
+
         # Save to cache
         self._save_merged_csv_cache(data)
         return data
@@ -151,11 +151,11 @@ class InteractionsAnalyzer(CacheableMixin):
         """Check if CSV cache is valid based on configuration."""
         if not self.config_cache_path.exists():
             return False
-        
+
         try:
             with open(self.config_cache_path, 'r') as f:
                 cached_config = f.read().strip()
-            
+
             current_config = self._get_current_config_string()
             return cached_config == current_config
         except Exception:
@@ -166,15 +166,15 @@ class InteractionsAnalyzer(CacheableMixin):
         try:
             # Ensure directory exists
             self.merged_csv_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Save data
             data.to_csv(self.merged_csv_path, index=False)
-            
+
             # Save config for validation
             current_config = self._get_current_config_string()
             with open(self.config_cache_path, 'w') as f:
                 f.write(current_config)
-            
+
             size_mb = self.merged_csv_path.stat().st_size / (1024 * 1024)
             self.logger.info(f"Saved optimized merged data to CSV cache ({size_mb:.1f} MB)")
         except Exception as e:
@@ -189,10 +189,10 @@ class InteractionsAnalyzer(CacheableMixin):
         try:
             # Ensure directory exists
             self.aggregated_csv_path.parent.mkdir(parents=True, exist_ok=True)
-            
+
             # Save data
             data.to_csv(self.aggregated_csv_path, index=False)
-            
+
             size_mb = self.aggregated_csv_path.stat().st_size / (1024 * 1024)
             self.logger.info(f"Saved optimized aggregated data to CSV cache ({size_mb:.1f} MB)")
         except Exception as e:
@@ -358,7 +358,7 @@ class InteractionsAnalyzer(CacheableMixin):
         if self._aggregated_cache is not None:
             self.logger.info("Using memory cache for aggregate data")
             return self._aggregated_cache
-        
+
         # Check CSV cache
         if self.aggregated_csv_path.exists() and self._is_csv_cache_valid():
             try:
@@ -367,14 +367,14 @@ class InteractionsAnalyzer(CacheableMixin):
                 return self._aggregated_cache
             except Exception as e:
                 self.logger.warning(f"Error loading aggregated CSV cache: {e}")
-        
+
         # Compute and cache
         self.logger.info("Computing optimized aggregated data")
         result = self._compute_aggregate()
-        
+
         # Save to CSV cache
         self._save_aggregated_csv_cache(result)
-        
+
         # Save to memory cache
         self._aggregated_cache = result
         return result

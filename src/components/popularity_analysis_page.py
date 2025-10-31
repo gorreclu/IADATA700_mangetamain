@@ -53,7 +53,6 @@ class PopularityAnalysisPage:
         # Preprocessing section
         st.sidebar.markdown("### ⚙️ Preprocessing optimisé")
         st.sidebar.info("🚀 **IQR fixe 5.0** - Filtre optimal : 95.1% des données conservées")
-        
 
         return {
             "plot_type": plot_type,
@@ -1563,21 +1562,21 @@ class PopularityAnalysisPage:
             temp_interactions_df, temp_recipes_df = self._load_data()
 
             col1, col2, col3 = st.columns(3)
-            
+
             with col1:
                 st.metric(
                     "💾 Interactions totales",
                     f"{len(temp_interactions_df):,}",
                     help="Nombre total d'interactions dans le dataset"
                 )
-            
+
             with col2:
                 st.metric(
-                    "📋 Recettes totales", 
+                    "📋 Recettes totales",
                     f"{len(temp_recipes_df):,}",
                     help="Nombre total de recettes dans le dataset"
                 )
-            
+
             with col3:
                 st.metric(
                     "🎯 Conservation attendue",

@@ -136,7 +136,7 @@ class TestIngredientsClusteringPage:
             )
             matrix_path = Path(tmpdir) / "matrix.csv"
             matrix.to_csv(matrix_path)
-            
+
             # Créer la liste des ingrédients
             ing_list = pd.DataFrame({
                 "ingredient": ingredients,
@@ -144,7 +144,7 @@ class TestIngredientsClusteringPage:
             })
             list_path = Path(tmpdir) / "list.csv"
             ing_list.to_csv(list_path, index=False)
-            
+
             yield matrix_path, list_path
 
     @pytest.fixture
