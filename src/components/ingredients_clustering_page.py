@@ -2,8 +2,8 @@ from __future__ import annotations
 
 """Streamlit page: Analyse de co-occurrence et clustering d'ingrédients.
 
-Note: La User Story est affichée dans l'interface Streamlit (méthode run()),
-pas dans cette docstring, conformément au pattern de la page 1.
+Cette page utilise une matrice de co-occurrence PRÉCALCULÉE pour optimiser les performances.
+La matrice 300x300 est générée à froid par utils/preprocess_ingredients_matrix.py.
 """
 
 from dataclasses import dataclass
@@ -14,9 +14,9 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 import streamlit as st
+from sklearn.cluster import KMeans
+from sklearn.manifold import TSNE
 
-from core.data_loader import DataLoader
-from core.ingredients_analyzer import IngredientsAnalyzer
 from core.logger import get_logger
 
 
@@ -25,181 +25,187 @@ class IngredientsClusteringConfig:
     """Configuration pour l'analyse de clustering d'ingrédients.
 
     Attributes:
-        recipes_path: Chemin vers le fichier CSV contenant les recettes.
-        n_ingredients: Nombre d'ingrédients les plus fréquents à analyser.
+        matrix_path: Chemin vers la matrice de co-occurrence précalculée.
+        ingredients_list_path: Chemin vers la liste des ingrédients.
+        n_ingredients: Nombre d'ingrédients à analyser (de la matrice 300x300).
         n_clusters: Nombre de clusters à créer avec K-means.
         tsne_perplexity: Paramètre de perplexité pour la visualisation t-SNE.
     """
 
-    recipes_path: Path
-    n_ingredients: int = 50
-    n_clusters: int = 5
+    matrix_path: Path = Path("data/ingredients_cooccurrence_matrix.csv")
+    ingredients_list_path: Path = Path("data/ingredients_list.csv")
+    n_ingredients: int = 40
+    n_clusters: int = 4
     tsne_perplexity: int = 30
 
 
 class IngredientsClusteringPage:
     """Page Streamlit pour l'analyse de clustering des ingrédients.
 
-    Cette classe gère l'interface utilisateur et la logique de présentation
-    pour l'analyse de co-occurrence et le clustering d'ingrédients basé sur
-    leurs patterns d'apparition dans les recettes.
+    Cette classe charge une matrice de co-occurrence PRÉCALCULÉE et effectue
+    le clustering et la visualisation en temps réel.
 
     Attributes:
-        default_recipes_path: Chemin par défaut vers le fichier de recettes.
+        matrix_path: Chemin vers la matrice de co-occurrence précalculée.
+        ingredients_list_path: Chemin vers la liste des ingrédients.
         logger: Instance du logger pour le suivi des opérations.
     """
 
-    def __init__(self, default_recipes_path: str = "data/RAW_recipes.csv") -> None:
+    def __init__(
+        self,
+        matrix_path: str = "data/ingredients_cooccurrence_matrix.csv",
+        ingredients_list_path: str = "data/ingredients_list.csv",
+    ) -> None:
         """Initialise la page de clustering d'ingrédients.
 
         Args:
-            default_recipes_path: Chemin par défaut vers le fichier CSV des recettes.
-                Doit contenir une colonne avec les listes d'ingrédients.
-
-        Raises:
-            ValueError: Si le chemin fourni est invalide ou vide.
+            matrix_path: Chemin vers la matrice de co-occurrence précalculée (300x300).
+            ingredients_list_path: Chemin vers la liste des 300 ingrédients avec fréquences.
         """
-        if not default_recipes_path:
-            raise ValueError("Le chemin du fichier de recettes ne peut pas être vide")
-
-        self.default_recipes_path = default_recipes_path
+        self.matrix_path = Path(matrix_path)
+        self.ingredients_list_path = Path(ingredients_list_path)
         self.logger = get_logger()
-        self.logger.info("Initializing IngredientsClusteringPage")
+        self.logger.info("Initializing IngredientsClusteringPage with precomputed matrix")
 
-    @st.cache_data
-    def _load_and_prepare_data(_self) -> Optional[pd.DataFrame]:
-        """Charge automatiquement le dataset au démarrage.
+    @st.cache_data(ttl=None, show_spinner="Chargement de la matrice précalculée...")
+    def _load_cooccurrence_matrix(_self) -> Optional[tuple[pd.DataFrame, pd.DataFrame]]:
+        """Charge et sanitise la matrice de co-occurrence + liste d'ingrédients.
 
-        Cette méthode est mise en cache par Streamlit pour éviter de recharger
-        les données à chaque interaction utilisateur.
+        Sanitation appliquée:
+        - Strip espaces
+        - Détection mismatch index/colonnes
+        - Forçage de la symétrie (colonnes = index) si nécessaire
+        - Suppression doublons éventuels
 
         Returns:
-            DataFrame contenant les recettes si le chargement réussit, None sinon.
-            Le DataFrame contient au minimum une colonne d'ingrédients.
-
-        Raises:
-            Exception: Affiche une erreur Streamlit mais ne propage pas l'exception.
+            Tuple (matrice 300x300 nettoyée, liste des ingrédients) si succès, None sinon.
         """
         try:
-            data_loader = DataLoader(_self.default_recipes_path)
-            data = data_loader.load_data()
-            return data
+            if not _self.matrix_path.exists():
+                st.error(f"❌ Matrice introuvable: {_self.matrix_path}")
+                st.info("💡 Exécutez d'abord: `uv run python -m utils.preprocess_ingredients_matrix`")
+                st.stop()
+                return None
+
+            cooc_matrix = pd.read_csv(_self.matrix_path, index_col=0)
+            _self.logger.info(f"✅ Matrice chargée brute: {cooc_matrix.shape}")
+
+            # Validation de forme: la matrice doit être carrée et <= 400x400
+            if cooc_matrix.shape[0] != cooc_matrix.shape[1] or cooc_matrix.shape[0] < 10:
+                _self.logger.error(
+                    "❌ Le fichier chargé n'est pas une matrice de co-occurrence carrée valide. Vérifiez le chemin fourni."
+                )
+                st.error(
+                    "Le fichier chargé n'est pas une matrice de co-occurrence carrée. Assurez-vous d'avoir précalculé la matrice avec `utils/preprocess_ingredients_matrix.py` et que le chemin est `data/ingredients_cooccurrence_matrix.csv`."
+                )
+                st.stop()
+            elif cooc_matrix.shape[0] > 500:
+                _self.logger.warning(
+                    f"⚠️ Matrice très grande ({cooc_matrix.shape}); ce n'est probablement pas le fichier précalculé attendu."
+                )
+
+            # Normalisation légère des labels (mais on conserve casse/minuscule existante)
+            cooc_matrix.index = cooc_matrix.index.str.strip()
+            cooc_matrix.columns = cooc_matrix.columns.str.strip()
+
+            # Vérifier symétrie des labels
+            idx_set = set(cooc_matrix.index)
+            col_set = set(cooc_matrix.columns)
+            if idx_set != col_set:
+                missing_in_cols = idx_set - col_set
+                missing_in_idx = col_set - idx_set
+                _self.logger.warning(
+                    f"⚠️ Mismatch labels: rows_only={len(missing_in_cols)}, cols_only={len(missing_in_idx)}"
+                )
+                # Intersection pour carré cohérent
+                common = sorted(idx_set & col_set)
+                cooc_matrix = cooc_matrix.loc[common, common]
+                _self.logger.info(
+                    f"🔧 Matrice réduite à intersection commune: {cooc_matrix.shape}"
+                )
+
+            # Forcer colonnes = index si ordre différent
+            if not (cooc_matrix.index.tolist() == cooc_matrix.columns.tolist()):
+                _self.logger.warning("⚠️ Réordonnancement des colonnes pour correspondre à l'index")
+                cooc_matrix = cooc_matrix[cooc_matrix.index]
+
+            # Vérifier doublons
+            if cooc_matrix.index.has_duplicates or cooc_matrix.columns.has_duplicates:
+                _self.logger.warning("⚠️ Doublons détectés dans labels; déduplication")
+                # Déduplication par agrégation (somme)
+                cooc_matrix = (
+                    cooc_matrix.groupby(cooc_matrix.index).sum()
+                )
+                cooc_matrix = cooc_matrix[cooc_matrix.index]  # réaligner colonnes
+                _self.logger.info(
+                    f"🔁 Après déduplication: {cooc_matrix.shape}"
+                )
+
+            _self.logger.info(
+                f"✅ Matrice finalisée: {cooc_matrix.shape} | Sample: {cooc_matrix.index[:5].tolist()}"
+            )
+
+            if not _self.ingredients_list_path.exists():
+                st.error(f"❌ Liste des ingrédients introuvable: {_self.ingredients_list_path}")
+                st.stop()
+                return None
+
+            ingredients_list = pd.read_csv(_self.ingredients_list_path)
+            ingredients_list['ingredient'] = ingredients_list['ingredient'].str.strip()
+            _self.logger.info(
+                f"✅ Liste chargée: {len(ingredients_list)} ingrédients | Top 5: {ingredients_list.head()['ingredient'].tolist()}"
+            )
+
+            return cooc_matrix, ingredients_list
+
         except Exception as e:
-            st.error(f"Erreur lors du chargement des données : {e}")
+            st.error(f"❌ Erreur de chargement: {e}")
+            _self.logger.error(f"Failed to load precomputed matrix: {e}")
+            st.stop()
             return None
-
-    def _render_cache_controls(self, analyzer: IngredientsAnalyzer) -> None:
-        """Affiche les contrôles de gestion du cache dans la sidebar.
-
-        Permet à l'utilisateur de visualiser l'état du cache et de le supprimer
-        si nécessaire. Affiche des métriques sur l'âge, la taille et le nombre
-        de fichiers en cache.
-
-        Args:
-            analyzer: Instance de l'analyseur d'ingrédients dont on gère le cache.
-        """
-        st.sidebar.markdown("---")
-        st.sidebar.markdown("### Cache Management")
-
-        # Get cache info
-        cache_info = analyzer.get_cache_info()
-
-        # Cache status
-        cache_enabled = cache_info["cache_enabled"]
-        cache_exists = cache_info["cache_exists"]
-
-        if cache_enabled:
-            if cache_exists:
-                st.sidebar.success("Cache disponible")
-                # Show cache details
-                if "cache_age_minutes" in cache_info:
-                    age_str = f"{cache_info['cache_age_minutes']:.1f} min"
-                    size_str = f"{cache_info['cache_size_mb']:.1f} MB"
-                    st.sidebar.info(f"Age: {age_str}, Taille: {size_str}")
-            else:
-                st.sidebar.info("Cache sera créé après traitement")
-
-            # Cache management buttons
-            col1, col2 = st.sidebar.columns(2)
-            with col1:
-                if st.button(
-                    "🗑️ Clear Cache",
-                    help="Supprimer tous les fichiers de cache",
-                    key="clear_ingredients_cache",
-                ):
-                    from core.cache_manager import get_cache_manager
-
-                    cache_manager = get_cache_manager()
-                    deleted_files = cache_manager.clear(analyzer_name="ingredients")
-                    if deleted_files > 0:
-                        st.sidebar.success(f"Cache effacé! ({deleted_files} fichiers)")
-                        st.rerun()
-                    else:
-                        st.sidebar.info("Aucun fichier de cache à supprimer")
-
-            with col2:
-                if st.button(
-                    "ℹ️ Info Cache",
-                    help="Afficher les détails du cache",
-                    key="info_ingredients_cache",
-                ):
-                    st.sidebar.json(cache_info)
-
-            # Show total cache files
-            if cache_info["cache_files_count"] > 0:
-                st.sidebar.caption(f"📁 {cache_info['cache_files_count']} fichier(s) de cache")
-        else:
-            st.sidebar.warning("Cache désactivé")
 
     def render_sidebar(self) -> dict[str, int | bool]:
         """Affiche la sidebar avec les paramètres de clustering.
 
-        Crée une interface interactive dans la sidebar permettant à l'utilisateur
-        de configurer les paramètres de l'analyse de clustering:
-        - Nombre d'ingrédients à analyser
-        - Nombre de clusters à créer
-        - Paramètres de visualisation t-SNE
-
         Returns:
-            Dictionnaire contenant les paramètres sélectionnés par l'utilisateur:
-                - n_ingredients: Nombre d'ingrédients les plus fréquents (10-200)
-                - n_clusters: Nombre de groupes à créer (2-20)
-                - tsne_perplexity: Paramètre de densité pour t-SNE (5-50)
-                - analyze_button: True si le bouton d'analyse a été cliqué
+            Dictionnaire contenant les paramètres sélectionnés.
         """
         st.sidebar.header("🔧 Paramètres de Clustering")
 
-        # Paramètres de clustering
+        st.sidebar.info("📊 Matrice précalculée: 300 ingrédients")
+
+        # Nombre d'ingrédients à sélectionner
         n_ingredients = st.sidebar.slider(
             "Nombre d'ingrédients à analyser",
-            min_value=10,
-            max_value=200,
-            value=50,
+            min_value=40,
+            max_value=300,
+            value=40,
             step=10,
-            help="Nombre d'ingrédients les plus fréquents à inclure dans l'analyse",
+            help="Sélectionner les N ingrédients les plus fréquents depuis la matrice 300x300",
         )
 
+        # Nombre de clusters
         n_clusters = st.sidebar.slider(
             "Nombre de clusters",
-            min_value=2,
+            min_value=3,
             max_value=20,
-            value=5,
+            value=4,
             step=1,
-            help="Nombre de groupes d'ingrédients à créer",
+            help="Nombre de groupes d'ingrédients à créer avec K-means",
         )
 
         # Paramètres t-SNE
-        st.sidebar.subheader("🎨 Paramètres Visualisation")
+        st.sidebar.subheader("🎨 Visualisation t-SNE")
         tsne_perplexity = st.sidebar.slider(
-            "Perplexité t-SNE",
+            "Perplexité",
             min_value=5,
             max_value=50,
             value=30,
             step=5,
-            help="Contrôle la densité des groupes dans la visualisation",
+            help="Contrôle la densité des groupes (5=local, 50=global)",
         )
 
-        # Bouton d'analyse dans la sidebar
+        # Bouton d'analyse
         analyze_button = st.sidebar.button("🚀 Lancer l'analyse", type="primary")
 
         return {
@@ -209,401 +215,371 @@ class IngredientsClusteringPage:
             "analyze_button": analyze_button,
         }
 
-    def render_cooccurrence_analysis(self, ingredient_names: list[str], ingredients_matrix: pd.DataFrame) -> None:
-        """Affiche l'analyse de co-occurrence interactive.
+    def _select_top_ingredients(
+        self, cooc_matrix: pd.DataFrame, ingredients_list: pd.DataFrame, n: int
+    ) -> tuple[pd.DataFrame, list[str]]:
+        """Sélectionne robustement les N ingrédients les plus fréquents.
 
-        Permet à l'utilisateur de sélectionner deux ingrédients et visualise
-        leur score de co-occurrence (nombre de recettes où ils apparaissent ensemble).
-        Affiche également des statistiques contextuelles pour interpréter le score.
-
-        Args:
-            ingredient_names: Liste des noms d'ingrédients disponibles pour la sélection.
-            ingredients_matrix: Matrice de co-occurrence (DataFrame symétrique) où
-                matrix[ing1, ing2] = nombre de recettes contenant ing1 ET ing2.
-
-        Raises:
-            ValueError: Si les ingrédients sélectionnés ne sont pas dans la matrice.
-            IndexError: Si un accès invalide à la matrice est tenté.
+        Diagnostic détaillé:
+        - Taille liste vs matrice
+        - Intersections
+        - Fallback si mismatch complet (utilisation directe de l'index matrice)
         """
-        st.subheader("🔍 Analyse de Co-occurrence")
+        matrix_index = list(cooc_matrix.index)
+        matrix_cols = list(cooc_matrix.columns)
 
-        # Création de trois colonnes pour les menus déroulants
-        col1, col2, col3 = st.columns([1, 1, 1])
+        # Logs de diagnostic
+        self.logger.info(
+            f"🔎 Diagnostic sélection: matrix_index={len(matrix_index)}, matrix_cols={len(matrix_cols)}, list_rows={len(ingredients_list)}"
+        )
 
-        with col1:
-            ingredient1 = st.selectbox(
-                "Premier ingrédient",
-                options=ingredient_names,
-                index=0,
-                key="ingredient1",
+        if set(matrix_index) != set(matrix_cols):
+            self.logger.warning("⚠️ Les labels lignes/colonnes ne correspondent pas parfaitement.")
+
+        list_ings = ingredients_list['ingredient'].tolist()
+        inter_with_index = set(list_ings) & set(matrix_index)
+        inter_with_cols = set(list_ings) & set(matrix_cols)
+        self.logger.info(
+            f"🔎 Intersections: with_index={len(inter_with_index)}, with_cols={len(inter_with_cols)}"
+        )
+
+        if not inter_with_index:
+            self.logger.error("❌ Aucune intersection entre la liste et l'index de la matrice. Fallback sur index brut.")
+            # Fallback: prendre directement premiers n ingrédients de la matrice
+            top_final = matrix_index[:n]
+            sub_matrix = cooc_matrix.loc[top_final, top_final]
+            self.logger.info(
+                f"✅ Fallback utilisé: {len(top_final)} ingrédients | shape={sub_matrix.shape}"
+            )
+            return sub_matrix, top_final
+
+        # Filtrage selon index (pas colonnes encore)
+        filtered = ingredients_list[ingredients_list['ingredient'].isin(matrix_index)]
+        top = filtered.nlargest(n, 'frequency')['ingredient'].tolist()
+
+        # Vérification colonnes
+        top_valid = [ing for ing in top if ing in set(matrix_cols)]
+        lost = set(top) - set(top_valid)
+        if lost:
+            self.logger.warning(
+                f"⚠️ Ingrédients présents dans index mais absents des colonnes ignorés: {list(lost)[:8]}{'...' if len(lost)>8 else ''}"
             )
 
+        top_final = top_valid[:n]
+        if len(top_final) < n:
+            self.logger.warning(
+                f"⚠️ Seulement {len(top_final)}/{n} ingrédients disponibles après filtrage"
+            )
+
+        sub_matrix = cooc_matrix.reindex(index=top_final, columns=top_final)
+        if sub_matrix.isna().any().any():
+            self.logger.warning("⚠️ NaN détectés dans sous-matrice; remplissage à 0")
+            sub_matrix = sub_matrix.fillna(0)
+
+        self.logger.info(
+            f"✅ Sélection finale: {len(top_final)} ingrédients | shape={sub_matrix.shape}"
+        )
+        return sub_matrix, top_final
+
+    def _perform_clustering(self, matrix: pd.DataFrame, n_clusters: int) -> np.ndarray:
+        """Effectue le clustering K-means sur la matrice.
+
+        Args:
+            matrix: Matrice de co-occurrence.
+            n_clusters: Nombre de clusters.
+
+        Returns:
+            Array des labels de cluster.
+        """
+        self.logger.info(f"Performing K-means clustering with k={n_clusters}")
+
+        kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
+        clusters = kmeans.fit_predict(matrix.values)
+
+        self.logger.info(f"Clustering completed: {len(set(clusters))} unique clusters")
+
+        return clusters
+
+    def _generate_tsne(
+        self, matrix: pd.DataFrame, clusters: np.ndarray, perplexity: int
+    ) -> dict:
+        """Génère la visualisation t-SNE.
+
+        Args:
+            matrix: Matrice de co-occurrence.
+            clusters: Labels de cluster.
+            perplexity: Paramètre de perplexité.
+
+        Returns:
+            Dict avec coordonnées x, y et métadonnées.
+        """
+        self.logger.info(f"Generating t-SNE visualization with perplexity={perplexity}")
+
+        try:
+            # Ajuster la perplexité si nécessaire
+            n_samples = matrix.shape[0]
+            adjusted_perplexity = min(perplexity, n_samples - 1)
+
+            if adjusted_perplexity != perplexity:
+                self.logger.warning(
+                    f"Perplexity adjusted from {perplexity} to {adjusted_perplexity} (n_samples={n_samples})"
+                )
+
+            # t-SNE
+            tsne = TSNE(
+                n_components=2,
+                perplexity=adjusted_perplexity,
+                random_state=42,
+                max_iter=1000,
+            )
+
+            coords = tsne.fit_transform(matrix.values)
+
+            return {
+                "x_coords": coords[:, 0].tolist(),
+                "y_coords": coords[:, 1].tolist(),
+                "ingredient_names": matrix.index.tolist(),
+                "cluster_labels": clusters.tolist(),
+                "n_clusters": len(set(clusters)),
+                "tsne_params": {
+                    "perplexity": adjusted_perplexity,
+                    "max_iter": 1000,
+                    "random_state": 42,
+                    "method": "tsne",
+                },
+            }
+
+        except Exception as e:
+            self.logger.error(f"t-SNE failed: {e}")
+            return {"error": str(e)}
+
+    def render_cooccurrence_analysis(
+        self, ingredient_names: list[str], matrix: pd.DataFrame
+    ) -> None:
+        """Affiche l'analyse de co-occurrence interactive."""
+        st.subheader("🔍 Analyse de Co-occurrence")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            ing1 = st.selectbox("Premier ingrédient", options=ingredient_names, index=0)
+
         with col2:
-            ingredient2 = st.selectbox(
+            ing2 = st.selectbox(
                 "Deuxième ingrédient",
                 options=ingredient_names,
                 index=1 if len(ingredient_names) > 1 else 0,
-                key="ingredient2",
             )
 
-        # Afficher le score de co-occurrence
-        if ingredient1 and ingredient2 and ingredient1 != ingredient2:
+        if ing1 and ing2 and ing1 != ing2:
             try:
-                # Récupérer le score de co-occurrence
-                cooccurrence_score = ingredients_matrix.at[ingredient1, ingredient2]
+                score = matrix.at[ing1, ing2]
+                max_score = matrix.values.max()
+                avg_score = matrix.values[matrix.values > 0].mean()
 
-                # Calculer les statistiques de la matrice
-                matrix_values = ingredients_matrix.values
-                matrix_values_flat = matrix_values[matrix_values > 0]  # Seulement les valeurs non-nulles
+                col_m1, col_m2, col_m3 = st.columns(3)
 
-                if len(matrix_values_flat) > 0:
-                    max_score = np.max(matrix_values_flat)
-                    avg_score = np.mean(matrix_values_flat)
-                    median_score = np.median(matrix_values_flat)
-                else:
-                    max_score = avg_score = median_score = 0
+                with col_m1:
+                    st.metric("Score", f"{score:.0f}", help="Nombre de recettes communes")
 
-                # Affichage des métriques
-                col_metric1, col_metric2, col_metric3 = st.columns(3)
+                with col_m2:
+                    percentile = (score / max_score) * 100 if max_score > 0 else 0
+                    st.metric("Percentile", f"{percentile:.1f}%")
 
-                with col_metric1:
-                    st.metric(
-                        label="Score de co-occurrence",
-                        value=f"{cooccurrence_score:.0f}",
-                        help=f"Nombre de recettes contenant '{ingredient1}' ET '{ingredient2}'",
-                    )
+                with col_m3:
+                    ratio = score / avg_score if avg_score > 0 else 0
+                    st.metric("vs Moyenne", f"{ratio:.1f}x")
 
-                with col_metric2:
-                    if max_score > 0:
-                        percentile = (cooccurrence_score / max_score) * 100
-                        st.metric(
-                            label="Percentile",
-                            value=f"{percentile:.1f}%",
-                            help="Position par rapport au score maximum",
-                        )
-
-                with col_metric3:
-                    if avg_score > 0:
-                        ratio_avg = cooccurrence_score / avg_score
-                        st.metric(
-                            label="Ratio vs Moyenne",
-                            value=f"{ratio_avg:.1f}x",
-                            help=f"Ratio par rapport à la moyenne ({avg_score:.1f})",
-                        )
-
-                # Barre de progression visuelle
+                # Barre de progression
                 if max_score > 0:
-                    normalized_score = cooccurrence_score / max_score
-                    st.progress(normalized_score)
+                    st.progress(score / max_score)
 
-                    # Interprétation du score
-                    if cooccurrence_score >= median_score * 2:
-                        st.success("🔥 Combinaison très fréquente!")
-                    elif cooccurrence_score >= median_score:
-                        st.info("✅ Combinaison courante")
-                    elif cooccurrence_score > 0:
-                        st.warning("⚠️ Combinaison rare")
-                    else:
-                        st.error("❌ Aucune co-occurrence trouvée")
+                # Interprétation
+                if score >= avg_score * 2:
+                    st.success("🔥 Combinaison très fréquente!")
+                elif score >= avg_score:
+                    st.info("✅ Combinaison courante")
+                elif score > 0:
+                    st.warning("⚠️ Combinaison rare")
+                else:
+                    st.error("❌ Aucune co-occurrence")
 
-            except (ValueError, IndexError, KeyError):
-                st.warning("Erreur lors du calcul du score de co-occurrence")
+            except Exception as e:
+                st.warning(f"Erreur: {e}")
 
-    def render_clusters(self, clusters: np.ndarray, ingredient_names: list[str], n_clusters: int) -> None:
-        """Affiche les clusters d'ingrédients de manière organisée.
-
-        Présente chaque cluster dans un expander séparé avec une couleur distinctive.
-        Les ingrédients sont affichés en colonnes pour une meilleure lisibilité.
-
-        Args:
-            clusters: Array numpy contenant les labels de cluster pour chaque ingrédient.
-                Taille = len(ingredient_names), valeurs de 0 à n_clusters-1.
-            ingredient_names: Liste ordonnée des noms d'ingrédients correspondant
-                aux indices dans l'array clusters.
-            n_clusters: Nombre total de clusters créés (pour l'itération).
-
-        Example:
-            >>> clusters = np.array([0, 1, 0, 2, 1])
-            >>> names = ['salt', 'sugar', 'pepper', 'flour', 'honey']
-            >>> page.render_clusters(clusters, names, 3)
-            # Affiche 3 expanders avec les ingrédients regroupés
-        """
+    def render_clusters(
+        self, clusters: np.ndarray, ingredient_names: list[str], n_clusters: int
+    ) -> None:
+        """Affiche les clusters d'ingrédients."""
         st.subheader("🎯 Clusters d'Ingrédients")
 
-        # Affichage par cluster avec couleurs
         colors = ["🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪", "🟤", "🔘"]
 
         for cluster_id in range(n_clusters):
-            cluster_ingredients = [ingredient_names[i] for i, cluster in enumerate(clusters) if cluster == cluster_id]
+            cluster_ings = [
+                ingredient_names[i]
+                for i, c in enumerate(clusters)
+                if c == cluster_id
+            ]
 
-            color_emoji = colors[cluster_id % len(colors)]
+            color = colors[cluster_id % len(colors)]
 
             with st.expander(
-                f"{color_emoji} Cluster {cluster_id + 1} ({len(cluster_ingredients)} ingrédients)",
-                expanded=True,
+                f"{color} Cluster {cluster_id + 1} ({len(cluster_ings)} ingrédients)",
+                expanded=cluster_id < 2,  # Expand first 2 clusters only
             ):
-                # Affichage en colonnes pour une meilleure lisibilité
                 cols = st.columns(4)
-                for i, ingredient in enumerate(cluster_ingredients):
-                    cols[i % 4].write(f"• **{ingredient}**")
+                for i, ing in enumerate(cluster_ings):
+                    cols[i % 4].write(f"• **{ing}**")
 
-    def render_tsne_visualization(self, analyzer: IngredientsAnalyzer, clusters: np.ndarray, tsne_perplexity: int) -> None:
-        """Affiche la visualisation t-SNE 2D des clusters d'ingrédients.
+    def render_tsne_visualization(self, tsne_data: dict) -> None:
+        """Affiche la visualisation t-SNE."""
+        st.subheader("🎨 Visualisation t-SNE 2D")
 
-        Génère et affiche un graphique interactif Plotly montrant les ingrédients
-        dans un espace 2D obtenu par réduction de dimensionnalité t-SNE. Les points
-        sont colorés selon leur cluster et peuvent être régénérés avec de nouveaux
-        paramètres.
+        if "error" in tsne_data:
+            st.error(f"❌ Erreur t-SNE: {tsne_data['error']}")
+            return
 
-        Args:
-            analyzer: Instance de IngredientsAnalyzer utilisée pour générer la
-                visualisation t-SNE à partir de la matrice de co-occurrence.
-            clusters: Array numpy des labels de cluster pour chaque ingrédient.
-            tsne_perplexity: Paramètre de perplexité pour t-SNE (5-50).
-                Contrôle la densité des groupes dans la visualisation.
-                Valeurs faibles = focus local, valeurs élevées = structure globale.
+        # Créer le graphique
+        fig = go.Figure()
 
-        Notes:
-            La visualisation est mise en cache dans st.session_state pour éviter
-            de la recalculer à chaque interaction. Un bouton permet de forcer la
-            régénération avec de nouveaux paramètres aléatoires.
-        """
-        col_title, col_button = st.columns([3, 1])
-        with col_title:
-            st.subheader("🎨 Visualisation t-SNE 2D des Clusters")
-        with col_button:
-            regenerate_tsne = st.button(
-                "🔄 Régénérer t-SNE",
-                help="Regénérer la visualisation avec de nouveaux paramètres",
-            )
+        colors = [
+            "#FF6B6B",
+            "#4ECDC4",
+            "#45B7D1",
+            "#96CEB4",
+            "#FFEAA7",
+            "#DDA0DD",
+            "#98D8C8",
+            "#F7DC6F",
+            "#BB8FCE",
+            "#85C1E9",
+            "#F8B88B",
+            "#FAA0A0",
+            "#B0E57C",
+            "#87CEEB",
+            "#DDA0DD",
+            "#F0E68C",
+            "#FFB6C1",
+            "#20B2AA",
+            "#FF69B4",
+            "#BA55D3",
+        ]
 
-        # Générer t-SNE au premier lancement ou si demandé
-        should_generate_tsne = "tsne_data" not in st.session_state or regenerate_tsne
+        n_clusters = tsne_data["n_clusters"]
 
-        if should_generate_tsne:
-            with st.spinner("Génération de la visualisation t-SNE..."):
-                tsne_data = analyzer.generate_tsne_visualization(clusters, perplexity=tsne_perplexity)
-                st.session_state["tsne_data"] = tsne_data
-        else:
-            tsne_data = st.session_state["tsne_data"]
-
-        if "error" not in tsne_data:
-            # Créer le graphique de dispersion avec Plotly
-            fig_tsne = go.Figure()
-
-            # Palette de couleurs hexadécimales pour t-SNE
-            tsne_colors = [
-                "#FF6B6B",
-                "#4ECDC4",
-                "#45B7D1",
-                "#96CEB4",
-                "#FFEAA7",
-                "#DDA0DD",
-                "#98D8C8",
-                "#F7DC6F",
-                "#BB8FCE",
-                "#85C1E9",
+        for cluster_id in range(n_clusters):
+            mask = [label == cluster_id for label in tsne_data["cluster_labels"]]
+            cluster_x = [x for i, x in enumerate(tsne_data["x_coords"]) if mask[i]]
+            cluster_y = [y for i, y in enumerate(tsne_data["y_coords"]) if mask[i]]
+            cluster_names = [
+                name for i, name in enumerate(tsne_data["ingredient_names"]) if mask[i]
             ]
 
-            n_clusters = tsne_data["n_clusters"]
+            color = colors[cluster_id % len(colors)]
 
-            # Ajouter les points par cluster pour avoir des couleurs distinctes
-            for cluster_id in range(n_clusters):
-                # Filtrer les données pour ce cluster
-                cluster_mask = [label == cluster_id for label in tsne_data["cluster_labels"]]
-                cluster_x = [x for i, x in enumerate(tsne_data["x_coords"]) if cluster_mask[i]]
-                cluster_y = [y for i, y in enumerate(tsne_data["y_coords"]) if cluster_mask[i]]
-                cluster_names = [name for i, name in enumerate(tsne_data["ingredient_names"]) if cluster_mask[i]]
-
-                color = tsne_colors[cluster_id % len(tsne_colors)]
-
-                fig_tsne.add_trace(
-                    go.Scatter(
-                        x=cluster_x,
-                        y=cluster_y,
-                        mode="markers+text",
-                        marker=dict(
-                            size=12,
-                            color=color,
-                            line=dict(width=2, color="white"),
-                            opacity=0.8,
-                        ),
-                        text=cluster_names,
-                        textposition="top center",
-                        textfont=dict(size=10),
-                        name=f"Cluster {cluster_id + 1}",
-                        hovertemplate="<b>%{text}</b><br>Cluster: "
-                        + f"{cluster_id + 1}<br>"
-                        + "Coordonnées: (%{x:.2f}, %{y:.2f})<extra></extra>",
-                    )
+            fig.add_trace(
+                go.Scatter(
+                    x=cluster_x,
+                    y=cluster_y,
+                    mode="markers+text",
+                    marker=dict(size=12, color=color, line=dict(width=2, color="white"), opacity=0.8),
+                    text=cluster_names,
+                    textposition="top center",
+                    textfont=dict(size=10),
+                    name=f"Cluster {cluster_id + 1}",
+                    hovertemplate=f"<b>%{{text}}</b><br>Cluster: {cluster_id + 1}<extra></extra>",
                 )
-
-            # Mise en forme du graphique
-            fig_tsne.update_layout(
-                title="Visualisation t-SNE des Ingrédients par Cluster",
-                xaxis_title="Dimension t-SNE 1",
-                yaxis_title="Dimension t-SNE 2",
-                showlegend=True,
-                height=600,
-                hovermode="closest",
-                plot_bgcolor="rgba(245,245,245,0.8)",
-                legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
             )
 
-            # Afficher le graphique
-            st.plotly_chart(fig_tsne, use_container_width=True)
+        fig.update_layout(
+            title="Visualisation t-SNE des Ingrédients",
+            xaxis_title="Dimension 1",
+            yaxis_title="Dimension 2",
+            showlegend=True,
+            height=600,
+            hovermode="closest",
+            plot_bgcolor="rgba(245,245,245,0.8)",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        )
 
-            # Informations sur t-SNE
-            with st.expander("ℹ️ À propos de la visualisation t-SNE / Diagnostics"):
-                st.markdown(
-                    """
-                **t-SNE (t-Distributed Stochastic Neighbor Embedding)** est une technique de réduction de dimensionnalité
-                qui permet de visualiser des données haute-dimensionnelles en 2D.
+        st.plotly_chart(fig, use_container_width=True)
 
-                **Dans ce contexte :**
-                - Chaque point représente un **ingrédient**
-                - La position est basée sur les **profils de co-occurrence** avec les autres ingrédients
-                - Les couleurs correspondent aux **clusters K-means**
-                - Les ingrédients proches ont des **patterns de co-occurrence similaires**
-
-                **Interprétation :**
-                - Points regroupés = ingrédients utilisés dans des contextes similaires
-                - Clusters colorés = groupes détectés par l'algorithme K-means
-                - Distance = mesure de similarité des profils culinaires
+        with st.expander("ℹ️ À propos de t-SNE"):
+            st.markdown(
                 """
+            **t-SNE** réduit la dimensionnalité pour visualiser les similarités entre ingrédients.
+
+            - **Points proches** = ingrédients avec profils de co-occurrence similaires
+            - **Couleurs** = clusters K-means
+            - **Distance** = mesure de similarité culinaire
+
+            **Paramètres utilisés**:
+            - Perplexité: {}
+            - Itérations: 1000
+            - Seed: 42
+            """.format(
+                    tsne_data["tsne_params"]["perplexity"]
                 )
-
-                method = tsne_data.get("tsne_params", {}).get("method", "tsne")
-                st.markdown(
-                    f"""
-                **Paramètres & Méthode :**
-                - Méthode effective : `{method}`
-                - Perplexité (après ajustement) : {tsne_data['tsne_params']['perplexity']}
-                - Itérations max : {tsne_data['tsne_params']['max_iter']}
-                - Seed aléatoire : {tsne_data['tsne_params']['random_state']}
-                - Ingrédients (n_samples) : {len(tsne_data['ingredient_names'])}
-                """
-                )
-
-                if method != "tsne":
-                    if method == "fallback_circle":
-                        st.warning(
-                            "Fallback circle layout utilisé car t-SNE instable (trop peu d'ingrédients ou matrice dégénérée)."
-                        )
-                    elif method == "fallback_svd":
-                        st.info("Projection issue de la décomposition SVD (approximation PCA) suite à un échec t-SNE.")
-
-                # Afficher quelques stats basiques sur la dispersion
-                try:
-                    xs = tsne_data["x_coords"]
-                    ys = tsne_data["y_coords"]
-                    spread_x = max(xs) - min(xs)
-                    spread_y = max(ys) - min(ys)
-                    st.caption(f"Dispersion: Δx={spread_x:.2f}, Δy={spread_y:.2f} (échelle relative des clusters)")
-                except Exception:
-                    pass
-        else:
-            st.error("Erreur lors de la génération de la visualisation t-SNE")
-            with st.expander("🛠 Détails de l'erreur"):
-                st.json(tsne_data)
-                st.markdown(
-                    """
-                **Causes possibles :**
-                - Perplexité trop élevée par rapport au nombre d'ingrédients (doit être < n_samples)
-                - Matrice de co-occurrence vide ou dégénérée (toutes valeurs nulles)
-                - Incohérence entre le nombre de labels de clusters et la liste d'ingrédients
-                - Conflit de cache sur des anciennes données
-
-                **Actions suggérées :**
-                1. Réduire le nombre d'ingrédients ou ajuster la perplexité
-                2. Vider le cache (bouton Clear Cache) puis relancer
-                3. Vérifier que l'étape de clustering a bien été effectuée
-                """
-                )
-
-    def render_sidebar_statistics(self, clusters: Optional[np.ndarray], ingredient_names: Optional[list[str]]) -> None:
-        """Affiche les statistiques de clustering dans la sidebar.
-
-        Présente des métriques récapitulatives et un graphique de répartition
-        des ingrédients par cluster. N'affiche rien si les données ne sont pas
-        disponibles.
-
-        Args:
-            clusters: Array numpy des labels de cluster, ou None si l'analyse
-                n'a pas encore été effectuée.
-            ingredient_names: Liste des noms d'ingrédients, ou None si l'analyse
-                n'a pas encore été effectuée.
-
-        Notes:
-            Cette méthode vérifie que les deux paramètres sont non-None avant
-            d'afficher les statistiques. Le graphique utilise Plotly pour une
-            visualisation interactive.
-        """
-        if clusters is not None and ingredient_names is not None:
-            st.sidebar.markdown("---")
-            st.sidebar.markdown("### 📊 Statistiques")
-
-            # Comptage par cluster
-            cluster_counts = pd.Series(clusters).value_counts().sort_index()
-
-            st.sidebar.metric("Total ingrédients", len(ingredient_names))
-            st.sidebar.metric("Nombre de clusters", len(cluster_counts))
-
-            # Graphique horizontal des proportions par cluster
-            st.sidebar.markdown("**Répartition par cluster:**")
-
-            # Créer le graphique avec Plotly
-            colors = [
-                "#FF6B6B",
-                "#4ECDC4",
-                "#45B7D1",
-                "#96CEB4",
-                "#FFEAA7",
-                "#DDA0DD",
-                "#98D8C8",
-                "#F7DC6F",
-                "#BB8FCE",
-                "#85C1E9",
-            ]
-
-            fig = go.Figure()
-
-            for i, count in enumerate(cluster_counts):
-                percentage = (count / len(ingredient_names)) * 100
-                color = colors[i % len(colors)]
-
-                fig.add_trace(
-                    go.Bar(
-                        x=[count],
-                        y=[f"Cluster {i + 1}"],
-                        orientation="h",
-                        name=f"Cluster {i + 1}",
-                        marker_color=color,
-                        text=f"{count} ({percentage:.1f}%)",
-                        textposition="outside",
-                        showlegend=False,
-                    )
-                )
-
-            fig.update_layout(
-                title="",
-                xaxis_title="Nombre d'ingrédients",
-                yaxis_title="",
-                height=min(400, len(cluster_counts) * 40 + 100),
-                margin=dict(l=10, r=10, t=10, b=10),
-                font=dict(size=10),
             )
 
-            st.sidebar.plotly_chart(fig, use_container_width=True)
+    def render_sidebar_statistics(
+        self, clusters: np.ndarray, ingredient_names: list[str]
+    ) -> None:
+        """Affiche les statistiques dans la sidebar."""
+        st.sidebar.markdown("---")
+        st.sidebar.markdown("### 📊 Statistiques")
 
-    # ---------------- Étapes de l'analyse ---------------- #
+        cluster_counts = pd.Series(clusters).value_counts().sort_index()
 
-    def _render_step_1_preprocessing(self, analyzer: IngredientsAnalyzer) -> None:
-        """Affiche l'étape 1 : Prétraitement NLP des ingrédients.
+        st.sidebar.metric("Ingrédients analysés", len(ingredient_names))
+        st.sidebar.metric("Clusters créés", len(cluster_counts))
 
-        Args:
-            analyzer: Instance de l'analyseur contenant les résultats du preprocessing.
-        """
+        # Graphique
+        st.sidebar.markdown("**Répartition:**")
+
+        colors = [
+            "#FF6B6B",
+            "#4ECDC4",
+            "#45B7D1",
+            "#96CEB4",
+            "#FFEAA7",
+            "#DDA0DD",
+            "#98D8C8",
+            "#F7DC6F",
+            "#BB8FCE",
+            "#85C1E9",
+        ]
+
+        fig = go.Figure()
+
+        for i, count in enumerate(cluster_counts):
+            percentage = (count / len(ingredient_names)) * 100
+            color = colors[i % len(colors)]
+
+            fig.add_trace(
+                go.Bar(
+                    x=[count],
+                    y=[f"C{i + 1}"],
+                    orientation="h",
+                    marker_color=color,
+                    text=f"{count} ({percentage:.0f}%)",
+                    textposition="outside",
+                    showlegend=False,
+                )
+            )
+
+        fig.update_layout(
+            xaxis_title="Nombre",
+            height=min(400, len(cluster_counts) * 40 + 100),
+            margin=dict(l=10, r=10, t=10, b=10),
+            font=dict(size=10),
+        )
+
+        st.sidebar.plotly_chart(fig, use_container_width=True)
+
+    def _render_step_1_preprocessing(self) -> None:
+        """Affiche l'étape 1 : Prétraitement NLP des ingrédients."""
         st.markdown("---")
         st.header("📈 ÉTAPE 1 : Prétraitement NLP des ingrédients")
 
@@ -616,82 +592,27 @@ class IngredientsClusteringPage:
         pour créer une représentation cohérente.
 
         **Métrique :** Taux de réduction du nombre d'ingrédients uniques après normalisation.
-        """
-        )
 
-        # Afficher le résumé du preprocessing
-        if hasattr(analyzer, "ingredient_groups") and analyzer.ingredient_groups:
-            with st.expander("🔍 Détails du prétraitement", expanded=True):
-                # Récupérer les statistiques de traitement
-                summary = analyzer.get_processing_summary()
+        **💡 Note technique :** Cette étape a été **précalculée à froid** lors de la génération de la
+        matrice 300×300 avec `utils/preprocess_ingredients_matrix.py`. Environ **~230,000 recettes** ont
+        été traitées pour extraire et normaliser les 300 ingrédients les plus fréquents.
 
-                if "error" not in summary:
-                    col1, col2, col3 = st.columns(3)
+        **Méthodologie appliquée :**
+        - Normalisation : minuscules, suppression ponctuation, filtrage stop words
+        - Regroupement : variantes lexicales fusionnées
+        - Réduction typique : ~70% des variantes éliminées
 
-                    with col1:
-                        st.metric(
-                            "Ingrédients bruts uniques",
-                            f"{summary['normalization']['total_unique_raw']:,}",
-                            help="Nombre d'ingrédients uniques avant normalisation",
-                        )
-
-                    with col2:
-                        st.metric(
-                            "Après normalisation",
-                            f"{summary['normalization']['total_normalized']:,}",
-                            delta=f"-{summary['normalization']['reduction_ratio']}%",
-                            help="Nombre d'ingrédients après regroupement des variantes",
-                        )
-
-                    with col3:
-                        st.metric(
-                            "Groupes créés",
-                            f"{summary['grouping']['groups_with_multiple_items']}",
-                            help="Nombre de groupes contenant plusieurs variantes",
-                        )
-
-                    # Exemples de normalisation
-                    st.markdown("**🧪 Exemples de normalisation :**")
-                    test_ingredients = [
-                        "large eggs",
-                        "fresh ground black pepper",
-                        "unsalted butter",
-                        "red onions",
-                        "whole milk",
-                        "extra virgin olive oil",
-                    ]
-                    for ing in test_ingredients:
-                        normalized = analyzer.normalize_ingredient(ing)
-                        st.write(f"• `{ing}` → `{normalized}`")
-
-                    # Exemples de regroupements
-                    multi_groups = [g for g in analyzer.ingredient_groups if len(g) > 1]
-                    if multi_groups:
-                        st.markdown("**🔗 Exemples de regroupements d'ingrédients similaires :**")
-                        for i, group in enumerate(multi_groups[:5]):
-                            members_display = " | ".join(group[:5])
-                            if len(group) > 5:
-                                members_display += f" (+ {len(group) - 5} autres)"
-                            st.write(f"**Groupe {i + 1}:** {members_display}")
-
-        st.markdown(
-            """
-        **💡 Observations :** Le prétraitement NLP réduit significativement la redondance en identifiant
+        **🎯 Résultat :** Le prétraitement réduit significativement la redondance en identifiant
         les variantes linguistiques d'un même ingrédient. Cette étape est cruciale pour obtenir une
-        matrice de co-occurrence fiable.
-
-        **🎯 Implication :** La normalisation permet de concentrer l'analyse sur les véritables patterns
+        matrice de co-occurrence fiable et permet de concentrer l'analyse sur les véritables patterns
         culinaires plutôt que sur les variations de nomenclature.
         """
         )
 
-    def _render_step_2_cooccurrence(self, ingredient_names: list[str], ingredients_matrix: pd.DataFrame) -> None:
-        """Affiche l'étape 2 : Création de la matrice de co-occurrence.
-
-        Args:
-            ingredient_names: Liste des noms d'ingrédients.
-            ingredients_matrix: Matrice de co-occurrence.
-        """
+    def _render_step_2_cooccurrence(
+        self, ingredient_names: list[str], matrix: pd.DataFrame
+    ) -> None:
+        """Affiche l'étape 2 : Création de la matrice de co-occurrence."""
         st.markdown("---")
         st.header("📈 ÉTAPE 2 : Matrice de co-occurrence")
 
@@ -704,12 +625,16 @@ class IngredientsClusteringPage:
         la base de notre analyse de similarité.
 
         **Méthode :** Pour chaque recette, toutes les paires d'ingrédients présents sont comptabilisées.
+
+        **💡 Note technique :** Cette matrice **300×300** a été **précalculée à froid** sur l'ensemble
+        du corpus (~230,000 recettes). Vous sélectionnez dynamiquement un sous-ensemble (40-300 ingrédients)
+        de cette matrice pour votre analyse.
         """
         )
 
         # Statistiques de la matrice
-        total_cooccurrences = int(ingredients_matrix.values.sum() / 2)
-        non_zero_pairs = int((ingredients_matrix.values > 0).sum() / 2)
+        total_cooccurrences = int(matrix.values.sum() / 2)
+        non_zero_pairs = int((matrix.values > 0).sum() / 2)
         matrix_size = len(ingredient_names)
         max_possible_pairs = matrix_size * (matrix_size - 1) / 2
         sparsity = (1 - non_zero_pairs / max_possible_pairs) * 100
@@ -731,7 +656,7 @@ class IngredientsClusteringPage:
         st.markdown("---")
 
         # Analyse interactive de co-occurrence
-        self.render_cooccurrence_analysis(ingredient_names, ingredients_matrix)
+        self.render_cooccurrence_analysis(ingredient_names, matrix)
 
         st.markdown(
             """
@@ -744,14 +669,10 @@ class IngredientsClusteringPage:
         """
         )
 
-    def _render_step_3_clustering(self, clusters: np.ndarray, ingredient_names: list[str], n_clusters: int) -> None:
-        """Affiche l'étape 3 : Clustering K-means.
-
-        Args:
-            clusters: Array des labels de cluster.
-            ingredient_names: Liste des noms d'ingrédients.
-            n_clusters: Nombre de clusters créés.
-        """
+    def _render_step_3_clustering(
+        self, clusters: np.ndarray, ingredient_names: list[str], n_clusters: int
+    ) -> None:
+        """Affiche l'étape 3 : Clustering K-means."""
         st.markdown("---")
         st.header("📈 ÉTAPE 3 : Clustering K-means")
 
@@ -799,14 +720,8 @@ class IngredientsClusteringPage:
         """
         )
 
-    def _render_step_4_visualization(self, analyzer: IngredientsAnalyzer, clusters: np.ndarray, tsne_perplexity: int) -> None:
-        """Affiche l'étape 4 : Visualisation t-SNE 2D.
-
-        Args:
-            analyzer: Instance de l'analyseur.
-            clusters: Array des labels de cluster.
-            tsne_perplexity: Paramètre de perplexité pour t-SNE.
-        """
+    def _render_step_4_visualization(self, tsne_data: dict) -> None:
+        """Affiche l'étape 4 : Visualisation t-SNE 2D."""
         st.markdown("---")
         st.header("📈 ÉTAPE 4 : Visualisation t-SNE 2D")
 
@@ -818,14 +733,12 @@ class IngredientsClusteringPage:
         (t-Distributed Stochastic Neighbor Embedding) réduit cette dimensionnalité à 2D tout en
         préservant les proximités locales.
 
-        **Méthode :** t-SNE avec perplexité={}, optimisation par descente de gradient.
-        """.format(
-                tsne_perplexity
-            )
+        **Méthode :** t-SNE avec perplexité ajustée, optimisation par descente de gradient.
+        """
         )
 
         # Visualisation t-SNE
-        self.render_tsne_visualization(analyzer, clusters, tsne_perplexity)
+        self.render_tsne_visualization(tsne_data)
 
         st.markdown(
             """
@@ -854,14 +767,10 @@ class IngredientsClusteringPage:
         """
         )
 
-    def _render_conclusion(self, ingredient_names: list[str], clusters: np.ndarray, n_clusters: int) -> None:
-        """Affiche la conclusion de l'analyse.
-
-        Args:
-            ingredient_names: Liste des noms d'ingrédients.
-            clusters: Array des labels de cluster.
-            n_clusters: Nombre de clusters créés.
-        """
+    def _render_conclusion(
+        self, ingredient_names: list[str], clusters: np.ndarray, n_clusters: int
+    ) -> None:
+        """Affiche la conclusion de l'analyse."""
         st.markdown("---")
         st.subheader("📋 Conclusion de l'analyse")
 
@@ -914,126 +823,15 @@ class IngredientsClusteringPage:
         """
         )
 
-    def render_analysis_summary(self, analyzer: IngredientsAnalyzer) -> None:
-        """Affiche le résumé détaillé du processus d'analyse.
-
-        Présente des informations sur le regroupement d'ingrédients similaires,
-        la normalisation effectuée et des exemples de mappings. Utile pour
-        comprendre les transformations appliquées aux données brutes.
-
-        Args:
-            analyzer: Instance de l'analyseur contenant les résultats du
-                traitement (groupes d'ingrédients, mappings, etc.).
-
-        Notes:
-            Affiche plusieurs sections extensibles:
-            - Exemples de regroupements d'ingrédients similaires
-            - Debug de la normalisation pour des ingrédients courants
-            - Tests de normalisation en temps réel
-            - Résumé complet du pipeline de traitement
-        """
-        # Afficher quelques exemples de regroupements d'ingrédients
-        if hasattr(analyzer, "ingredient_groups") and analyzer.ingredient_groups:
-            with st.expander("🔗 Exemples de regroupements d'ingrédients similaires"):
-                # Afficher les groupes avec plus d'un élément
-                multi_groups = [g for g in analyzer.ingredient_groups if len(g) > 1]
-
-                if multi_groups:
-                    # Afficher les 10 premiers groupes
-                    for i, group in enumerate(multi_groups[:10]):
-                        members_display = " | ".join(group[:5])
-                        if len(group) > 5:
-                            members_display += f" (+ {len(group) - 5} autres)"
-                        st.write(f"**Groupe {i + 1}:** {members_display}")
-
-                    st.info(f"Total: {len(multi_groups)} groupes d'ingrédients similaires détectés")
-
-                    # Debug pour des ingrédients problématiques
-                    debug_info = analyzer.debug_ingredient_mapping(["pepper", "egg", "salt", "butter", "onion"])
-                    if "search_results" in debug_info:
-                        st.write("**🔍 Debug - Exemples de normalisation:**")
-                        for term, matches in debug_info["search_results"].items():
-                            if matches:
-                                st.write(f"*{term.title()}:*")
-                                for match in matches[:3]:  # Limiter à 3 résultats
-                                    # Montrer aussi la normalisation
-                                    normalized = analyzer.normalize_ingredient(match["ingredient"])
-                                    status = (
-                                        "✅ Représentant"
-                                        if match["is_representative"]
-                                        else f"➡️ Mappé vers '{match['representative']}'"
-                                    )
-                                    st.write(
-                                        f"  • `{match['ingredient']}` → `{normalized}` {status}"
-                                    )
-
-                    # Exemple de normalisation en temps réel
-                    st.write("**🧪 Test de normalisation:**")
-                    test_ingredients = [
-                        "large eggs",
-                        "fresh ground black pepper",
-                        "unsalted butter",
-                        "red onions",
-                        "whole milk",
-                        "extra virgin olive oil",
-                    ]
-                    for ing in test_ingredients:
-                        normalized = analyzer.normalize_ingredient(ing)
-                        st.write(f"• `{ing}` → `{normalized}`")
-
-                    # Résumé complet du processus
-                    with st.expander("📋 Résumé Complet du Data Processing"):
-                        summary = analyzer.get_processing_summary()
-                        if "error" not in summary:
-                            col1, col2 = st.columns(2)
-
-                            with col1:
-                                st.write("**📊 Données d'entrée:**")
-                                st.write(f"• Recettes: {summary['input_data']['total_recipes']:,}")
-                                st.write(f"• Ingrédients bruts: {summary['input_data']['total_raw_ingredients']:,}")
-                                st.write(f"• Moyenne par recette: {summary['input_data']['avg_ingredients_per_recipe']}")
-
-                                st.write("**🔄 Normalisation:**")
-                                st.write(f"• Ingrédients uniques bruts: {summary['normalization']['total_unique_raw']:,}")
-                                st.write(f"• Après normalisation: {summary['normalization']['total_normalized']:,}")
-                                st.write(f"• Réduction: {summary['normalization']['reduction_ratio']}%")
-
-                            with col2:
-                                st.write("**🔗 Regroupement:**")
-                                st.write(f"• Groupes multiples: {summary['grouping']['groups_with_multiple_items']}")
-                                st.write(f"• Plus grand groupe: {summary['grouping']['largest_group_size']} éléments")
-
-                                st.write("**📈 Matrice Co-occurrence:**")
-                                st.write(f"• Dimensions: {summary['cooccurrence_matrix']['dimensions']}")
-                                st.write(f"• Co-occurrences: {summary['cooccurrence_matrix']['total_cooccurrences']:,}")
-                                st.write(f"• Paires non-nulles: {summary['cooccurrence_matrix']['non_zero_pairs']:,}")
-                                st.write(f"• Sparsité: {summary['cooccurrence_matrix']['sparsity']}%")
-                else:
-                    st.warning("Aucun regroupement détecté. Tous les ingrédients sont considérés comme uniques.")
-
     def run(self) -> None:
-        """Point d'entrée principal de la page.
-
-        Orchestre l'ensemble du workflow de la page de clustering:
-        1. Chargement automatique des données
-        2. Affichage de la sidebar avec paramètres
-        3. Exécution de l'analyse (process, clustering, visualisation)
-        4. Affichage des résultats interactifs
-
-        Cette méthode gère également le cache de session Streamlit pour
-        persister les résultats entre les interactions utilisateur.
-
-        Raises:
-            Exception: Affiche les erreurs via st.error mais ne les propage pas
-                pour maintenir l'interface fonctionnelle.
-        """
-        self.logger.info("Starting ingredients clustering analysis")
+        """Point d'entrée principal de la page."""
+        self.logger.info("Starting ingredients clustering analysis with precomputed matrix")
 
         # Introduction et User Story
         with st.expander("🎯 Objectifs et méthodologie de l'analyse", expanded=True):
             st.markdown(
                 """
-            ### Peut-on regrouper les ingrédients selon leurs usages culinaires ?
+            ### Peut-on regrouper les ingrédients selon leurs usages culinaires ?
 
             Cette analyse explore les patterns de co-occurrence d'ingrédients dans les recettes pour
             identifier les associations culinaires naturelles. En analysant des milliers de recettes,
@@ -1043,111 +841,103 @@ class IngredientsClusteringPage:
             familles d'ingrédients distinctes ? Comment les ingrédients se regroupent-ils en fonction
             de leurs profils d'utilisation ?
 
-            **Approche :** Analyse NLP des listes d'ingrédients, construction d'une matrice de
-            co-occurrence, clustering automatique par K-means, et visualisation en 2D par t-SNE.
+            **Approche :**
+            - **Étapes 1-2 (précalculées à froid)** : Analyse NLP des listes d'ingrédients et construction
+              d'une matrice de co-occurrence 300×300
+            - **Étapes 3-4 (temps réel)** : Clustering automatique par K-means et visualisation en 2D par t-SNE
 
             **Problématique :** Dans un espace culinaire où des milliers d'ingrédients peuvent être
             combinés, comment identifier automatiquement les groupes d'ingrédients qui partagent des
             contextes d'utilisation similaires ?
+
+
+            **💡 Optimisation** : Les étapes 1-2 sont précalculées pour accélérer l'analyse. Vous ajustez
+            le nombre d'ingrédients (40-300) et de clusters (3-20) en temps réel.
             """
             )
 
-        # Sidebar pour les paramètres
+        # Sidebar
         params = self.render_sidebar()
-        self.logger.debug(f"Clustering parameters: {params}")
+        self.logger.debug(f"Parameters: {params}")
 
-        # Chargement automatique des données
-        self.logger.debug("Loading and preparing data")
-        data = self._load_and_prepare_data()
+        # Charger la matrice précalculée
+        data = self._load_cooccurrence_matrix()
 
-        # Traitement des données
-        if data is not None:
-            self.logger.info(f"Dataset loaded successfully: {len(data)} recipes")
+        if data is None:
+            return
 
-            # Initialisation de l'analyseur
-            analyzer = IngredientsAnalyzer(data)
+        full_matrix, ingredients_list = data
 
-            # Cache controls dans la sidebar
-            self._render_cache_controls(analyzer)
+        # Vérifier si les paramètres ont changé
+        params_changed = False
+        if "last_params" in st.session_state:
+            last = st.session_state["last_params"]
+            if (
+                last["n_ingredients"] != params["n_ingredients"]
+                or last["n_clusters"] != params["n_clusters"]
+                or last["tsne_perplexity"] != params["tsne_perplexity"]
+            ):
+                params_changed = True
 
-            # Vérifier si les paramètres ont changé
-            params_changed = False
-            if "last_params" in st.session_state:
-                last_params = st.session_state["last_params"]
-                if (
-                    last_params["n_ingredients"] != params["n_ingredients"]
-                    or last_params["n_clusters"] != params["n_clusters"]
-                    or last_params["tsne_perplexity"] != params["tsne_perplexity"]
-                ):
-                    params_changed = True
+        # Décider si on lance l'analyse
+        should_analyze = (
+            params["analyze_button"]
+            or "clusters" not in st.session_state
+            or params_changed
+        )
 
-            # Lancer l'analyse si bouton cliqué, première fois, ou paramètres changés
-            should_analyze = params["analyze_button"] or "ingredient_names" not in st.session_state or params_changed
+        if should_analyze:
+            self.logger.info(
+                f"Running analysis: n_ingredients={params['n_ingredients']}, n_clusters={params['n_clusters']}"
+            )
 
-            if should_analyze:
-                self.logger.info(
-                    f"Starting clustering analysis with parameters: n_ingredients={params['n_ingredients']}, n_clusters={params['n_clusters']}"
+            with st.spinner("Analyse en cours..."):
+                # Sélectionner les top N ingrédients
+                matrix, ingredient_names = self._select_top_ingredients(
+                    full_matrix, ingredients_list, params["n_ingredients"]
                 )
-                with st.spinner("Analyse en cours..."):
-                    # Traitement des ingrédients
-                    self.logger.debug(
-                        f"Processing ingredients with n_ingredients={params['n_ingredients']}"
-                    )
-                    ingredients_matrix, ingredient_names = analyzer.process_ingredients(params["n_ingredients"])
-                    self.logger.info(f"Processed ingredients matrix: {ingredients_matrix.shape}")
 
-                    # Clustering
-                    self.logger.debug(f"Performing clustering with n_clusters={params['n_clusters']}")
-                    clusters = analyzer.perform_clustering(ingredients_matrix, params["n_clusters"])
-                    self.logger.info(f"Clustering completed: {len(set(clusters))} unique clusters found")
+                # Clustering
+                clusters = self._perform_clustering(matrix, params["n_clusters"])
 
-                    # Sauvegarde des résultats dans la session
-                    st.session_state["ingredient_names"] = ingredient_names
-                    st.session_state["clusters"] = clusters
-                    st.session_state["ingredients_matrix"] = ingredients_matrix
-                    st.session_state["analyzer"] = analyzer
-                    st.session_state["last_params"] = params.copy()
+                # t-SNE
+                tsne_data = self._generate_tsne(matrix, clusters, params["tsne_perplexity"])
 
-            # Affichage des résultats si disponibles
-            if "ingredient_names" in st.session_state:
-                self.logger.debug("Displaying cached clustering results")
-                ingredient_names = st.session_state["ingredient_names"]
-                ingredients_matrix = st.session_state["ingredients_matrix"]
-                clusters = st.session_state["clusters"]
-                analyzer = st.session_state["analyzer"]
+                # Sauvegarder dans session
+                st.session_state["matrix"] = matrix
+                st.session_state["ingredient_names"] = ingredient_names
+                st.session_state["clusters"] = clusters
+                st.session_state["tsne_data"] = tsne_data
+                st.session_state["last_params"] = params.copy()
 
-                # Statistiques générales
-                col1, col2, col3 = st.columns(3)
-                with col1:
-                    st.metric("📊 Recettes analysées", f"{len(data):,}")
-                with col2:
-                    st.metric("🥘 Ingrédients retenus", f"{len(ingredient_names)}")
-                with col3:
-                    st.metric("🎯 Clusters créés", f"{params['n_clusters']}")
+        # Afficher les résultats si disponibles
+        if "clusters" in st.session_state:
+            matrix = st.session_state["matrix"]
+            ingredient_names = st.session_state["ingredient_names"]
+            clusters = st.session_state["clusters"]
+            tsne_data = st.session_state["tsne_data"]
 
-                # ÉTAPE 1 : Prétraitement NLP
-                self._render_step_1_preprocessing(analyzer)
+            # Métriques
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("📊 Matrice source", "300x300")
+            with col2:
+                st.metric("🥘 Ingrédients analysés", f"{len(ingredient_names)}")
+            with col3:
+                st.metric("🎯 Clusters créés", f"{params['n_clusters']}")
 
-                # ÉTAPE 2 : Matrice de co-occurrence
-                self._render_step_2_cooccurrence(ingredient_names, ingredients_matrix)
+            # ÉTAPES
+            self._render_step_1_preprocessing()
+            self._render_step_2_cooccurrence(ingredient_names, matrix)
+            self._render_step_3_clustering(clusters, ingredient_names, params["n_clusters"])
+            self._render_step_4_visualization(tsne_data)
+            self._render_conclusion(ingredient_names, clusters, params["n_clusters"])
 
-                # ÉTAPE 3 : Clustering
-                self._render_step_3_clustering(clusters, ingredient_names, params["n_clusters"])
-
-                # ÉTAPE 4 : Visualisation t-SNE
-                self._render_step_4_visualization(analyzer, clusters, params["tsne_perplexity"])
-
-                # Conclusion
-                self._render_conclusion(ingredient_names, clusters, params["n_clusters"])
-
-                # Statistiques dans la sidebar
-                self.render_sidebar_statistics(clusters, ingredient_names)
-
-        else:
-            st.error("Impossible de charger les données. Vérifiez la présence du fichier de données.")
+            # Statistiques sidebar
+            self.render_sidebar_statistics(clusters, ingredient_names)
 
         # Footer
         st.markdown("---")
         st.caption(
-            "💡 **Configuration** : Ajustez les paramètres dans la sidebar pour explorer différentes configurations de clustering."
+            "💡 **Configuration** : Ajustez les paramètres dans la sidebar pour explorer différentes configurations."
         )

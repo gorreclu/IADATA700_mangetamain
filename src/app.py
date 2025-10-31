@@ -201,7 +201,13 @@ class App:
 
         # Logique des pages
         if page == "Analyse de clustering des ingrédients":
-            clustering_page = IngredientsClusteringPage(str(self.config.default_recipes_path))
+            # IMPORTANT: Ne pas passer le chemin des recettes comme matrice.
+            # Utiliser les chemins des fichiers précalculés (générés par preprocessing).
+            clustering_page = IngredientsClusteringPage(
+                matrix_path="data/ingredients_cooccurrence_matrix.csv",
+                ingredients_list_path="data/ingredients_list.csv",
+            )
+            self.logger.debug("Instantiated IngredientsClusteringPage with precomputed matrix paths")
             clustering_page.run()
             return
         if page == "Analyse popularité des recettes":
