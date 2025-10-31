@@ -1,18 +1,39 @@
 from __future__ import annotations
 
+import sys
 from dataclasses import dataclass
 from pathlib import Path
+import urllib.request
 
 import streamlit as st
 
-from components.ingredients_clustering_page import IngredientsClusteringPage
-from components.popularity_analysis_page import PopularityAnalysisPage
-from core.data_explorer import DataExplorer
-from core.data_loader import DataLoader
-from core.logger import get_logger, setup_logging
+# Ajouter le répertoire parent au chemin Python pour les imports
+sys.path.append(str(Path(__file__).parent))
+
+# Imports des modules locaux (après modification du sys.path)
+try:
+    from components.ingredients_clustering_page import IngredientsClusteringPage
+    from components.popularity_analysis_page import PopularityAnalysisPage
+    from core.data_explorer import DataExplorer
+    from core.data_loader import DataLoader
+    from core.logger import get_logger, setup_logging
+except ImportError:
+    # Fallback pour les imports absolus depuis le répertoire racine
+    sys.path.append(str(Path(__file__).parent.parent))
+    from src.components.ingredients_clustering_page import IngredientsClusteringPage
+    from src.components.popularity_analysis_page import PopularityAnalysisPage
+    from src.core.data_explorer import DataExplorer
+    from src.core.data_loader import DataLoader
+    from src.core.logger import get_logger, setup_logging
 
 DEFAULT_RECIPES = Path("data/RAW_recipes.csv")
 DEFAULT_INTERACTIONS = Path("data/RAW_interactions.csv")
+
+# S3 URLs pour les fichiers de données
+S3_URLS = {
+    "RAW_recipes.csv": "https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_recipes+2.csv",
+    "RAW_interactions.csv": "https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_interactions+3.csv",
+}
 
 
 @dataclass
@@ -33,6 +54,73 @@ class App:
         setup_logging(level="WARNING")  # Less verbose for better performance
         self.logger = get_logger()
         self.logger.info("Mangetamain application starting")
+
+    @staticmethod
+    @st.cache_data
+    def _download_file(url: str, destination: Path) -> bool:
+        """Télécharge un fichier depuis une URL vers un chemin local."""
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "Python-urllib/3.12 MangetamainApp/1.0",
+                    "Accept": "*/*",
+                    "Accept-Encoding": "identity",
+                },
+            )
+
+            with urllib.request.urlopen(req, timeout=30) as response:
+                chunk_size = 1024 * 1024  # 1MB chunks
+
+                with open(destination, "wb") as f:
+                    while True:
+                        chunk = response.read(chunk_size)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+
+            return True
+        except Exception:
+            return False
+
+    def _ensure_data_files(self):
+        """S'assure que tous les fichiers de données sont présents."""
+        data_dir = Path("data")
+        data_dir.mkdir(exist_ok=True)
+
+        required_files = ["RAW_recipes.csv", "RAW_interactions.csv"]
+        missing_files = []
+
+        for filename in required_files:
+            filepath = data_dir / filename
+            if not filepath.exists() or filepath.stat().st_size < 1000:
+                missing_files.append(filename)
+
+        if not missing_files:
+            return True
+
+        st.info("📥 Téléchargement des données depuis AWS S3...")
+        progress_bar = st.progress(0)
+        status_text = st.empty()
+
+        total_files = len(missing_files)
+
+        for i, filename in enumerate(missing_files):
+            status_text.text(f"Téléchargement de {filename}...")
+            progress = int((i / total_files) * 100)
+            progress_bar.progress(progress)
+
+            url = S3_URLS[filename]
+            destination = data_dir / filename
+
+            if not App._download_file(url, destination):
+                st.error(f"❌ Échec du téléchargement de {filename}")
+                return False
+
+        progress_bar.progress(100)
+        status_text.text("✅ Téléchargement terminé!")
+        st.success("Données téléchargées avec succès!")
+        return True
 
     def _sidebar(self) -> dict:
         """Configuration de la sidebar avec sélection des pages et datasets."""
@@ -92,6 +180,11 @@ class App:
             page_title=self.config.page_title,
             layout=self.config.layout,
         )
+
+        # Vérifier et télécharger les données si nécessaire
+        if not self._ensure_data_files():
+            st.error("❌ Impossible de charger les données. Veuillez réessayer.")
+            st.stop()
 
         # Gestion du titre dynamique
         page = st.session_state.get("page_select_box", "Home")
