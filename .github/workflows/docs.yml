@@ -53,6 +53,13 @@ jobs:
         run: |
           uv run sphinx-build -b html --keep-going docs/source docs/build/html
 
+      # Vérification et copie manuelle du SVG si nécessaire
+      - name: Ensure SVG is in output
+        run: |
+          ls -la docs/build/html/_static/ || echo "No _static in output"
+          cp docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/ || echo "SVG already copied"
+          ls -la docs/build/html/_static/Architecture_AWS_Mangetamain.svg
+
       # Copie le rapport de couverture dans la doc
       - name: Copy coverage report to docs
         run: |
@@ -103,6 +110,12 @@ jobs:
         run: |
           uv run sphinx-apidoc -o docs/source/api src
           uv run sphinx-build -b html --keep-going docs/source docs/build/html
+
+      - name: Ensure SVG is in output
+        run: |
+          ls -la docs/build/html/_static/ || echo "No _static in output"
+          cp docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/ || echo "SVG already copied"
+          ls -la docs/build/html/_static/Architecture_AWS_Mangetamain.svg
 
       - name: Copy coverage report to docs
         run: |
