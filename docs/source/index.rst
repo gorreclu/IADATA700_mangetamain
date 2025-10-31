@@ -13,7 +13,7 @@ Application web interactive développée avec Streamlit pour analyser un corpus 
 * � **Analyse de popularité** - Relations entre notes, interactions et caractéristiques avec preprocessing IQR
 * 🏠 **Exploration des données** - Statistiques descriptives et métriques clés
 * ⚡ **Optimisations avancées** - Preprocessing offline + système de cache pour performances optimales
-* 🌐 **Déploiement cloud** - Application disponible sur Streamlit Cloud
+* 🌐 **Déploiement cloud** - Streamlit Cloud (gratuit, actif) + AWS EC2 testé (désactivé)
 
 **Stack technique :**
 
@@ -23,6 +23,12 @@ Application web interactive développée avec Streamlit pour analyser un corpus 
 * **Visualisation** : Plotly, Matplotlib
 * **Tests** : pytest (160 tests, 49% coverage)
 * **Docs** : Sphinx, PlantUML
+
+**Accès en ligne :**
+
+* 🌐 **Streamlit Cloud** (actif) : https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/
+
+*Note : Un déploiement AWS EC2 a été testé puis désactivé pour éviter les coûts. L'architecture reste documentée ci-dessous.*
 
 .. toctree::
    :maxdepth: 2
@@ -35,6 +41,7 @@ Application web interactive développée avec Streamlit pour analyser un corpus 
    :maxdepth: 1
    :caption: Architecture
 
+   Architecture AWS <ArchitectureAWS>
    Diagramme de classes <ClassDiagram>
 
 .. toctree::
