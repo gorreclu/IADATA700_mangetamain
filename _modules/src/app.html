@@ -285,7 +285,13 @@
 
         <span class="c1"># Logique des pages</span>
         <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Analyse de clustering des ingrédients&quot;</span><span class="p">:</span>
-            <span class="n">clustering_page</span> <span class="o">=</span> <span class="n">IngredientsClusteringPage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">default_recipes_path</span><span class="p">))</span>
+            <span class="c1"># IMPORTANT: Ne pas passer le chemin des recettes comme matrice.</span>
+            <span class="c1"># Utiliser les chemins des fichiers précalculés (générés par preprocessing).</span>
+            <span class="n">clustering_page</span> <span class="o">=</span> <span class="n">IngredientsClusteringPage</span><span class="p">(</span>
+                <span class="n">matrix_path</span><span class="o">=</span><span class="s2">&quot;data/ingredients_cooccurrence_matrix.csv&quot;</span><span class="p">,</span>
+                <span class="n">ingredients_list_path</span><span class="o">=</span><span class="s2">&quot;data/ingredients_list.csv&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Instantiated IngredientsClusteringPage with precomputed matrix paths&quot;</span><span class="p">)</span>
             <span class="n">clustering_page</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Analyse popularité des recettes&quot;</span><span class="p">:</span>
