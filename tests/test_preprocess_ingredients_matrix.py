@@ -32,7 +32,7 @@ class TestNormalizeIngredient:
         """Test de suppression des stop words."""
         result = preprocessor.normalize_ingredient("fresh garlic")
         assert "garlic" in result
-        
+
         result = preprocessor.normalize_ingredient("ground black pepper")
         assert "pepper" in result
 
@@ -129,12 +129,12 @@ class TestIngredientsMatrixPreprocessor:
         """Test du chargement et traitement des recettes."""
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=3)
         df = preprocessor.load_and_process_recipes(str(sample_recipes_file))
-        
+
         assert isinstance(df, pd.DataFrame)
         assert "normalized_ingredients" in df.columns  # Colonne renommée après normalisation
         assert "id" in df.columns
         assert len(df) > 0
-        
+
         # Vérifier que les ingrédients ont été parsés et sont des listes
         assert isinstance(df.iloc[0]["normalized_ingredients"], list)
 
@@ -143,11 +143,11 @@ class TestIngredientsMatrixPreprocessor:
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=3)
         df = preprocessor.load_and_process_recipes(str(sample_recipes_file))
         top_ingredients, ingredient_counts = preprocessor.get_top_ingredients(df)
-        
+
         assert isinstance(top_ingredients, list)
         assert isinstance(ingredient_counts, dict)
         assert len(top_ingredients) <= preprocessor.n_ingredients
-        
+
         # Vérifier que ce sont bien des chaînes
         assert all(isinstance(ing, str) for ing in top_ingredients)
 
@@ -156,20 +156,20 @@ class TestIngredientsMatrixPreprocessor:
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=5)
         df = preprocessor.load_and_process_recipes(str(sample_recipes_file))
         top_ingredients, _ = preprocessor.get_top_ingredients(df)
-        
+
         matrix = preprocessor.build_cooccurrence_matrix(df, top_ingredients)
-        
+
         # Vérifications de structure
         assert isinstance(matrix, pd.DataFrame)
         assert matrix.shape[0] == matrix.shape[1]  # Matrice carrée
         assert matrix.shape[0] == len(top_ingredients)
-        
+
         # Vérifier la symétrie
         assert np.allclose(matrix.values, matrix.values.T)
-        
+
         # Vérifier que la diagonale est non-nulle (auto-occurrence)
         assert all(matrix.iloc[i, i] >= 0 for i in range(len(top_ingredients)))
-        
+
         # Vérifier que les valeurs sont des entiers non-négatifs
         assert (matrix >= 0).all().all()
 
@@ -179,12 +179,12 @@ class TestIngredientsMatrixPreprocessor:
         df = preprocessor.load_and_process_recipes(str(sample_recipes_file))
         top_ingredients, _ = preprocessor.get_top_ingredients(df)
         matrix = preprocessor.build_cooccurrence_matrix(df, top_ingredients)
-        
+
         # Dans notre échantillon :
         # Recipe 1: flour, sugar, eggs
         # Recipe 2: flour, butter, sugar
         # Recipe 3: eggs, butter, milk
-        
+
         # flour et sugar apparaissent ensemble 2 fois
         if "flour" in matrix.index and "sugar" in matrix.index:
             flour_sugar_cooc = matrix.loc["flour", "sugar"]
@@ -193,10 +193,10 @@ class TestIngredientsMatrixPreprocessor:
     def test_n_ingredients_parameter(self, sample_recipes_file):
         """Test du paramètre n_ingredients."""
         preprocessor_10 = IngredientsMatrixPreprocessor(n_ingredients=10)
-        
+
         df = preprocessor_10.load_and_process_recipes(str(sample_recipes_file))
         top_ingredients, _ = preprocessor_10.get_top_ingredients(df)
-        
+
         # Avec notre petit échantillon, on devrait avoir max 5 ingrédients uniques
         assert len(top_ingredients) <= 10
         assert len(top_ingredients) > 0
@@ -220,10 +220,10 @@ class TestEdgeCases:
             "ingredients": ["['café', 'chocolat@', 'œufs']"],
             "nutrition": ["[100, 10, 5, 2, 15, 20, 3]"],
         })
-        
+
         filepath = temp_dir / "test_special.csv"
         df.to_csv(filepath, index=False)
-        
+
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=10)
         df_loaded = preprocessor.load_and_process_recipes(str(filepath))
         assert len(df_loaded) > 0
@@ -237,10 +237,10 @@ class TestEdgeCases:
             "ingredients": [long_list],
             "nutrition": ["[100, 10, 5, 2, 15, 20, 3]"],
         })
-        
+
         filepath = temp_dir / "test_long.csv"
         df.to_csv(filepath, index=False)
-        
+
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=50)
         df_loaded = preprocessor.load_and_process_recipes(str(filepath))
         top_ingredients, _ = preprocessor.get_top_ingredients(df_loaded)
@@ -254,14 +254,14 @@ class TestEdgeCases:
             "ingredients": ["['flour', 'flour', 'sugar']"],
             "nutrition": ["[100, 10, 5, 2, 15, 20, 3]"],
         })
-        
+
         filepath = temp_dir / "test_dup.csv"
         df.to_csv(filepath, index=False)
-        
+
         preprocessor = IngredientsMatrixPreprocessor(n_ingredients=10)
         df_loaded = preprocessor.load_and_process_recipes(str(filepath))
         top_ingredients, _ = preprocessor.get_top_ingredients(df_loaded)
         matrix = preprocessor.build_cooccurrence_matrix(df_loaded, top_ingredients)
-        
+
         # La matrice devrait traiter les doublons correctement
         assert matrix.loc["flour", "flour"] >= 0

@@ -4,7 +4,6 @@ Script pour arrêter tous les processus Streamlit en cours.
 """
 
 import subprocess
-import sys
 
 
 def stop_streamlit():

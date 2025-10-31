@@ -34,6 +34,9 @@ cache/
 debug/
 *.log
 
+# Fichiers de configuration temporaires
+data/.preprocessing_config_optimized.txt
+
 # Scripts de test temporaires (gardés pour compatibilité si des fichiers restent)
 comprehensive_audit.py
 test_cache.py
