@@ -1,0 +1,226 @@
+<svg viewBox="0 0 2000 1400" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .title { font-size: 48px; font-weight: bold; fill: #232F3E; }
+      .subtitle { font-size: 18px; fill: #666; }
+      .section-title { font-size: 18px; fill: white; font-weight: bold; }
+      .label { font-size: 14px; fill: white; font-weight: 600; }
+      .card-text { font-size: 13px; fill: #333; }
+      .small-text { font-size: 12px; fill: #666; }
+      .arrow-label { font-size: 12px; fill: #FF9900; font-weight: bold; }
+      
+      .gradient-dns { fill: url(#grad-dns); }
+      .gradient-elastic { fill: url(#grad-elastic); }
+      .gradient-security { fill: url(#grad-security); }
+      .gradient-alb { fill: url(#grad-alb); }
+      .gradient-asg { fill: url(#grad-asg); }
+      .gradient-app { fill: url(#grad-app); }
+      
+      .arrow { stroke: #FF9900; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .interaction-arrow { stroke: #4CAF50; stroke-width: 2.5; fill: none; marker-end: url(#arrowhead-green); stroke-dasharray: 4,4; }
+    </style>
+    
+    <linearGradient id="grad-dns" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#9C27B0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6A1B9A;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="grad-elastic" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF9900;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#E68A00;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="grad-security" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2196F3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1565C0;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="grad-alb" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5722;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#D84315;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="grad-asg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4CAF50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#2E7D32;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="grad-app" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00BCD4;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#00838F;stop-opacity:1" />
+    </linearGradient>
+    
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#FF9900" />
+    </marker>
+    
+    <marker id="arrowhead-green" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#4CAF50" />
+    </marker>
+    
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="2000" height="1400" fill="#f8f9fa"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="2000" height="100" fill="white" stroke="#ddd" stroke-width="1"/>
+  <text x="1000" y="50" text-anchor="middle" class="title">AWS Architecture - Mangetamain Streamlit</text>
+  <text x="1000" y="80" text-anchor="middle" class="subtitle">Production Ready | Auto-Scaling &amp; Load Balancing | Region: eu-west-3 (Paris)</text>
+  
+  <!-- ============ LAYER 1: INTERNET ============ -->
+  <rect x="50" y="120" width="1900" height="90" rx="10" fill="#E3F2FD" stroke="#2196F3" stroke-width="3"/>
+  <text x="1000" y="155" text-anchor="middle" class="section-title" fill="#1565C0" font-size="16">🌐 INTERNET - Users Access Application</text>
+  <text x="1000" y="185" text-anchor="middle" class="card-text" fill="#1565C0">Users worldwide access via: mangetamain.com or 13.37.60.84:8501</text>
+  
+  <!-- Arrow down -->
+  <path d="M 1000 210 L 1000 250" class="arrow"/>
+  <text x="1030" y="232" class="arrow-label">HTTP Request</text>
+  
+  <!-- ============ LAYER 2: DNS & ELASTIC IP ============ -->
+  <g filter="url(#shadow)">
+    <!-- Route 53 DNS -->
+    <rect x="80" y="260" width="420" height="170" rx="10" class="gradient-dns"/>
+    <text x="290" y="290" text-anchor="middle" class="label" font-size="16">🎯 Route 53 (DNS)</text>
+    <line x1="90" y1="305" x2="480" y2="305" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+    <text x="100" y="330" class="label" fill="white" font-size="13">Domain: mangetamain.com</text>
+    <text x="100" y="355" class="label" fill="white" font-size="13">A Record Points to Elastic IP</text>
+    <text x="100" y="380" class="label" fill="white" font-size="13">TTL: 300 seconds</text>
+    <text x="100" y="405" class="label" fill="white" font-size="13">Health Checks: ✓ Enabled</text>
+  </g>
+  
+  <!-- Arrow right -->
+  <path d="M 500 345 L 600 345" class="arrow"/>
+  <text x="540" y="335" class="arrow-label" text-anchor="middle">resolves to</text>
+  
+  <!-- Elastic IP -->
+  <g filter="url(#shadow)">
+    <rect x="600" y="260" width="420" height="170" rx="10" class="gradient-elastic"/>
+    <text x="810" y="290" text-anchor="middle" class="label" font-size="16">🔒 Elastic IP</text>
+    <line x1="610" y1="305" x2="1000" y2="305" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+    <text x="620" y="330" class="label" fill="white" font-size="13">Public IP: 13.37.60.84</text>
+    <text x="620" y="355" class="label" fill="white" font-size="13">✓ Permanently Fixed</text>
+    <text x="620" y="380" class="label" fill="white" font-size="13">Never changes on restart</text>
+    <text x="620" y="405" class="label" fill="white" font-size="13">Cost: Free (when in use)</text>
+  </g>
+  
+  <!-- Arrow right -->
+  <path d="M 1020 345 L 1120 345" class="arrow"/>
+  <text x="1060" y="335" class="arrow-label" text-anchor="middle">attached to</text>
+  
+  <!-- VPC & Security -->
+  <g filter="url(#shadow)">
+    <rect x="1120" y="260" width="420" height="170" rx="10" class="gradient-security"/>
+    <text x="1330" y="290" text-anchor="middle" class="label" font-size="16">🛡️ VPC &amp; Security</text>
+    <line x1="1130" y1="305" x2="1520" y2="305" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+    <text x="1140" y="330" class="label" fill="white" font-size="13">Security Group: sg-0e01</text>
+    <text x="1140" y="355" class="label" fill="white" font-size="13">Ports: 80, 443, 8501, 22</text>
+    <text x="1140" y="380" class="label" fill="white" font-size="13">Private IP: 172.31.39.71</text>
+    <text x="1140" y="405" class="label" fill="white" font-size="13">CIDR: 172.31.0.0/16</text>
+  </g>
+  
+  <!-- Arrow down -->
+  <path d="M 1000 430 L 1000 470" class="arrow"/>
+  <text x="1030" y="452" class="arrow-label">Firewall ✓ Pass</text>
+  
+  <!-- ============ LAYER 3: LOAD BALANCER ============ -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="480" width="1840" height="150" rx="10" class="gradient-alb"/>
+    <text x="1000" y="515" text-anchor="middle" class="label" font-size="18">⚖️ Application Load Balancer (ALB)</text>
+    <line x1="90" y1="530" x2="1910" y2="530" stroke="rgba(255,255,255,0.4)" stroke-width="2"/>
+    <text x="100" y="555" class="label" fill="white" font-size="13">Listen Ports: 80/443  →  Forward to: 8501  |  Algorithm: Round-robin distribution</text>
+    <text x="100" y="580" class="label" fill="white" font-size="13">Health Checks: Every 30s  |  Auto-Failover: ✓ Enabled  |  Sticky Sessions: Optional</text>
+    <text x="100" y="605" class="label" fill="white" font-size="13">Connected to: Auto-Scaling Group  |  Manages: 1-5 EC2 instances  |  Capacity: 5000+ concurrent users</text>
+  </g>
+  
+  <!-- Arrow down -->
+  <path d="M 1000 630 L 1000 670" class="arrow"/>
+  <text x="1030" y="652" class="arrow-label">Distribute Traffic</text>
+  
+  <!-- ============ LAYER 4: AUTO-SCALING GROUP ============ -->
+  <rect x="80" y="680" width="1840" height="200" rx="10" fill="#F1F8E9" stroke="#4CAF50" stroke-width="3"/>
+  <text x="1000" y="715" text-anchor="middle" class="label" fill="#1B5E20" font-size="18">🔄 Auto-Scaling Group (ASG)</text>
+  <line x1="90" y1="730" x2="1910" y2="730" stroke="rgba(76,175,80,0.3)" stroke-width="2"/>
+  
+  <text x="1000" y="760" text-anchor="middle" class="card-text" fill="#1B5E20" font-weight="bold">Configuration: Min 1 | Max 5 instances | Launch Template: t3.medium (2 vCPU, 4GB RAM)</text>
+  <text x="1000" y="785" text-anchor="middle" class="card-text" fill="#1B5E20">⬆️ Scale UP when CPU > 70% for 2 min  |  ⬇️ Scale DOWN when CPU < 30% for 5 min  |  Cooldown: 5 min</text>
+  <text x="1000" y="810" text-anchor="middle" class="card-text" fill="#1B5E20">OS: Ubuntu 24.04 LTS | Python: 3.12.3 | Storage: EBS 50GB (gp3 SSD) | Streamlit Port: 8501</text>
+  
+  <!-- EC2 Instances -->
+  <g filter="url(#shadow)">
+    <rect x="100" y="830" width="280" height="50" rx="8" class="gradient-app"/>
+    <text x="240" y="863" text-anchor="middle" class="label" font-size="14">🖥️ Instance 1 (Primary)</text>
+  </g>
+  
+  <g filter="url(#shadow)">
+    <rect x="410" y="830" width="280" height="50" rx="8" class="gradient-app" opacity="0.8"/>
+    <text x="550" y="863" text-anchor="middle" class="label" font-size="14">🖥️ Instance 2 (Scaling)</text>
+  </g>
+  
+  <g filter="url(#shadow)">
+    <rect x="720" y="830" width="280" height="50" rx="8" class="gradient-app" opacity="0.6"/>
+    <text x="860" y="863" text-anchor="middle" class="label" font-size="14">🖥️ Instance 3-5 (if needed)</text>
+  </g>
+  
+  <text x="1050" y="860" class="card-text" fill="#1B5E20">Each runs independent Streamlit server on port 8501</text>
+  
+  <!-- ALB Distribution arrows -->
+  <path d="M 600 630 L 240 830" class="interaction-arrow" />
+  <path d="M 1000 630 L 550 830" class="interaction-arrow" />
+  <path d="M 1400 630 L 860 830" class="interaction-arrow" />
+  
+  <!-- Arrow down -->
+  <path d="M 1000 900 L 1000 940" class="arrow"/>
+  <text x="1030" y="922" class="arrow-label">Execute</text>
+  
+  <!-- ============ LAYER 5: STREAMLIT APPLICATION ============ -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="950" width="1840" height="140" rx="10" fill="#FFF9C4" stroke="#F57F17" stroke-width="3"/>
+    <text x="1000" y="985" text-anchor="middle" class="label" fill="#3E2723" font-size="18">🍳 Streamlit Application (All Instances)</text>
+    <line x1="90" y1="1000" x2="1910" y2="1000" stroke="rgba(63,39,35,0.2)" stroke-width="2"/>
+    <text x="1000" y="1025" text-anchor="middle" class="card-text" fill="#3E2723" font-weight="bold">Data Files: RAW_recipes.csv (294MB) + RAW_interactions.csv (349MB) = 643MB total</text>
+    <text x="1000" y="1050" text-anchor="middle" class="card-text" fill="#3E2723">Dependencies: scikit-learn • plotly • matplotlib • seaborn • pandas • numpy • streamlit</text>
+    <text x="1000" y="1075" text-anchor="middle" class="card-text" fill="#3E2723">Features: 📊 Data Explorer • 📈 Visualizations • 🎯 Clustering • ⚙️ Configuration • 🍽️ Recipe Analysis • 👥 User Interactions</text>
+  </g>
+  
+  <!-- Arrow down -->
+  <path d="M 1000 1100 L 1000 1140" class="arrow"/>
+  <text x="1030" y="1122" class="arrow-label">Render UI</text>
+  
+  <!-- ============ LAYER 6: USER BROWSER ============ -->
+  <rect x="80" y="1150" width="1840" height="100" rx="10" fill="#E8F5E9" stroke="#4CAF50" stroke-width="3"/>
+  <text x="1000" y="1185" text-anchor="middle" class="label" fill="#1B5E20" font-size="18">✓ User's Browser - Interactive Web Application</text>
+  <line x1="90" y1="1200" x2="1910" y2="1200" stroke="rgba(76,175,80,0.3)" stroke-width="2"/>
+  <text x="1000" y="1225" text-anchor="middle" class="card-text" fill="#1B5E20" font-weight="bold">Real-time Dashboard • Multi-user Support • Session Persistence • High Availability</text>
+  
+  <!-- ============ LEGEND ============ -->
+  <rect x="80" y="1270" width="1840" height="50" fill="white" stroke="#ddd" stroke-width="2" rx="8"/>
+  <text x="100" y="1295" class="card-text" font-weight="bold" fill="#232F3E">📋 LEGEND:</text>
+  
+  <rect x="250" y="1280" width="18" height="18" fill="#9C27B0"/>
+  <text x="275" y="1295" class="card-text">DNS &amp; Domain  •</text>
+  
+  <rect x="520" y="1280" width="18" height="18" fill="#FF9900"/>
+  <text x="545" y="1295" class="card-text">Elastic IP (Fixed)  •</text>
+  
+  <rect x="790" y="1280" width="18" height="18" fill="#2196F3"/>
+  <text x="815" y="1295" class="card-text">VPC &amp; Security  •</text>
+  
+  <rect x="1060" y="1280" width="18" height="18" fill="#FF5722"/>
+  <text x="1085" y="1295" class="card-text">Load Balancer (ALB)  •</text>
+  
+  <rect x="1380" y="1280" width="18" height="18" fill="#4CAF50"/>
+  <text x="1405" y="1295" class="card-text">Auto-Scaling  •</text>
+  
+  <rect x="1650" y="1280" width="18" height="18" fill="#00BCD4"/>
+  <text x="1675" y="1295" class="card-text">Streamlit Instances</text>
+  
+  <!-- ============ KEY METRICS ============ -->
+  <rect x="80" y="1330" width="1840" height="50" fill="white" stroke="#FF9900" stroke-width="2" rx="8"/>
+  <text x="1000" y="1360" text-anchor="middle" class="card-text" font-weight="bold" fill="#FF9900">
+    💰 Estimated Cost: $100-150/month  |  🚀 Max Capacity: 5000+ concurrent users  |  ⏱️ Downtime: ~0%  |  📊 Data: 643MB  |  🔄 Auto-Scaling: 1-5 instances
+  </text>
+</svg>
