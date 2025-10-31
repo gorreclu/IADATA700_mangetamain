@@ -1,0 +1,493 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Architecture AWS &mdash; Documentation Mangetamain 1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=e6b791cb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="next" title="Architecture du Projet" href="ClassDiagram.html" />
+    <link rel="prev" title="src.core package" href="api/src.core.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Mangetamain
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mangetamain - Guide de Développement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">src</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Architecture AWS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vue-d-ensemble">Vue d’Ensemble</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#composants-utilises">Composants Utilisés</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#composants-non-utilises">Composants Non Utilisés</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-technique">Configuration Technique</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#instance-ec2">Instance EC2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#security-group">Security Group</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#application-streamlit">Application Streamlit</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#deploiement">Déploiement</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#processus-de-deploiement">Processus de Déploiement</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gestion-du-service">Gestion du Service</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#monitoring">Monitoring</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#metriques-ec2">Métriques EC2</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#logs-application">Logs Application</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#performances">Performances</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#capacite">Capacité</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">Limitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#evolutions-possibles">Évolutions Possibles</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#couts">Coûts</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#estimation-mensuelle">Estimation Mensuelle</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#comparaison-des-deux-deploiements">Comparaison des Deux Déploiements</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ClassDiagram.html">Diagramme de classes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Qualité</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Tests.html">Tests et Couverture</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Mangetamain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Architecture AWS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/ArchitectureAWS.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="architecture-aws">
+<h1>Architecture AWS<a class="headerlink" href="#architecture-aws" title="Lien vers cette rubrique"></a></h1>
+<p>Infrastructure de déploiement de l’application Mangetamain sur Amazon Web Services.</p>
+<a class="reference internal image-reference" href="_images/Architecture_AWS_Mangetamain.svg"><img alt="Architecture AWS de Mangetamain" src="_images/Architecture_AWS_Mangetamain.svg" style="width: 100%;" />
+</a>
+<section id="vue-d-ensemble">
+<h2>Vue d’Ensemble<a class="headerlink" href="#vue-d-ensemble" title="Lien vers cette rubrique"></a></h2>
+<p>L’application a été déployée sur <strong>deux environnements</strong> à des fins de <strong>comparaison et tests</strong> :</p>
+<ol class="arabic simple">
+<li><p><strong>Streamlit Cloud</strong> (gratuit) : <a class="reference external" href="https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/">https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/</a> ✅ <strong>Actif</strong></p></li>
+<li><p><strong>AWS EC2</strong> (infrastructure dédiée) : ~~http://13.37.60.84:8501~~ ❌ <strong>Désactivé</strong> (pour éviter les coûts)</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>L’infrastructure AWS EC2 a été utilisée pour tester et comparer les performances avec Streamlit Cloud,
+mais elle n’est <strong>plus active</strong> pour éviter les frais mensuels (~30€/mois). Seul le déploiement
+<strong>Streamlit Cloud</strong> reste accessible publiquement.</p>
+</div>
+<p>Cette architecture AWS était optimisée pour un usage académique/démonstration,
+privilégiant la simplicité et le contrôle des coûts tout en maintenant des performances acceptables.</p>
+<p><strong>Configuration testée :</strong></p>
+<ul class="simple">
+<li><p>🌐 <strong>Accès</strong> : ~~http://13.37.60.84:8501~~ (désactivé)</p></li>
+<li><p>🖥️ <strong>Instance</strong> : EC2 t3.medium (2 vCPU, 4 GB RAM)</p></li>
+<li><p>💰 <strong>Coût</strong> : ~30€/mois (raison de la désactivation)</p></li>
+<li><p>👥 <strong>Capacité</strong> : ~500 utilisateurs concurrents</p></li>
+<li><p>⏸️ <strong>Statut</strong> : Instance arrêtée après phase de tests</p></li>
+</ul>
+</section>
+<section id="composants-utilises">
+<h2>Composants Utilisés<a class="headerlink" href="#composants-utilises" title="Lien vers cette rubrique"></a></h2>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 20.0%" />
+<col style="width: 25.0%" />
+<col style="width: 25.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Composant</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Interaction</p></th>
+<th class="head"><p>Coût</p></th>
+<th class="head"><p>Statut</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>🌐 <strong>Internet</strong></p></td>
+<td><p>Utilisateurs accédant via navigateur</p></td>
+<td><p>Source des requêtes HTTP/HTTPS</p></td>
+<td><p>Gratuit</p></td>
+<td><p>✅</p></td>
+</tr>
+<tr class="row-odd"><td><p>🔒 <strong>Elastic IP</strong></p></td>
+<td><p>Adresse IP publique fixe (13.37.60.84)</p></td>
+<td><p>Reçoit requêtes → dirige vers EC2</p></td>
+<td><p>Gratuit*</p></td>
+<td><p>✅ Gardé</p></td>
+</tr>
+<tr class="row-even"><td><p>🛡️ <strong>VPC &amp; Security Group</strong></p></td>
+<td><p>Pare-feu numérique autorisant port 8501</p></td>
+<td><p>Vérifie &amp; laisse passer trafic légitime</p></td>
+<td><p>Gratuit</p></td>
+<td><p>✅ Gardé</p></td>
+</tr>
+<tr class="row-odd"><td><p>🖥️ <strong>EC2 Instance</strong></p></td>
+<td><p>Serveur 2vCPU/4GB RAM Ubuntu 24.04</p></td>
+<td><p>Exécute Streamlit &amp; traite requêtes</p></td>
+<td><p>~30€/mois</p></td>
+<td><p>✅ Gardé</p></td>
+</tr>
+<tr class="row-even"><td><p>🍳 <strong>Streamlit App</strong></p></td>
+<td><p>Application Python interactive (port 8501)</p></td>
+<td><p>Charge données, crée visualisations</p></td>
+<td><p>Gratuit</p></td>
+<td><p>✅ Gardé</p></td>
+</tr>
+<tr class="row-odd"><td><p>✓ <strong>User’s Browser</strong></p></td>
+<td><p>Navigateur affichant l’interface web</p></td>
+<td><p>Affiche l’app &amp; envoie actions utilisateur</p></td>
+<td><p>Gratuit</p></td>
+<td><p>✅</p></td>
+</tr>
+</tbody>
+</table>
+<p>* <em>Gratuit tant que l’Elastic IP est attachée à une instance en cours d’exécution</em></p>
+</section>
+<section id="composants-non-utilises">
+<h2>Composants Non Utilisés<a class="headerlink" href="#composants-non-utilises" title="Lien vers cette rubrique"></a></h2>
+<p>Pour des raisons de <strong>contrôle des coûts</strong> et de simplicité, certains composants AWS classiques
+ne sont pas utilisés :</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 20.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Composant</p></th>
+<th class="head"><p>Coût</p></th>
+<th class="head"><p>Raison</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Route 53</strong> (DNS)</p></td>
+<td><p>0.50€/mois</p></td>
+<td><p>Accès direct via IP <code class="docutils literal notranslate"><span class="pre">13.37.60.84:8501</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Application Load Balancer</strong> (ALB)</p></td>
+<td><p>25€/mois</p></td>
+<td><p>Une seule instance suffit (~500 users max)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Auto Scaling Group</strong></p></td>
+<td><p>Gratuit*</p></td>
+<td><p>Pas de besoin d’auto-scaling pour une démo</p></td>
+</tr>
+</tbody>
+</table>
+<p>* <em>Gratuit mais nécessiterait un ALB payant</em></p>
+</section>
+<section id="configuration-technique">
+<h2>Configuration Technique<a class="headerlink" href="#configuration-technique" title="Lien vers cette rubrique"></a></h2>
+<section id="instance-ec2">
+<h3>Instance EC2<a class="headerlink" href="#instance-ec2" title="Lien vers cette rubrique"></a></h3>
+<p><strong>Type</strong> : <code class="docutils literal notranslate"><span class="pre">t3.medium</span></code></p>
+<ul class="simple">
+<li><p><strong>vCPU</strong> : 2</p></li>
+<li><p><strong>RAM</strong> : 4 GB</p></li>
+<li><p><strong>Stockage</strong> : 20 GB gp3 SSD</p></li>
+<li><p><strong>OS</strong> : Ubuntu 24.04 LTS</p></li>
+<li><p><strong>Région</strong> : eu-west-3 (Paris)</p></li>
+</ul>
+</section>
+<section id="security-group">
+<h3>Security Group<a class="headerlink" href="#security-group" title="Lien vers cette rubrique"></a></h3>
+<p>Règles d’entrée (Inbound) :</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Port 8501 (TCP) : 0.0.0.0/0  # Streamlit
+Port 22 (SSH) : [IP Admin]   # Administration
+</pre></div>
+</div>
+<p>Règles de sortie (Outbound) :</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>All traffic : 0.0.0.0/0      # Internet access
+</pre></div>
+</div>
+</section>
+<section id="application-streamlit">
+<h3>Application Streamlit<a class="headerlink" href="#application-streamlit" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Port</strong> : 8501</p></li>
+<li><p><strong>Workers</strong> : 1 (mode single-process)</p></li>
+<li><p><strong>Max upload size</strong> : 200 MB</p></li>
+<li><p><strong>Cache</strong> : Activé (Streamlit native + cache disque)</p></li>
+<li><p><strong>Données</strong> : Chargées en mémoire au démarrage</p></li>
+</ul>
+</section>
+</section>
+<section id="deploiement">
+<h2>Déploiement<a class="headerlink" href="#deploiement" title="Lien vers cette rubrique"></a></h2>
+<section id="processus-de-deploiement">
+<h3>Processus de Déploiement<a class="headerlink" href="#processus-de-deploiement" title="Lien vers cette rubrique"></a></h3>
+<ol class="arabic">
+<li><p><strong>Connexion SSH</strong> à l’instance EC2</p></li>
+<li><p><strong>Pull</strong> du code depuis GitHub</p></li>
+<li><p><strong>Installation</strong> des dépendances avec <code class="docutils literal notranslate"><span class="pre">uv</span></code></p></li>
+<li><p><strong>Lancement</strong> de l’application :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>/home/ubuntu/IADATA700_mangetamain
+git<span class="w"> </span>pull<span class="w"> </span>origin<span class="w"> </span>main
+uv<span class="w"> </span>sync
+uv<span class="w"> </span>run<span class="w"> </span>streamlit<span class="w"> </span>run<span class="w"> </span>src/app.py<span class="w"> </span>--server.port<span class="o">=</span><span class="m">8501</span>
+</pre></div>
+</div>
+</li>
+<li><p><strong>Vérification</strong> : <a class="reference external" href="http://13.37.60.84:8501">http://13.37.60.84:8501</a></p></li>
+</ol>
+</section>
+<section id="gestion-du-service">
+<h3>Gestion du Service<a class="headerlink" href="#gestion-du-service" title="Lien vers cette rubrique"></a></h3>
+<p>L’application peut être gérée via <strong>systemd</strong> pour un démarrage automatique :</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Démarrer le service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>mangetamain
+
+<span class="c1"># Arrêter le service</span>
+sudo<span class="w"> </span>systemctl<span class="w"> </span>stop<span class="w"> </span>mangetamain
+
+<span class="c1"># Voir les logs</span>
+sudo<span class="w"> </span>journalctl<span class="w"> </span>-u<span class="w"> </span>mangetamain<span class="w"> </span>-f
+</pre></div>
+</div>
+</section>
+</section>
+<section id="monitoring">
+<h2>Monitoring<a class="headerlink" href="#monitoring" title="Lien vers cette rubrique"></a></h2>
+<section id="metriques-ec2">
+<h3>Métriques EC2<a class="headerlink" href="#metriques-ec2" title="Lien vers cette rubrique"></a></h3>
+<p>Via AWS CloudWatch (gratuit) :</p>
+<ul class="simple">
+<li><p>CPU utilization</p></li>
+<li><p>Network in/out</p></li>
+<li><p>Disk read/write</p></li>
+<li><p>Status checks</p></li>
+</ul>
+</section>
+<section id="logs-application">
+<h3>Logs Application<a class="headerlink" href="#logs-application" title="Lien vers cette rubrique"></a></h3>
+<p>Logs stockés localement sur l’instance :</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">debug/debug.log</span></code> : Logs détaillés (INFO/DEBUG)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">debug/errors.log</span></code> : Erreurs uniquement</p></li>
+</ul>
+</section>
+</section>
+<section id="performances">
+<h2>Performances<a class="headerlink" href="#performances" title="Lien vers cette rubrique"></a></h2>
+<section id="capacite">
+<h3>Capacité<a class="headerlink" href="#capacite" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p><strong>Utilisateurs simultanés</strong> : ~500 (estimation)</p></li>
+<li><p><strong>Temps de réponse</strong> : &lt;2s pour les requêtes simples</p></li>
+<li><p><strong>Temps de chargement initial</strong> : ~3-5s</p></li>
+</ul>
+</section>
+<section id="limitations">
+<h3>Limitations<a class="headerlink" href="#limitations" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>Pas de haute disponibilité (single instance)</p></li>
+<li><p>Pas de load balancing</p></li>
+<li><p>Pas de CDN pour les assets statiques</p></li>
+<li><p>Downtime lors des mises à jour</p></li>
+</ul>
+</section>
+<section id="evolutions-possibles">
+<h3>Évolutions Possibles<a class="headerlink" href="#evolutions-possibles" title="Lien vers cette rubrique"></a></h3>
+<p>Pour un passage en production :</p>
+<ol class="arabic simple">
+<li><p><strong>Load Balancer</strong> + <strong>Auto Scaling</strong> pour la haute disponibilité</p></li>
+<li><p><strong>Route 53</strong> pour un nom de domaine personnalisé</p></li>
+<li><p><strong>CloudFront</strong> (CDN) pour améliorer les performances</p></li>
+<li><p><strong>RDS</strong> pour une base de données persistante</p></li>
+<li><p><strong>S3</strong> pour stocker les données brutes</p></li>
+<li><p><strong>ElastiCache</strong> pour un cache distribué</p></li>
+</ol>
+</section>
+</section>
+<section id="couts">
+<h2>Coûts<a class="headerlink" href="#couts" title="Lien vers cette rubrique"></a></h2>
+<section id="estimation-mensuelle">
+<h3>Estimation Mensuelle<a class="headerlink" href="#estimation-mensuelle" title="Lien vers cette rubrique"></a></h3>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 30.0%" />
+<col style="width: 30.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Ressource</p></th>
+<th class="head"><p>Configuration</p></th>
+<th class="head"><p>Coût mensuel</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>EC2 t3.medium</p></td>
+<td><p>2 vCPU, 4 GB RAM, 24/7</p></td>
+<td><p>~30€</p></td>
+</tr>
+<tr class="row-odd"><td><p>Elastic IP</p></td>
+<td><p>Attachée à l’instance</p></td>
+<td><p>Gratuit</p></td>
+</tr>
+<tr class="row-even"><td><p>Stockage EBS</p></td>
+<td><p>20 GB gp3</p></td>
+<td><p>~2€</p></td>
+</tr>
+<tr class="row-odd"><td><p>Transfert de données</p></td>
+<td><p>~10 GB/mois sortants</p></td>
+<td><p>~1€</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>TOTAL</strong></p></td>
+<td></td>
+<td><p><strong>~33€/mois</strong></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="comparaison-des-deux-deploiements">
+<h2>Comparaison des Deux Déploiements<a class="headerlink" href="#comparaison-des-deux-deploiements" title="Lien vers cette rubrique"></a></h2>
+<p>Les deux environnements sont utilisés <strong>en parallèle</strong> pour évaluer et comparer les approches.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 35.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Critère</p></th>
+<th class="head"><p>Streamlit Cloud</p></th>
+<th class="head"><p>AWS EC2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Coût</strong></p></td>
+<td><p>✅ Gratuit (plan Community)</p></td>
+<td><p>❌ ~33€/mois</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Déploiement</strong></p></td>
+<td><p>✅ Automatique depuis GitHub</p></td>
+<td><p>⚠️ Manuel (SSH + git pull)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Maintenance</strong></p></td>
+<td><p>✅ Gérée par Streamlit</p></td>
+<td><p>❌ À gérer (updates, monitoring)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Contrôle</strong></p></td>
+<td><p>❌ Limité (ressources fixes)</p></td>
+<td><p>✅ Total (SSH, config, monitoring)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Performances</strong></p></td>
+<td><p>⚠️ Variables (ressources partagées)</p></td>
+<td><p>✅ Garanties (ressources dédiées)</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Personnalisation</strong></p></td>
+<td><p>❌ Limitée (port 8501 fixe)</p></td>
+<td><p>✅ Complète (ports, services, etc.)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>URL</strong></p></td>
+<td><p><a class="reference external" href="https://[app-name].streamlit.app">https://[app-name].streamlit.app</a></p></td>
+<td><p><a class="reference external" href="http://13.37.60.84:8501">http://13.37.60.84:8501</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Uptime</strong></p></td>
+<td><p>✅ Géré par Streamlit (~99%)</p></td>
+<td><p>⚠️ À gérer (redémarrages)</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Conclusion de la comparaison</strong> :</p>
+<ul class="simple">
+<li><p><strong>Streamlit Cloud</strong> : ✅ <strong>Solution retenue</strong> - Idéal pour prototypes, démos, projets académiques (gratuit, simple)</p></li>
+<li><p><strong>AWS EC2</strong> : Testé puis désactivé - Recommandé pour production, besoins spécifiques, contrôle total (payant, flexible)</p></li>
+</ul>
+<p><strong>Décision</strong> : Streamlit Cloud a été choisi comme solution de déploiement final pour ce projet académique,
+offrant un excellent compromis entre fonctionnalités et coût (gratuit).</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="api/src.core.html" class="btn btn-neutral float-left" title="src.core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+        <a href="ClassDiagram.html" class="btn btn-neutral float-right" title="Architecture du Projet" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, William.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
