@@ -84,7 +84,7 @@ Chemins par défaut :
 - **Recettes** : `data/RAW_recipes.csv`
 - **Interactions** : `data/RAW_interactions.csv`
 
-> 💡 **Prérequis** : Le fichier de données doit être présent localement dans le dossier `data/` à la racine du projet.
+> 💡 **Prérequis** : Le fichier de données doit être présent localement dans le dossier `data/` à la racine du projet. Les données peuvent être télécharger avec le fichier download_data.py.
 
 ### ✨ Fonctionnalités
 - **Page Home** : Exploration générale des données + métriques
@@ -101,21 +101,6 @@ Chemins par défaut :
   - Filtre sur interactions minimales
   - Prétraitement IQR configurable (exclut les notes pour préserver la distribution réelle)
   - Segmentation par percentiles (Low ≤ P25, Medium ≤ P75, High ≤ P95, Viral > P95)
-
-### 🔧 Prétraitement & Segmentation
-
-**IQR (InterQuartile Range) Filtering**
-- Variables filtrées: `minutes`, `n_steps`, `n_ingredients`
-- Formule: Q1 − k·IQR ≤ valeur ≤ Q3 + k·IQR (k réglable 1.0 → 20.0)
-- `rating` n'est pas filtré pour conserver les avis extrêmes.
-
-**Segmentation Popularité**
-- Low: interaction_count ≤ P25
-- Medium: P25 < interaction_count ≤ P75
-- High: P75 < interaction_count ≤ P95
-- Viral: interaction_count > P95
-
-Cette segmentation reflète la distribution longue traîne et met en évidence l'extrême rareté des recettes virales.
 
 ## 📐 Architecture UML
 
@@ -195,16 +180,5 @@ Le projet utilise un système de logging structuré dans `debug/` :
 - **`debug/debug.log`** : Logs INFO/DEBUG détaillés
 - **`debug/errors.log`** : Erreurs uniquement
 
-Configuration dans `src/core/logger.py` :
-```python
-from src.core.logger import get_logger
-logger = get_logger(__name__)
-logger.info("Message d'information")
-```
 
-### Cache
-Système de cache automatique pour optimiser les analyses lourdes :
-- **Localisation** : `cache/analyzer/operation/hash.pkl`
-- **Contrôle** : Sidebar de chaque page (activation/nettoyage)
-- **Détection** : Changements de paramètres automatiques
 
