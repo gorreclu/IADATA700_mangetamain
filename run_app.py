@@ -5,7 +5,6 @@ Script de lancement pour l'application IADATA700_mangetamain.
 Ce script s'assure que les données sont disponibles avant de lancer Streamlit.
 """
 
-import os
 import sys
 import time
 import subprocess
@@ -81,7 +80,6 @@ def launch_streamlit():
 
     try:
         # Import des modules nécessaires
-        import webbrowser
         import signal
 
         # Commande Streamlit

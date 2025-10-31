@@ -168,7 +168,7 @@ class IngredientsMatrixPreprocessor:
         total_after = sum(len(ings) for ings in normalized_ingredients)
         reduction = (1 - total_after / total_before) * 100 if total_before > 0 else 0
 
-        self.logger.info(f"✅ Normalisation terminée:")
+        self.logger.info("✅ Normalisation terminée:")
         self.logger.info(f"   - Avant: {total_before:,} ingrédients")
         self.logger.info(f"   - Après: {total_after:,} ingrédients")
         self.logger.info(f"   - Réduction: {reduction:.1f}%")

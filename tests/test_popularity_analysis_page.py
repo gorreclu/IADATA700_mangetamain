@@ -247,11 +247,12 @@ class TestPopularityAnalysisPage:
             patch("streamlit.sidebar.selectbox") as mock_selectbox,
             patch("streamlit.sidebar.slider") as mock_slider,
             patch("streamlit.sidebar.markdown"),
+            patch("streamlit.sidebar.info"),  # Mock the info component too
         ):
 
             # Set default return values
             mock_selectbox.return_value = "Scatter"
-            mock_slider.side_effect = [0.6, 10.0]  # alpha, outlier_threshold
+            mock_slider.side_effect = [0.6]  # Only alpha slider now (outlier_threshold is fixed)
 
             params = page_instance._sidebar()
 
@@ -265,7 +266,7 @@ class TestPopularityAnalysisPage:
             assert all(key in params for key in expected_keys)
             assert params["plot_type"] == "Scatter"
             assert params["alpha"] == 0.6
-            assert params["outlier_threshold"] == 10.0
+            assert params["outlier_threshold"] == 5.0  # Fixed optimal value
 
     def test_render_cache_controls(self, page_instance):
         """Test cache controls rendering logic."""
@@ -279,7 +280,7 @@ class TestPopularityAnalysisPage:
         with (
             patch("streamlit.sidebar.markdown") as mock_markdown,
             patch("streamlit.sidebar.button") as mock_button,
-            patch("streamlit.sidebar.info") as mock_info,
+            patch("streamlit.sidebar.info"),
         ):
             mock_button.return_value = False  # Don't trigger clear cache
 

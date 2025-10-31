@@ -83,8 +83,22 @@ class InteractionsAnalyzer(CacheableMixin):
         # Enable/disable cache based on parameter
         self.enable_cache(self.cache_enabled)
 
-        # Use optimized CSV cache system
-        self._df = self._load_or_compute_merged_data()
+        # Choose data source: provided DataFrames have priority over CSV cache
+        if self.merged is not None:
+            # Pre-merged data provided - use it directly
+            self._df = self.merged
+            self.logger.info("Using provided pre-merged DataFrame")
+        elif self.interactions is not None and self.recipes is not None:
+            # Merge provided DataFrames
+            self._df = self._merge_data()
+            self.logger.info("Using provided interactions and recipes DataFrames")
+        elif self.interactions is not None:
+            # Only interactions provided - no merge needed
+            self._df = self.interactions
+            self.logger.info("Using provided interactions DataFrame only")
+        else:
+            # No data provided - use optimized CSV cache system
+            self._df = self._load_or_compute_merged_data()
 
         # Cache for aggregated data in memory
         self._aggregated_cache = None
@@ -160,6 +174,35 @@ class InteractionsAnalyzer(CacheableMixin):
             return cached_config == current_config
         except Exception:
             return False
+
+    def _merge_data(self) -> pd.DataFrame:
+        """Merge provided interactions and recipes DataFrames."""
+        if self.interactions is None:
+            raise ValueError("interactions DataFrame is required for merging")
+
+        inter = self._standardize_cols(self.interactions.copy())
+
+        if self.recipes is not None:
+            rec = self._standardize_cols(self.recipes.copy())
+            # Handle common alternate primary key naming ('id' -> 'recipe_id')
+            if RECIPE_ID_COL not in rec.columns and "id" in rec.columns:
+                rec = rec.rename(columns={"id": RECIPE_ID_COL})
+            # prefer left join to keep only interactions that occurred
+            if RECIPE_ID_COL in rec.columns:
+                df = inter.merge(rec, on=RECIPE_ID_COL, how="left", suffixes=("", "_r"))
+            else:
+                df = inter
+        else:
+            df = inter
+
+        # Apply preprocessing if enabled
+        if self.preprocessing.enable_preprocessing:
+            self.logger.info("Starting data preprocessing (outlier removal)")
+            df, self.preprocessing_stats = self._preprocess_data(df)
+        else:
+            self.preprocessing_stats = None
+
+        return df
 
     def _save_merged_csv_cache(self, data: pd.DataFrame) -> None:
         """Save merged data to CSV cache."""
@@ -359,8 +402,10 @@ class InteractionsAnalyzer(CacheableMixin):
             self.logger.info("Using memory cache for aggregate data")
             return self._aggregated_cache
 
-        # Check CSV cache
-        if self.aggregated_csv_path.exists() and self._is_csv_cache_valid():
+        # Only use CSV cache if no explicit DataFrames were provided
+        use_csv_cache = (self.interactions is None and self.recipes is None and self.merged is None)
+
+        if use_csv_cache and self.aggregated_csv_path.exists() and self._is_csv_cache_valid():
             try:
                 self.logger.info("Loading aggregated data from optimized CSV cache")
                 self._aggregated_cache = pd.read_csv(self.aggregated_csv_path)
@@ -372,8 +417,9 @@ class InteractionsAnalyzer(CacheableMixin):
         self.logger.info("Computing optimized aggregated data")
         result = self._compute_aggregate()
 
-        # Save to CSV cache
-        self._save_aggregated_csv_cache(result)
+        # Save to CSV cache only if using CSV cache system
+        if use_csv_cache:
+            self._save_aggregated_csv_cache(result)
 
         # Save to memory cache
         self._aggregated_cache = result

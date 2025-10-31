@@ -262,7 +262,7 @@ class IngredientsClusteringPage:
         lost = set(top) - set(top_valid)
         if lost:
             self.logger.warning(
-                f"⚠️ Ingrédients présents dans index mais absents des colonnes ignorés: {list(lost)[:8]}{'...' if len(lost)>8 else ''}"
+                f"⚠️ Ingrédients présents dans index mais absents des colonnes ignorés: {list(lost)[:8]}{'...' if len(lost) > 8 else ''}"
             )
 
         top_final = top_valid[:n]

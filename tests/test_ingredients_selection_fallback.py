@@ -1,6 +1,7 @@
 import pandas as pd
 from src.components.ingredients_clustering_page import IngredientsClusteringPage
 
+
 def test_select_top_ingredients_fallback_no_intersection():
     # Construire matrice factice 5x5
     ingredients = ["salt", "butter", "pepper", "onion", "sugar"]

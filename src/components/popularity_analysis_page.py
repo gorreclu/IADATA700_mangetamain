@@ -52,18 +52,19 @@ class PopularityAnalysisPage:
 
         # Preprocessing section
         st.sidebar.markdown("### ⚙️ Preprocessing optimisé")
-        st.sidebar.info("🚀 **IQR fixe 5.0** - Filtre optimal : 95.1% des données conservées")
+        st.sidebar.info("**IQR fixe 5.0** - Filtre optimal : 95.1% des données conservées")
 
         return {
             "plot_type": plot_type,
             "n_bins": n_bins,
             "bin_agg": bin_agg,
             "alpha": alpha,
+            "outlier_threshold": 5.0,  # Fixed optimal value for test compatibility
         }
 
     def _render_cache_controls(self, analyzer: InteractionsAnalyzer):
         """Render cache management controls in sidebar."""
-        st.sidebar.markdown("### 🗄️ Cache Management")
+        st.sidebar.markdown("### Cache Management")
 
         # Get cache info
         cache_info = analyzer.get_cache_info()
@@ -1666,7 +1667,7 @@ class PopularityAnalysisPage:
         agg = analyzer.aggregate()
 
         # Aperçu du dataframe fusionné avant agrégation
-        st.subheader("Aperçu du dataframe fusionné (interactions ⟵ recettes)")
+        st.subheader("Aperçu du dataframe fusionné (interactions et recettes)")
         try:
             merged_df = analyzer._df  # type: ignore[attr-defined]
             col1, col2 = st.columns(2)
