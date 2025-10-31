@@ -97,52 +97,7 @@ Analyse des associations d'ingrédients par co-occurrence et clustering :
 - **Visualisation t-SNE** : Projection 2D interactive des groupes
 - **Analyse des groupes** : Ingrédients caractéristiques par cluster
 
-<details>
-
-<summary><b>🔎 Sélection d'ingrédients pour le clustering</b></summary>
-
-### Matrice de co-occurrence précalculée
-
-Pour accélérer l'analyse de clustering, le projet utilise un **preprocessing offline** qui génère une matrice de co-occurrence 300×300 en analysant ~230 000 recettes.
-
-#### 📍 Fichier
-`utils/preprocess_ingredients_matrix.py`
-
-#### 🎯 Pipeline de traitement
-
-1. **Chargement** : Import du dataset RAW_recipes.csv
-2. **Normalisation NLP** : 
-   - Lowercase, suppression de la ponctuation
-   - Filtrage de 50+ stop words culinaires
-   - Parsing des listes d'ingrédients JSON
-3. **Sélection** : Extraction des 300 ingrédients les plus fréquents
-4. **Co-occurrence** : Construction de la matrice symétrique 300×300
-5. **Export** : Sauvegarde en CSV optimisé
-
-#### 🚀 Exécution
-
-```bash
-# Génération de la matrice (requis à la première installation)
-uv run python -m utils.preprocess_ingredients_matrix
-```
-
-**⏱️ Durée** : ~5-10 minutes (une seule fois)
-
-#### 📊 Fichiers générés
-
-| Fichier | Taille | Description |
-|---------|--------|-------------|
-| `data/ingredients_cooccurrence_matrix.csv` | ~259 KB | Matrice de co-occurrence 300×300 |
-| `data/ingredients_list.csv` | ~5 KB | Liste des 300 ingrédients avec fréquences |
-
-#### 🔄 Quand régénérer ?
-
-- ✅ Première installation du projet
-- ✅ Après modification du dataset RAW_recipes.csv
-- ✅ Pour changer le nombre d'ingrédients (paramètre `n_ingredients`)
-
-> 💡 **Astuce** : Les fichiers générés sont versionnés dans git pour éviter de régénérer à chaque clone.
-</details>
+> � Voir la section [Preprocessing & Optimisations](#-preprocessing--optimisations) pour les détails du preprocessing de la matrice.
 
 ### � Analyse de Popularité
 Relations entre popularité, notes et caractéristiques des recettes :
@@ -184,105 +139,90 @@ IADATA700_mangetamain/
 
 ## 🏗️ Architecture
 
-### Diagramme de classes
-
 ![Architecture UML](docs/class-diagram.svg)
 
-<details>
-<summary>📋 <b>Description de l'architecture</b></summary>
+**Modules principaux** :
+- **Core** : DataLoader, DataExplorer, InteractionsAnalyzer, CacheManager, Logger
+- **Components** : IngredientsClusteringPage, PopularityAnalysisPage
+- **Utils** : IngredientsMatrixPreprocessor
 
-#### Core Modules
-- **DataLoader** : Chargement et validation des fichiers CSV
-- **DataExplorer** : Statistiques descriptives et exploration
-- **InteractionsAnalyzer** : Calculs d'agrégations popularité/notes (avec cache)
-- **CacheManager** : Gestion centralisée du cache disque
-- **Logger** : Système de logging structuré
-
-#### Components (Pages Streamlit)
-- **IngredientsClusteringPage** : Interface de clustering d'ingrédients
-- **PopularityAnalysisPage** : Interface d'analyse de popularité
-
-#### Utils
-- **IngredientsMatrixPreprocessor** : Génération offline de la matrice de co-occurrence
-
-</details>
-
-**Générer le diagramme :**
 ```bash
-brew install plantuml                     # Installation (macOS)
-plantuml -tsvg docs/class-diagram.puml   # Génération SVG
+# Générer le diagramme
+plantuml -tsvg docs/class-diagram.puml
 ```
+
+## ⚡ Preprocessing & Optimisations
+
+### 🍳 Matrice d'ingrédients (Offline)
+
+Génération d'une matrice de co-occurrence 300×300 pour accélérer le clustering.
+
+```bash
+# Exécution (première fois uniquement, ~5-10 min)
+uv run python -m utils.preprocess_ingredients_matrix
+```
+
+**Pipeline** : Normalisation NLP → Top 300 ingrédients → Matrice de co-occurrence → Export CSV
+
+**Fichiers générés** :
+- `data/ingredients_cooccurrence_matrix.csv` (259 KB)
+- `data/ingredients_list.csv` (5 KB)
+
+> � Voir `utils/preprocess_ingredients_matrix.py` pour plus de détails
+
+---
+
+### 📊 Preprocessing d'interactions (Runtime)
+
+Nettoyage automatique des données pour l'analyse de popularité avec détection d'outliers par méthode **IQR** (seuil × 5.0).
+
+**Pipeline** : Fusion interactions ↔ recettes → Détection outliers (IQR) → Cache
+
+**Fichiers cache** :
+- `data/merged_interactions_recipes_optimized.csv`
+- `data/aggregated_popularity_metrics_optimized.csv`
+
+**Configuration** : Interface disponible dans la page "Analyse de Popularité" (méthode IQR/Z-score, seuil ajustable)
+
+> 📝 Voir `src/core/interactions_analyzer.py` (classe `PreprocessingConfig`)
+
+---
+
+**⚡ Impact** : Temps de chargement divisé par ~10-20× grâce au preprocessing + cache
 
 ## 🧪 Tests
 
-### Suite de tests complète
-
-Le projet dispose de **124 tests** couvrant tous les modules critiques.
+**124 tests** couvrant tous les modules (core, components, utils, intégration)
 
 ```bash
-# Lancer tous les tests
+# Tous les tests
 uv run pytest
 
-# Tests avec rapport de couverture
+# Avec couverture
 uv run pytest --cov=src --cov-report=html
 
-# Tests d'un module spécifique
+# Tests spécifiques
 uv run pytest tests/test_ingredients_clustering_page.py
-uv run pytest tests/test_preprocess_ingredients_matrix.py
-uv run pytest tests/test_interactions_analyzer.py
 
-# Mode verbose avec détails
-uv run pytest -v --tb=short
-```
-
-### Modules testés
-
-- ✅ **Core** : data_loader, data_explorer, interactions_analyzer, logger
-- ✅ **Components** : ingredients_clustering_page, popularity_analysis_page
-- ✅ **Utils** : preprocess_ingredients_matrix
-- ✅ **Integration** : app.py, workflows complets
-
-### Qualité du code
-
-```bash
 # Linting PEP8
 uv run flake8 src/ tests/
-
-# Vérification des types
-uv run mypy src/
 ```
 
 ## 📖 Documentation
 
-### Documentation Sphinx
-
-Une documentation complète de l'API est disponible :
+### Sphinx
 
 ```bash
-# Générer la documentation
-cd docs
-uv run make html
-
-# Ouvrir dans le navigateur
+cd docs && uv run make html
 open build/html/index.html
 ```
 
-**Contenu** :
-- 📚 API Reference complète
-- 🏗️ Guide d'architecture
-- 📝 Guide de contribution
-- 🔍 Index des modules et classes
-
 ### Logging
 
-Le projet utilise un système de logging structuré :
-
-| Fichier | Niveau | Contenu |
-|---------|--------|---------|
-| `debug/debug.log` | INFO/DEBUG | Logs détaillés de tous les modules |
-| `debug/errors.log` | ERROR/CRITICAL | Erreurs uniquement |
-
-Configuration dans `src/core/logger.py`
+| Fichier | Contenu |
+|---------|---------|
+| `debug/debug.log` | Logs détaillés (INFO/DEBUG) |
+| `debug/errors.log` | Erreurs uniquement |
 
 ## 🛠️ Technologies
 
