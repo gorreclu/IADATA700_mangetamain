@@ -97,9 +97,9 @@ Analyse des associations d'ingrédients par co-occurrence et clustering :
 - **Visualisation t-SNE** : Projection 2D interactive des groupes
 - **Analyse des groupes** : Ingrédients caractéristiques par cluster
 
-> � Voir la section [Preprocessing & Optimisations](#-preprocessing--optimisations) pour les détails du preprocessing de la matrice.
+> 🍳 Voir la section [Preprocessing & Optimisations](#-preprocessing--optimisations) pour les détails du preprocessing de la matrice.
 
-### � Analyse de Popularité
+### 📈 Analyse de Popularité
 Relations entre popularité, notes et caractéristiques des recettes :
 - **Métriques agrégées** : Nombre d'interactions, note moyenne, temps de préparation
 - **Scatter plots interactifs** : Popularité vs notes, popularité vs features
@@ -188,7 +188,6 @@ Nettoyage automatique des données pour l'analyse de popularité avec détection
 
 ---
 
-**⚡ Impact** : Temps de chargement divisé par ~10-20× grâce au preprocessing + cache
 
 ## 🧪 Tests
 
