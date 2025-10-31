@@ -1,45 +1,75 @@
-# IADATA700_mangetamain
-Dans le cadre d'un enseignement à Telecom Paris, ce projet consiste en une application web interactive d'analyse de données pour une entreprise fictive : Mangetamain ; leader dans la recommandation B2C de recettes de cuisine à l'ancienne bio.
+# Mangetamain - Guide de Développement
 
-## Application Streamlit
+Application web d'analyse de données culinaires développée avec Streamlit.
 
-Version simplifiée et modulaire avec pages : Display, Analysis1 (recettes), Analysis2 (recettes + interactions).
+**Projet académique** - Telecom Paris - IADATA700 Kit Big Data
 
-### Lancer
-```
+## 🚀 Installation Rapide
+
+```bash
+# 1. Cloner et installer
+git clone https://github.com/gorreclu/IADATA700_mangetamain.git
+cd IADATA700_mangetamain
 uv sync
-uv run streamlit run src/app.py
+
+# 2. Générer la matrice précalculée (première fois)
+uv run python -m utils.preprocess_ingredients_matrix
+
+# 3. Lancer l'application
+uv run python scripts/run_app.py
 ```
 
-Les chemins par défaut :
-- Recettes : `data/RAW_recipes.csv`
-- Interactions : `data/RAW_interactions.csv`
+## 📋 Pages de l'Application
 
-> Prérequis données : pour le moment l'application suppose que ces deux fichiers existent localement dans un dossier `data/` à la racine. Aucun téléchargement automatique n'est encore implémenté.
+### 🏠 Home
+Exploration générale des datasets avec métriques clés et statistiques descriptives.
 
+### 🍳 Clustering des Ingrédients
+- Matrice de co-occurrence 300×300 précalculée
+- Clustering K-means (3-20 clusters)
+- Visualisation t-SNE 2D interactive
+- Sélection dynamique de 40 à 300 ingrédients
 
-### Fonctionnalités actuelles
-- Page Display : aperçu (10 premières lignes) du dataset sélectionné (recettes ou interactions)
-- Page Analysis1 : aperçu + métriques ingrédients (diversité, moyenne par recette)
-- Page Analysis2 : aperçu des deux jeux + scatter "popularité vs note moyenne" (interactions)
-- Chargement paresseux des données via `DataLoader`
-- Architecture extensible via explorateurs spécialisés
+### 📊 Analyse de Popularité
+- Relations popularité ↔ notes ↔ caractéristiques
+- Preprocessing IQR avec détection d'outliers
+- Scatter plots interactifs
+- Segmentation par percentiles
 
-### Diagramme de classes (PlantUML)
-Le diagramme suivant décrit l'architecture principale (base + explorateurs + application) :
+## 🏗️ Architecture
 
+Voir le [Diagramme de Classes](ClassDiagram.rst) pour l'architecture détaillée.
 
+**Modules principaux :**
+- `src/core/` : DataLoader, DataExplorer, InteractionsAnalyzer, CacheManager
+- `src/components/` : Pages Streamlit (IngredientsClusteringPage, PopularityAnalysisPage)
+- `utils/` : IngredientsMatrixPreprocessor (génération offline de la matrice)
+- `scripts/` : Utilitaires de lancement et téléchargement
 
-![Schéma](ClassDiagram.png)
+## ⚡ Optimisations
 
+### Preprocessing Offline
+```bash
+uv run python -m utils.preprocess_ingredients_matrix
+```
+Génère la matrice 300×300 en ~5-10 min (une seule fois).
 
-Dans VS Code (extension PlantUML) vous pouvez simplement ouvrir le fichier et utiliser "Preview Current Diagram".
+### Système de Cache
+- Données d'interactions : cache disque automatique
+- Matrice d'ingrédients : versionnée dans git
+- Cache Streamlit natif pour chargements optimisés
 
-#### Évolution possible
-- Ajouter d'autres pages d'analyse (ex: qualité nutritionnelle, temporalité)
-- Extraire un registre d'analyses plug-and-play
-- Remplacer `seaborn` par matplotlib pur pour alléger les dépendances
+## 🧪 Tests
 
----
-_Ce README reflète l'état simplifié actuel après nettoyage des fonctionnalités inutilisées._
+```bash
+# Tous les tests (124)
+uv run pytest
+
+# Avec couverture
+uv run pytest --cov=src --cov-report=html
+```
+
+## 📖 Documentation Complète
+
+Voir l'[API Reference](api/modules.rst) pour la documentation détaillée de tous les modules.
 

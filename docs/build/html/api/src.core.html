@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.core package &mdash; Documentation MangetamainTESTWR 1.0</title>
+  <title>src.core package &mdash; Documentation Mangetamain 1.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -33,7 +33,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            MangetamainTESTWR
+            Mangetamain
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -45,7 +45,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="src.html#subpackages">Subpackages</a><ul class="current">
@@ -72,7 +72,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MangetamainTESTWR</a>
+          <a href="../index.html">Mangetamain</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -336,269 +336,8 @@ Permet une gestion uniforme du cache across l’application.</p>
 </dd></dl>
 
 </section>
-<section id="module-src.core.ingredients_analyzer">
-<span id="src-core-ingredients-analyzer-module"></span><h2>src.core.ingredients_analyzer module<a class="headerlink" href="#module-src.core.ingredients_analyzer" title="Lien vers cette rubrique"></a></h2>
-<dl class="py class">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.ingredients_analyzer.</span></span><span class="sig-name descname"><span class="pre">IngredientsAnalyzer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer" title="Lien vers cette définition"></a></dt>
-<dd><p>Bases : <a class="reference internal" href="#src.core.cacheable_mixin.CacheableMixin" title="src.core.cacheable_mixin.CacheableMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">CacheableMixin</span></code></a></p>
-<p>Classe pour analyser les ingrédients et effectuer le clustering basé sur la co-occurrence.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.build_similarity_groups">
-<span class="sig-name descname"><span class="pre">build_similarity_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ingredients</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.55</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.build_similarity_groups"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.build_similarity_groups" title="Lien vers cette définition"></a></dt>
-<dd><p>Regroupe les ingrédients similaires basé sur la normalisation.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ingredients</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – Liste des ingrédients à regrouper</p></li>
-<li><p><strong>threshold</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></span>) – Seuil de similarité (non utilisé dans cette implémentation)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Liste de groupes d’ingrédients similaires</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.cached_operation">
-<span class="sig-name descname"><span class="pre">cached_operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation_func</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.cached_operation" title="Lien vers cette définition"></a></dt>
-<dd><p>Exécute une opération avec mise en cache automatique.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>operation_name</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Nom de l’opération (pour la clé de cache)</p></li>
-<li><p><strong>operation_func</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Callable</span></code>[[], <code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)]</span>) – Fonction à exécuter si pas en cache</p></li>
-<li><p><strong>cache_params</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Any</span></code>]]</span>) – Paramètres pour générer la clé de cache</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">TypeVar</span></code>(<code class="docutils literal notranslate"><span class="pre">T</span></code>)</span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Résultat de l’opération (depuis le cache ou calculé)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.clean_ingredient">
-<span class="sig-name descname"><span class="pre">clean_ingredient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ingredient</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.clean_ingredient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.clean_ingredient" title="Lien vers cette définition"></a></dt>
-<dd><p>Nettoie et standardise un ingrédient.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ingredient</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Nom de l’ingrédient brut</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Ingrédient nettoyé</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.clear_cache">
-<span class="sig-name descname"><span class="pre">clear_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.clear_cache" title="Lien vers cette définition"></a></dt>
-<dd><p>Nettoie le cache pour cet analyseur.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>operation</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Si spécifié, nettoie seulement cette opération</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Nombre de fichiers supprimés</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.create_cooccurrence_matrix">
-<span class="sig-name descname"><span class="pre">create_cooccurrence_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_ingredients</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.create_cooccurrence_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.create_cooccurrence_matrix" title="Lien vers cette définition"></a></dt>
-<dd><p>Crée une matrice de co-occurrence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>top_ingredients</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span>) – Liste des ingrédients représentatifs à analyser</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Matrice de co-occurrence sous forme de DataFrame</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.debug_ingredient_mapping">
-<span class="sig-name descname"><span class="pre">debug_ingredient_mapping</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_terms</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.debug_ingredient_mapping"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.debug_ingredient_mapping" title="Lien vers cette définition"></a></dt>
-<dd><p>Méthode de debug pour voir comment les ingrédients sont mappés.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>search_terms</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – Liste de termes à rechercher dans les mappings</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Informations de debug sur les mappings</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.enable_cache">
-<span class="sig-name descname"><span class="pre">enable_cache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.enable_cache" title="Lien vers cette définition"></a></dt>
-<dd><p>Active ou désactive le cache pour cet analyseur.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.generate_tsne_visualization">
-<span class="sig-name descname"><span class="pre">generate_tsne_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cluster_labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">42</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.generate_tsne_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.generate_tsne_visualization" title="Lien vers cette définition"></a></dt>
-<dd><p>Génère une visualisation t-SNE 2D des ingrédients colorés par cluster.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>cluster_labels</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – Labels des clusters pour chaque ingrédient</p></li>
-<li><p><strong>perplexity</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Paramètre de perplexité pour t-SNE</p></li>
-<li><p><strong>random_state</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Seed pour reproductibilité</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Données pour la visualisation (coordonnées, labels, couleurs)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.get_cache_info">
-<span class="sig-name descname"><span class="pre">get_cache_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.get_cache_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.get_cache_info" title="Lien vers cette définition"></a></dt>
-<dd><p>Get cache information compatible with the old interface.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.get_most_common_ingredients">
-<span class="sig-name descname"><span class="pre">get_most_common_ingredients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ingredients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.get_most_common_ingredients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.get_most_common_ingredients" title="Lien vers cette définition"></a></dt>
-<dd><p>Obtient les ingrédients les plus fréquents avec regroupement.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_ingredients</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Nombre d’ingrédients à retourner</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Liste des ingrédients représentatifs les plus fréquents</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.get_processing_summary">
-<span class="sig-name descname"><span class="pre">get_processing_summary</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.get_processing_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.get_processing_summary" title="Lien vers cette définition"></a></dt>
-<dd><p>Génère un résumé complet du processus de traitement des données.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
-</dd>
-<dt class="field-even">Renvoie<span class="colon">:</span></dt>
-<dd class="field-even"><p>Statistiques complètes du pipeline de traitement</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.normalize_ingredient">
-<span class="sig-name descname"><span class="pre">normalize_ingredient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">txt</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.normalize_ingredient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.normalize_ingredient" title="Lien vers cette définition"></a></dt>
-<dd><p>Normalise un ingrédient pour garder seulement l’essentiel.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>txt</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Nom de l’ingrédient brut</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Ingrédient normalisé à sa forme la plus générale</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.parse_ingredients">
-<span class="sig-name descname"><span class="pre">parse_ingredients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ingredients_str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.parse_ingredients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.parse_ingredients" title="Lien vers cette définition"></a></dt>
-<dd><p>Parse une chaîne d’ingrédients et retourne une liste d’ingrédients nettoyés.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>ingredients_str</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Chaîne contenant les ingrédients (format liste Python)</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Liste des ingrédients nettoyés</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.perform_clustering">
-<span class="sig-name descname"><span class="pre">perform_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">co_occurrence_df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.perform_clustering"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.perform_clustering" title="Lien vers cette définition"></a></dt>
-<dd><p>Effectue le clustering sur la matrice de co-occurrence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>co_occurrence_df</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span>) – Matrice de co-occurrence</p></li>
-<li><p><strong>n_clusters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Nombre de clusters</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Labels des clusters pour chaque ingrédient</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="src.core.ingredients_analyzer.IngredientsAnalyzer.process_ingredients">
-<span class="sig-name descname"><span class="pre">process_ingredients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_ingredients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/ingredients_analyzer.html#IngredientsAnalyzer.process_ingredients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.ingredients_analyzer.IngredientsAnalyzer.process_ingredients" title="Lien vers cette définition"></a></dt>
-<dd><p>Pipeline principal : traite les ingrédients et crée la matrice de co-occurrence.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>n_ingredients</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Nombre d’ingrédients représentatifs finaux</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span></p>
-</dd>
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tuple (matrice de co-occurrence DataFrame, noms des ingrédients représentatifs)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<section id="src-core-ingredients-analyzer-module">
+<h2>src.core.ingredients_analyzer module<a class="headerlink" href="#src-core-ingredients-analyzer-module" title="Lien vers cette rubrique"></a></h2>
 </section>
 <section id="module-src.core.interactions_analyzer">
 <span id="src-core-interactions-analyzer-module"></span><h2>src.core.interactions_analyzer module<a class="headerlink" href="#module-src.core.interactions_analyzer" title="Lien vers cette rubrique"></a></h2>
@@ -805,7 +544,7 @@ supersedes interactions/recipes arguments.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="src.core.interactions_analyzer.PreprocessingConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.interactions_analyzer.</span></span><span class="sig-name descname"><span class="pre">PreprocessingConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_preprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlier_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iqr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlier_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.5</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/interactions_analyzer.html#PreprocessingConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.interactions_analyzer.PreprocessingConfig" title="Lien vers cette définition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.core.interactions_analyzer.</span></span><span class="sig-name descname"><span class="pre">PreprocessingConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enable_preprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlier_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'iqr'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outlier_threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5.0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/core/interactions_analyzer.html#PreprocessingConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.core.interactions_analyzer.PreprocessingConfig" title="Lien vers cette définition"></a></dt>
 <dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Configuration for data preprocessing options.</p>
 <dl class="py attribute">
@@ -831,7 +570,7 @@ supersedes interactions/recipes arguments.</p></li>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.core.interactions_analyzer.PreprocessingConfig.outlier_threshold">
-<span class="sig-name descname"><span class="pre">outlier_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.5</span></em><a class="headerlink" href="#src.core.interactions_analyzer.PreprocessingConfig.outlier_threshold" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">outlier_threshold</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5.0</span></em><a class="headerlink" href="#src.core.interactions_analyzer.PreprocessingConfig.outlier_threshold" title="Lien vers cette définition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

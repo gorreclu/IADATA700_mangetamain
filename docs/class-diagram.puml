@@ -1,15 +1,14 @@
 @startuml class-diagram
-' Configuration pour un affichage horizontal et aéré
-left to right direction
+' Configuration pour un affichage carré compact
 skinparam packageStyle rectangle
 skinparam classAttributeIconSize 0
 skinparam shadowing false
 skinparam defaultFontName Arial, Helvetica, sans-serif
 skinparam dpi 200
-skinparam linetype polyline
-skinparam nodesep 100
-skinparam ranksep 120
-skinparam padding 10
+skinparam linetype ortho
+skinparam nodesep 60
+skinparam ranksep 80
+skinparam padding 8
 
 ' Couleurs pour une meilleure lisibilité
 skinparam class {
@@ -21,7 +20,7 @@ skinparam class {
     ArrowColor DarkGray
 }
 
-title Architecture IADATA700 MangetaMain - Vue Horizontale Simplifiée
+title Architecture IADATA700 MangetaMain
 
 package "🎯 APPLICATION" #TECHNOLOGY {
     class App {
@@ -92,21 +91,11 @@ package "📦 CORE (Logique Métier)" #BUSINESS {
         +get_cache_info(): dict
     }
     
-    class "IngredientsAnalyzer" as IngredientsAnalyzer <<analyzer>> {
-        -data: DataFrame
-        --
-        +process_ingredients(): tuple
-        +perform_clustering(): ndarray
-        +generate_tsne_visualization(): dict
-        +get_cache_info(): dict
-    }
-    
     ' Relations internes au package core
-    DataExplorer -right-> DataLoader : utilise
-    CacheableMixin -up-> CacheManager : utilise
+    DataExplorer --> DataLoader : utilise
+    CacheableMixin --> CacheManager : utilise
     InteractionsAnalyzer -up-|> CacheableMixin : hérite
-    IngredientsAnalyzer -up-|> CacheableMixin : hérite
-    InteractionsAnalyzer .right.> PreprocessingConfig : utilise
+    InteractionsAnalyzer --> PreprocessingConfig : utilise
 }
 
 package "🖥️ COMPONENTS (Interface UI)" #APPLICATION {
@@ -131,32 +120,32 @@ package "🖥️ COMPONENTS (Interface UI)" #APPLICATION {
     
     together {
         class "IngredientsClusteringPage\n(Page 2)" as IngredientsClusteringPage <<page>> {
-            -ingredients_analyzer: IngredientsAnalyzer
+            -matrix_path: Path
+            -ingredients_list_path: Path
             -config, logger
             --
             +run(), render_sidebar()
-            +_render_step_1_preprocessing()
-            +_render_step_2_cooccurrence()
-            +_render_step_3_clustering()
-            +_render_step_4_visualization()
+            +_load_cooccurrence_matrix()
+            +_perform_clustering()
+            +_compute_tsne()
             --
             +render_cooccurrence_analysis()
             +render_clusters()
             +render_tsne_visualization()
-            +render_analysis_summary()
         }
         
         class IngredientsClusteringConfig <<config>> {
-            +recipes_path: Path
-            +n_ingredients: int = 50
-            +n_clusters: int = 5
+            +matrix_path: Path
+            +ingredients_list_path: Path
+            +n_ingredients: int = 40
+            +n_clusters: int = 4
             +tsne_perplexity: int = 30
         }
     }
     
     ' Relations internes composants
-    PopularityAnalysisPage -right-> PopularityAnalysisConfig
-    IngredientsClusteringPage -right-> IngredientsClusteringConfig
+    PopularityAnalysisPage --> PopularityAnalysisConfig
+    IngredientsClusteringPage --> IngredientsClusteringConfig
 }
 
 ' ═══════════════════════════════════════════════════════════════
@@ -170,20 +159,12 @@ App --> DataExplorer : <<Home>>
 
 ' Pages vers Analyseurs (composition forte)
 PopularityAnalysisPage --> InteractionsAnalyzer : analyse
-IngredientsClusteringPage --> IngredientsAnalyzer : analyse
 
 ' Analyseurs vers DataLoader (dépendance)
 InteractionsAnalyzer ..> DataLoader : charge
-IngredientsAnalyzer ..> DataLoader : charge
-
-' Mixins et héritages
-InteractionsAnalyzer -up-|> CacheableMixin : hérite
-IngredientsAnalyzer -up-|> CacheableMixin : hérite
 
 ' Cache management
-CacheableMixin ..> CacheManager : utilise
 PopularityAnalysisPage ..> CacheManager : contrôle
-IngredientsClusteringPage ..> CacheManager : contrôle
 
 ' ═══════════════════════════════════════════════════════════════
 ' NOTES EXPLICATIVES
@@ -219,16 +200,14 @@ note bottom of PopularityAnalysisPage
 end note
 
 note bottom of IngredientsClusteringPage
-  **Page 2 - Structure 4 Étapes**
-  ① Prétraitement NLP
-  ② Matrice co-occurrence
-  ③ Clustering K-means
-  ④ Visualisation t-SNE 2D
+  **Page 2 - Clustering Ingrédients**
+  • Matrice 300×300 précalculée
+  • Sélection dynamique 40-300 ingrédients
+  • Clustering K-means (3-20 clusters)
+  • Visualisation t-SNE 2D
   --
-  • User Story dans UI
-  • 15 méthodes publiques
-  • Typage strict + Doc complète
-  • Détection changements params
+  • Pas de preprocessing runtime
+  • Cache Streamlit natif uniquement
 end note
 
 legend bottom right

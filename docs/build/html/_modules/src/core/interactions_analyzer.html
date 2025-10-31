@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.core.interactions_analyzer &mdash; Documentation MangetamainTESTWR 1.0</title>
+  <title>src.core.interactions_analyzer &mdash; Documentation Mangetamain 1.0</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
@@ -30,7 +30,7 @@
           
           
           <a href="../../../index.html" class="icon icon-home">
-            MangetamainTESTWR
+            Mangetamain
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -42,7 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../api/modules.html">src</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
@@ -56,7 +56,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../../index.html">MangetamainTESTWR</a>
+          <a href="../../../index.html">Mangetamain</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -97,6 +97,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
@@ -118,16 +119,13 @@
 
     <span class="n">enable_preprocessing</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="n">outlier_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;iqr&quot;</span>  <span class="c1"># &quot;iqr&quot;, &quot;zscore&quot;, &quot;none&quot;</span>
-    <span class="n">outlier_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.5</span>  <span class="c1"># IQR multiplier or Z-score threshold</span>
+    <span class="n">outlier_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">5.0</span>  <span class="c1"># Fixed IQR multiplier for optimal data retention (95.1%)</span>
 
 <div class="viewcode-block" id="PreprocessingConfig.get_hash">
 <a class="viewcode-back" href="../../../api/src.core.html#src.core.interactions_analyzer.PreprocessingConfig.get_hash">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate hash for cache validation.&quot;&quot;&quot;</span>
-        <span class="n">config_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span>
-<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">enable_preprocessing</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span>
-<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_method</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span>
-<span class="w">            </span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_threshold</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">config_str</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">enable_preprocessing</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_method</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_threshold</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">md5</span><span class="p">(</span><span class="n">config_str</span><span class="o">.</span><span class="n">encode</span><span class="p">())</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()[:</span><span class="mi">8</span><span class="p">]</span></div>
 </div>
 
@@ -161,15 +159,34 @@
         <span class="n">CacheableMixin</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
 
+        <span class="c1"># Define fixed CSV cache paths (IQR 5.0 optimal)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;merged_interactions_recipes_optimized.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;aggregated_popularity_metrics_optimized.csv&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config_cache_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_dir</span> <span class="o">/</span> <span class="s2">&quot;.preprocessing_config_optimized.txt&quot;</span>
+
         <span class="c1"># Enable/disable cache based on parameter</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enable_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache_enabled</span><span class="p">)</span>
 
-        <span class="c1"># Use cached operation for data preprocessing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_operation</span><span class="p">(</span>
-            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;preprocess_data&quot;</span><span class="p">,</span>
-            <span class="n">operation_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compute_preprocessed_data</span><span class="p">,</span>
-            <span class="n">cache_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_default_cache_params</span><span class="p">(),</span>
-        <span class="p">)</span>
+        <span class="c1"># Choose data source: provided DataFrames have priority over CSV cache</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Pre-merged data provided - use it directly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using provided pre-merged DataFrame&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Merge provided DataFrames</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_merge_data</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using provided interactions and recipes DataFrames&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Only interactions provided - no merge needed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using provided interactions DataFrame only&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># No data provided - use optimized CSV cache system</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_or_compute_merged_data</span><span class="p">()</span>
+
+        <span class="c1"># Cache for aggregated data in memory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_default_cache_params</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate cache parameters for the current configuration.&quot;&quot;&quot;</span>
@@ -209,6 +226,108 @@
             <span class="s2">&quot;total_size_mb&quot;</span><span class="p">:</span> <span class="n">cache_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;total_size_mb&quot;</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">),</span>
         <span class="p">}</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_or_compute_merged_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load merged data from CSV cache or compute if not available.&quot;&quot;&quot;</span>
+        <span class="c1"># Check if CSV cache exists and is valid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_cache_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># Validate config</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_csv_cache_valid</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading merged data from optimized CSV cache (IQR 5.0)&quot;</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;CSV cache invalid, recomputing with optimal IQR 5.0 settings&quot;</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading CSV cache: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Cache miss or invalid - compute data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing optimized merged data (IQR 5.0 for 95.1</span><span class="si">% d</span><span class="s2">ata retention)&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_preprocessed_data</span><span class="p">()</span>
+
+        <span class="c1"># Save to cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_merged_csv_cache</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_csv_cache_valid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if CSV cache is valid based on configuration.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_cache_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_cache_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">cached_config</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+            <span class="n">current_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_config_string</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">cached_config</span> <span class="o">==</span> <span class="n">current_config</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_merge_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Merge provided interactions and recipes DataFrames.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;interactions DataFrame is required for merging&quot;</span><span class="p">)</span>
+
+        <span class="n">inter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_cols</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipes</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">rec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_standardize_cols</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">recipes</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+            <span class="c1"># Handle common alternate primary key naming (&#39;id&#39; -&gt; &#39;recipe_id&#39;)</span>
+            <span class="k">if</span> <span class="n">RECIPE_ID_COL</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">columns</span> <span class="ow">and</span> <span class="s2">&quot;id&quot;</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">rec</span> <span class="o">=</span> <span class="n">rec</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;id&quot;</span><span class="p">:</span> <span class="n">RECIPE_ID_COL</span><span class="p">})</span>
+            <span class="c1"># prefer left join to keep only interactions that occurred</span>
+            <span class="k">if</span> <span class="n">RECIPE_ID_COL</span> <span class="ow">in</span> <span class="n">rec</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">rec</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="n">RECIPE_ID_COL</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">suffixes</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;_r&quot;</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">df</span> <span class="o">=</span> <span class="n">inter</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">inter</span>
+
+        <span class="c1"># Apply preprocessing if enabled</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">enable_preprocessing</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting data preprocessing (outlier removal)&quot;</span><span class="p">)</span>
+            <span class="n">df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing_stats</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_data</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preprocessing_stats</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">df</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_merged_csv_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save merged data to CSV cache.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Ensure directory exists</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Save data</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="c1"># Save config for validation</span>
+            <span class="n">current_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_current_config_string</span><span class="p">()</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_cache_path</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">current_config</span><span class="p">)</span>
+
+            <span class="n">size_mb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged_csv_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved optimized merged data to CSV cache (</span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB)&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving CSV cache: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_current_config_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get current configuration as string for cache validation.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;optimized_iqr_5.0_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">get_hash</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_aggregated_csv_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save aggregated data to CSV cache.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Ensure directory exists</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># Save data</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="n">size_mb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Saved optimized aggregated data to CSV cache (</span><span class="si">{</span><span class="n">size_mb</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB)&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error saving aggregated CSV cache: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_preprocessed_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the preprocessed data (called when not in cache).&quot;&quot;&quot;</span>
@@ -313,10 +432,7 @@
             <span class="n">df_processed</span><span class="p">,</span> <span class="n">outliers_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_outliers</span><span class="p">(</span><span class="n">df_processed</span><span class="p">,</span> <span class="n">available_features</span><span class="p">)</span>
             <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;outliers_removed&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">outliers_count</span>
             <span class="k">if</span> <span class="n">outliers_count</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">outliers_count</span><span class="si">}</span><span class="s2"> outliers using </span><span class="si">{</span>
-<span class="w">                        </span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">outlier_method</span><span class="si">}</span><span class="s2"> method&quot;</span>
-                <span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Removed </span><span class="si">{</span><span class="n">outliers_count</span><span class="si">}</span><span class="s2"> outliers using </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">preprocessing</span><span class="o">.</span><span class="n">outlier_method</span><span class="si">}</span><span class="s2"> method&quot;</span><span class="p">)</span>
 
         <span class="n">stats</span><span class="p">[</span><span class="s2">&quot;final_rows&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_processed</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">df_processed</span><span class="p">,</span> <span class="n">stats</span>
@@ -374,11 +490,33 @@
 <span class="sd">          - avg_rating (if ratings provided)</span>
 <span class="sd">          - minutes / n_steps / n_ingredients (if present)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cached_operation</span><span class="p">(</span>
-            <span class="n">operation_name</span><span class="o">=</span><span class="s2">&quot;aggregate&quot;</span><span class="p">,</span>
-            <span class="n">operation_func</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_compute_aggregate</span><span class="p">,</span>
-            <span class="n">cache_params</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_default_cache_params</span><span class="p">(),</span>
-        <span class="p">)</span></div>
+        <span class="c1"># Use memory cache if available</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using memory cache for aggregate data&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span>
+
+        <span class="c1"># Only use CSV cache if no explicit DataFrames were provided</span>
+        <span class="n">use_csv_cache</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactions</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">recipes</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">merged</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">use_csv_cache</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_csv_cache_valid</span><span class="p">():</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading aggregated data from optimized CSV cache&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">aggregated_csv_path</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error loading aggregated CSV cache: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Compute and cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Computing optimized aggregated data&quot;</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compute_aggregate</span><span class="p">()</span>
+
+        <span class="c1"># Save to CSV cache only if using CSV cache system</span>
+        <span class="k">if</span> <span class="n">use_csv_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_aggregated_csv_cache</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+        <span class="c1"># Save to memory cache</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_aggregated_cache</span> <span class="o">=</span> <span class="n">result</span>
+        <span class="k">return</span> <span class="n">result</span></div>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_compute_aggregate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
