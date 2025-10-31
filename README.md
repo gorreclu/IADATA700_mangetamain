@@ -7,7 +7,8 @@
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat&logo=pandas&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat&logo=scikit-learn&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat&logo=plotly&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-124%20passed-success?style=flat)
+![Tests](https://img.shields.io/badge/tests-160%20passed-success?style=flat)
+![Coverage](https://img.shields.io/badge/coverage-49%25-yellow?style=flat)
 
 **Application web d'analyse de recettes et d'interactions utilisateurs**  
 *Projet académique - Telecom Paris - IADATA700 Kit Big Data*
