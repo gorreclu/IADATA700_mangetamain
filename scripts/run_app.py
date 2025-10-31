@@ -46,6 +46,12 @@ def download_data():
     print("   ⏳ Cela peut prendre quelques minutes pour les gros fichiers...")
 
     try:
+        # Import depuis le même dossier scripts/
+        import sys
+        from pathlib import Path
+        scripts_dir = Path(__file__).parent
+        sys.path.insert(0, str(scripts_dir))
+        
         from download_data import ensure_data_files
 
         ensure_data_files()
