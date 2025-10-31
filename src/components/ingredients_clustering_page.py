@@ -509,11 +509,11 @@ class IngredientsClusteringPage:
             st.markdown(
                 """
             **t-SNE** réduit la dimensionnalité pour visualiser les similarités entre ingrédients.
-            
+
             - **Points proches** = ingrédients avec profils de co-occurrence similaires
             - **Couleurs** = clusters K-means
             - **Distance** = mesure de similarité culinaire
-            
+
             **Paramètres utilisés**:
             - Perplexité: {}
             - Itérations: 1000
@@ -592,9 +592,9 @@ class IngredientsClusteringPage:
         pour créer une représentation cohérente.
 
         **Métrique :** Taux de réduction du nombre d'ingrédients uniques après normalisation.
-        
-        **💡 Note technique :** Cette étape a été **précalculée à froid** lors de la génération de la 
-        matrice 300×300 avec `utils/preprocess_ingredients_matrix.py`. Environ **~230,000 recettes** ont 
+
+        **💡 Note technique :** Cette étape a été **précalculée à froid** lors de la génération de la
+        matrice 300×300 avec `utils/preprocess_ingredients_matrix.py`. Environ **~230,000 recettes** ont
         été traitées pour extraire et normaliser les 300 ingrédients les plus fréquents.
 
         **Méthodologie appliquée :**
@@ -625,9 +625,9 @@ class IngredientsClusteringPage:
         la base de notre analyse de similarité.
 
         **Méthode :** Pour chaque recette, toutes les paires d'ingrédients présents sont comptabilisées.
-        
-        **💡 Note technique :** Cette matrice **300×300** a été **précalculée à froid** sur l'ensemble 
-        du corpus (~230,000 recettes). Vous sélectionnez dynamiquement un sous-ensemble (40-300 ingrédients) 
+
+        **💡 Note technique :** Cette matrice **300×300** a été **précalculée à froid** sur l'ensemble
+        du corpus (~230,000 recettes). Vous sélectionnez dynamiquement un sous-ensemble (40-300 ingrédients)
         de cette matrice pour votre analyse.
         """
         )
@@ -841,15 +841,16 @@ class IngredientsClusteringPage:
             familles d'ingrédients distinctes ? Comment les ingrédients se regroupent-ils en fonction
             de leurs profils d'utilisation ?
 
-            **Approche :** 
-            - **Étapes 1-2 (précalculées à froid)** : Analyse NLP des listes d'ingrédients et construction 
+            **Approche :**
+            - **Étapes 1-2 (précalculées à froid)** : Analyse NLP des listes d'ingrédients et construction
               d'une matrice de co-occurrence 300×300
             - **Étapes 3-4 (temps réel)** : Clustering automatique par K-means et visualisation en 2D par t-SNE
 
             **Problématique :** Dans un espace culinaire où des milliers d'ingrédients peuvent être
             combinés, comment identifier automatiquement les groupes d'ingrédients qui partagent des
             contextes d'utilisation similaires ?
-            
+
+
             **💡 Optimisation** : Les étapes 1-2 sont précalculées pour accélérer l'analyse. Vous ajustez 
             le nombre d'ingrédients (40-300) et de clusters (3-20) en temps réel.
             """
