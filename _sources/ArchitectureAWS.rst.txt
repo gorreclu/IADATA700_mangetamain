@@ -3,17 +3,25 @@ Architecture AWS
 
 Infrastructure de déploiement de l'application Mangetamain sur Amazon Web Services.
 
-.. image:: Architecture_AWS_Mangetamain.svg
-   :width: 100%
+.. figure:: Architecture_AWS_Mangetamain.svg
+   :align: center
+   :width: 90%
    :alt: Architecture AWS de Mangetamain
+
+   Schéma d'architecture de déploiement AWS
 
 Vue d'Ensemble
 --------------
 
 L'application a été déployée sur **deux environnements** à des fins de **comparaison et tests** :
 
-1. **Streamlit Cloud** (gratuit) : https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/ ✅ **Actif**
-2. **AWS EC2** (infrastructure dédiée) : ~~http://13.37.60.84:8501~~ ❌ **Désactivé** (pour éviter les coûts)
+1. **Streamlit Cloud** (gratuit) : https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/
+   
+   ✅ **Actif**
+
+2. **AWS EC2** (infrastructure dédiée) : http://13.37.60.84:8501
+   
+   ❌ **Désactivé** (pour éviter les coûts)
 
 .. note::
    L'infrastructure AWS EC2 a été utilisée pour tester et comparer les performances avec Streamlit Cloud, 
@@ -25,7 +33,7 @@ privilégiant la simplicité et le contrôle des coûts tout en maintenant des p
 
 **Configuration testée :**
 
-* 🌐 **Accès** : ~~http://13.37.60.84:8501~~ (désactivé)
+* 🌐 **Accès** : http://13.37.60.84:8501 (désactivé)
 * 🖥️ **Instance** : EC2 t3.medium (2 vCPU, 4 GB RAM)
 * 💰 **Coût** : ~30€/mois (raison de la désactivation)
 * 👥 **Capacité** : ~500 utilisateurs concurrents

@@ -117,14 +117,23 @@
   <section id="architecture-aws">
 <h1>Architecture AWS<a class="headerlink" href="#architecture-aws" title="Lien vers cette rubrique"></a></h1>
 <p>Infrastructure de déploiement de l’application Mangetamain sur Amazon Web Services.</p>
-<a class="reference internal image-reference" href="_images/Architecture_AWS_Mangetamain.svg"><img alt="Architecture AWS de Mangetamain" src="_images/Architecture_AWS_Mangetamain.svg" style="width: 100%;" />
+<figure class="align-center" id="id1">
+<a class="reference internal image-reference" href="_images/Architecture_AWS_Mangetamain.svg"><img alt="Architecture AWS de Mangetamain" src="_images/Architecture_AWS_Mangetamain.svg" style="width: 90%;" />
 </a>
+<figcaption>
+<p><span class="caption-text">Schéma d’architecture de déploiement AWS</span><a class="headerlink" href="#id1" title="Lien vers cette image"></a></p>
+</figcaption>
+</figure>
 <section id="vue-d-ensemble">
 <h2>Vue d’Ensemble<a class="headerlink" href="#vue-d-ensemble" title="Lien vers cette rubrique"></a></h2>
 <p>L’application a été déployée sur <strong>deux environnements</strong> à des fins de <strong>comparaison et tests</strong> :</p>
-<ol class="arabic simple">
-<li><p><strong>Streamlit Cloud</strong> (gratuit) : <a class="reference external" href="https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/">https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/</a> ✅ <strong>Actif</strong></p></li>
-<li><p><strong>AWS EC2</strong> (infrastructure dédiée) : ~~http://13.37.60.84:8501~~ ❌ <strong>Désactivé</strong> (pour éviter les coûts)</p></li>
+<ol class="arabic">
+<li><p><strong>Streamlit Cloud</strong> (gratuit) : <a class="reference external" href="https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/">https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/</a></p>
+<p>✅ <strong>Actif</strong></p>
+</li>
+<li><p><strong>AWS EC2</strong> (infrastructure dédiée) : <a class="reference external" href="http://13.37.60.84:8501">http://13.37.60.84:8501</a></p>
+<p>❌ <strong>Désactivé</strong> (pour éviter les coûts)</p>
+</li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -136,7 +145,7 @@ mais elle n’est <strong>plus active</strong> pour éviter les frais mensuels (
 privilégiant la simplicité et le contrôle des coûts tout en maintenant des performances acceptables.</p>
 <p><strong>Configuration testée :</strong></p>
 <ul class="simple">
-<li><p>🌐 <strong>Accès</strong> : ~~http://13.37.60.84:8501~~ (désactivé)</p></li>
+<li><p>🌐 <strong>Accès</strong> : <a class="reference external" href="http://13.37.60.84:8501">http://13.37.60.84:8501</a> (désactivé)</p></li>
 <li><p>🖥️ <strong>Instance</strong> : EC2 t3.medium (2 vCPU, 4 GB RAM)</p></li>
 <li><p>💰 <strong>Coût</strong> : ~30€/mois (raison de la désactivation)</p></li>
 <li><p>👥 <strong>Capacité</strong> : ~500 utilisateurs concurrents</p></li>
