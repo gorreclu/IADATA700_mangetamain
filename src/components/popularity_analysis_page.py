@@ -111,45 +111,6 @@ class PopularityAnalysisPage:
         # Create popularity segments
         segmented_data = analyzer.create_popularity_segments(pop_rating)
 
-        # Get threshold information from analyzer
-        thresholds = analyzer._popularity_segments_info["thresholds"]
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            # Distribution of segments with precise intervals
-            segment_counts = segmented_data["popularity_segment"].value_counts()
-            st.write("**Distribution des segments avec intervalles précis:**")
-
-            # Display segments with their exact interaction count ranges
-            for segment in ["Low", "Medium", "High", "Viral"]:
-                if segment in segment_counts.index:
-                    count = segment_counts[segment]
-                    percentage = (count / len(segmented_data)) * 100
-
-                    # Define interval text based on segment
-                    if segment == "Low":
-                        interval = f"1 à {int(thresholds['low_max'])} fois"
-                    elif segment == "Medium":
-                        interval = f"{int(thresholds['low_max']) + 1} à {int(thresholds['medium_max'])} fois"
-                    elif segment == "High":
-                        interval = f"{int(thresholds['medium_max']) + 1} à {int(thresholds['high_max'])} fois"
-                    else:  # Viral
-                        interval = f"Plus de {int(thresholds['high_max'])} fois"
-
-                    st.write(f"- **{segment}** ({interval}): {count:,} recettes ({percentage:.1f}%)")
-
-        with col2:
-            # Average rating by segment
-            segment_ratings = segmented_data.groupby("popularity_segment")["avg_rating"].agg(["mean", "std", "count"])
-            st.write("**Note moyenne par segment:**")
-            for segment in ["Low", "Medium", "High", "Viral"]:
-                if segment in segment_ratings.index:
-                    mean_rating = segment_ratings.loc[segment, "mean"]
-                    std_rating = segment_ratings.loc[segment, "std"]
-                    count = segment_ratings.loc[segment, "count"]
-                    st.write(f"- {segment}: {mean_rating:.2f} ± {std_rating:.2f} ({count:,} recettes)")
-
         # Visualization of segments
         self._plot_popularity_segments(segmented_data, analyzer)
 
@@ -279,31 +240,28 @@ class PopularityAnalysisPage:
         thresholds = analyzer._popularity_segments_info["thresholds"]
 
         # Explication de la distribution observée avec pourcentages dynamiques
-        st.markdown(
-            f"""
-        **🔍 Lecture de la distribution (graphique de droite) :**
+        with st.expander("**🔍 Lecture de la distribution (graphique de droite) :**", expanded=False):
+            st.markdown(
+                f"""
+            Ce graphique révèle la **réalité de l'engagement** sur les plateformes de contenu :
+            - **Très haute colonne à 1 interaction** : {low_pct:.1f}% des recettes (~{low_count // 1000}k) n'ont qu'une seule interaction
+            - **Décroissance rapide** : Plus le nombre d'interactions augmente, moins il y a de recettes
+            - **Rareté du viral** : Très peu de recettes dépassent {thresholds['high_max']:.0f} interactions (seuil viral P95)
 
-        Ce graphique révèle la **réalité de l'engagement** sur les plateformes de contenu :
-        - **Très haute colonne à 1 interaction** : {low_pct:.1f}% des recettes (~{low_count // 1000}k) n'ont qu'une seule interaction
-        - **Décroissance rapide** : Plus le nombre d'interactions augmente, moins il y a de recettes
-        - **Rareté du viral** : Très peu de recettes dépassent {thresholds['high_max']:.0f} interactions (seuil viral P95)
+            Cette distribution de type **"longue traîne"** est typique des plateformes de contenu et
+            **renforce la valeur** de notre analyse : identifier les facteurs qui distinguent les {viral_pct:.1f}%
+            de recettes virales des {low_pct:.1f}% à faible engagement devient d'autant plus précieux !
 
-        Cette distribution de type **"longue traîne"** est typique des plateformes de contenu et
-        **renforce la valeur** de notre analyse : identifier les facteurs qui distinguent les {viral_pct:.1f}%
-        de recettes virales des {low_pct:.1f}% à faible engagement devient d'autant plus précieux !
+            **📐 Pourquoi pas exactement 25%/50%/75%/95% ?**
 
-        **📐 Pourquoi pas exactement 25%/50%/75%/95% ?**
+            Les percentiles P25/P75/P95 sont corrects, mais avec des **données discrètes entières**
+            (1, 2, 3... interactions), les segments ne peuvent pas être exactement équilibrés :
 
-        Les percentiles P25/P75/P95 sont corrects, mais avec des **données discrètes entières**
-        (1, 2, 3... interactions), les segments ne peuvent pas être exactement équilibrés :
-
-        - **P25 = {thresholds['low_max']:.0f}** : mais {low_pct:.1f}% des recettes ont exactement {thresholds['low_max']:.0f} interaction
-        - **Impossible d'avoir exactement 25%** sans utiliser des seuils fractionnaires (1.5, 2.3...)
-        - **C'est mathématiquement normal** : les percentiles indiquent les valeurs, pas forcément des répartitions égales
-
-        Cette asymétrie **renforce l'analyse** : elle reflète la vraie nature de l'engagement numérique !
-        """
-        )
+            - **P25 = {thresholds['low_max']:.0f}** : mais {low_pct:.1f}% des recettes ont exactement {thresholds['low_max']:.0f} interaction
+            - **Impossible d'avoir exactement 25%** sans utiliser des seuils fractionnaires (1.5, 2.3...)
+            - **C'est mathématiquement normal** : les percentiles indiquent les valeurs, pas forcément des répartitions égales
+            """
+            )
 
     def _render_step_1(
         self,
@@ -344,11 +302,7 @@ class PopularityAnalysisPage:
             # Analyse des résultats
             st.markdown(
                 """
-            **� Observations :** La distribution révèle plusieurs clusters de recettes avec des niveaux
-            d'engagement distincts. Les recettes à haute popularité ne présentent pas systématiquement
-            les meilleures notes, suggérant l'existence de facteurs additionnels.
-
-            **� Implication :** Cette distribution non-linéaire indique que la popularité s'organise
+            Cette distribution non-linéaire indique que la popularité s'organise
             en segments distincts plutôt qu'en progression continue. Cependant une grande majorité des recettes possède une bonne note.
             Les utilisateurs sont peut-être bienveillant entre eux ou les recettes sont peut-être toutes délicieuses.
             Nous allons donc plutôt nous focaliser dans la suite sur l'étude du nombre de fois où une recette a été faite soit sa
@@ -379,7 +333,6 @@ class PopularityAnalysisPage:
         )
 
         # Segmentation par popularité avec contexte narratif
-        st.markdown("---")
         self._render_popularity_segmentation(analyzer, pop_rating)
 
         # Obtenir les seuils de segmentation pour l'explication
@@ -400,7 +353,7 @@ class PopularityAnalysisPage:
             f"""
         **📋 Caractérisation des segments identifiés :**
 
-        L'analyse révèle quatre segments distincts basés sur le niveau d'engagement :
+        L'analyse révèle donc quatre segments distincts basés sur le niveau d'engagement :
 
         - **Engagement Faible** : 1 à {int(thresholds['low_max'])} interactions
           ({segment_percentages['Low']:.1f}% des recettes - souvent de qualité mais visibilité limitée)
@@ -711,20 +664,6 @@ class PopularityAnalysisPage:
         # Display the table
         st.dataframe(top_viral_display, width="stretch", hide_index=True)
 
-        # Quick stats
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            st.metric(
-                "🥇 Recette #1",
-                f"{top_viral.iloc[0]['interaction_count']:,.0f} interactions",
-            )
-        with col2:
-            total_interactions = top_viral["interaction_count"].sum()
-            st.metric("📊 Total Top 10", f"{total_interactions:,.0f} interactions")
-        with col3:
-            avg_rating_top10 = top_viral["avg_rating"].mean()
-            st.metric("⭐ Note moyenne", f"{avg_rating_top10:.2f}")
-
         # Recipe selection interface for 3D analysis
         st.markdown("### 📋 Pattern Commun du Top 3")
 
@@ -795,7 +734,6 @@ class PopularityAnalysisPage:
 
         🔍 **L'effet boule de neige** : démarrage lent, accélération, puis stabilisation/déclin
 
-        **Note :** La visualisation 3D utilise les données brutes pour préserver toutes les recettes.
         """
         )
 
