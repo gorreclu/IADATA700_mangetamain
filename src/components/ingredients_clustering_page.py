@@ -851,7 +851,7 @@ class IngredientsClusteringPage:
             contextes d'utilisation similaires ?
 
 
-            **💡 Optimisation** : Les étapes 1-2 sont précalculées pour accélérer l'analyse. Vous ajustez 
+            **💡 Optimisation** : Les étapes 1-2 sont précalculées pour accélérer l'analyse. Vous ajustez
             le nombre d'ingrédients (40-300) et de clusters (3-20) en temps réel.
             """
             )
