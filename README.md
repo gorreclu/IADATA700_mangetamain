@@ -167,7 +167,8 @@ plantuml -tsvg docs/class-diagram.puml   # Génération SVG
 ```
 
 
-## ⚡ Preprocessing - Optimisation des Performances
+<details>
+<summary>## ⚡ Preprocessing - Optimisation des Performances</summary>
 
 ### Matrice de co-occurrence précalculée
 
@@ -210,6 +211,9 @@ uv run python -m utils.preprocess_ingredients_matrix
 - ✅ Pour changer le nombre d'ingrédients (paramètre `n_ingredients`)
 
 > 💡 **Astuce** : Les fichiers générés sont versionnés dans git pour éviter de régénérer à chaque clone.
+
+</details>
+
 
 ## 🧪 Tests
 
@@ -282,38 +286,6 @@ Le projet utilise un système de logging structuré :
 
 Configuration dans `src/core/logger.py`
 
-## 📊 Données
-
-### Sources
-
-Les données proviennent d'un corpus de recettes et d'interactions utilisateurs hébergé sur AWS S3.
-
-**Datasets** :
-- `RAW_recipes.csv` : ~230 000 recettes avec métadonnées (nom, ingrédients, étapes, temps, etc.)
-- `RAW_interactions.csv` : Interactions utilisateurs (notes, dates)
-
-### Téléchargement
-
-```bash
-# Téléchargement automatique via le script
-python scripts/download_data.py
-
-# Ou au lancement de l'app
-python scripts/run_app.py  # Détecte et télécharge si manquant
-```
-
-### Structure des données
-
-**RAW_recipes.csv** :
-```
-id, name, minutes, ingredients, nutrition, n_steps, description, ...
-```
-
-**RAW_interactions.csv** :
-```
-user_id, recipe_id, date, rating, review
-```
-
 ## 🛠️ Technologies
 
 | Catégorie | Technologies |
@@ -329,7 +301,9 @@ user_id, recipe_id, date, rating, review
 ## 🤝 Contribution
 
 Ce projet est développé dans un cadre académique.
+
 Sara EL MOUNTASSER, Cyprien CHARLATÉ, William ROOSE, Lucas GORREC
+
 Telecom Paris - MS Big Data Expert ML OPS - Promotion IADATA700 2025-2026
 
 ---
