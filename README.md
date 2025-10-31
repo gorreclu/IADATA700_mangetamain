@@ -16,12 +16,19 @@ Dans le cadre d'un enseignement à Telecom Paris, ce projet consiste en une appl
 ## ⚡ Démarrage rapide
 
 ```bash
-# Installation et lancement sécurisé (recommandé)
+# 1. Installation
 uv sync
+
+# 2. Prétraitement (PREMIÈRE FOIS UNIQUEMENT)
+uv run python -m utils.preprocess_ingredients_matrix
+
+# 3. Lancement de l'application
 uv run python run_app.py
 ```
 
-> 📥 **Auto-download intelligent** : Le script vérifie et télécharge automatiquement les données manquantes depuis S3 avant de lancer Streamlit.
+> 📥 **Auto-download intelligent** : Le script vérifie et télécharge automatiquement les données manquantes depuis S3.
+> 
+> ⚡ **Matrice précalculée** : Le preprocessing génère une matrice de co-occurrence 300x300 pour accélérer l'analyse de clustering (~5-10 min, 1 seule fois).
 
 ### 🎛️ Contrôle de l'application
 
@@ -43,14 +50,6 @@ uv run streamlit run src/app.py
 
 - 📖 **[Documentation complète (Sphinx)](docs/build/html/index.html)** - API reference, architecture, guides
 - 🏗️ **[Diagramme de classes](docs/class-diagram.svg)** - Vue d'ensemble de l'architecture
-
-## 🆕 Nouveautés récentes
-
-- ✅ **Téléchargement automatique S3** - Provisioning automatique des données
-- ✅ **Documentation Sphinx complète** - API reference et guides d'architecture  
-- ✅ **144 tests unitaires** - Couverture complète avec pytest
-- ✅ **Optimisations performances** - Cache intelligent et paramètres t-SNE optimisés
-- ✅ **GitHub Actions CI/CD** - Tests automatiques et vérification qualité code
 
 ## 🚀 Application Streamlit
 
@@ -146,6 +145,32 @@ plantuml -tsvg docs/class-diagram.puml
 ```
 
 
+## 🔄 Preprocessing des données
+
+### Matrice de co-occurrence des ingrédients
+
+Le projet utilise un preprocessing offline pour optimiser les performances de la page de clustering des ingrédients.
+
+**📍 Localisation** : `utils/preprocess_ingredients_matrix.py`
+
+**🎯 Objectif** :
+Générer une matrice de co-occurrence 300×300 pré-calculée analysant ~230 000 recettes pour identifier les associations fréquentes d'ingrédients.
+
+**⚙️ Processus** :
+1. **Normalisation NLP** : Nettoyage des ingrédients (lowercase, 50 stop words, regex)
+2. **Sélection** : Top 300 ingrédients par fréquence d'apparition
+3. **Construction** : Matrice de co-occurrence symétrique
+4. **Export** : Fichiers CSV dans `data/`
+
+**🚀 Exécution** :
+```bash
+# Première installation - génération requise (5-10 minutes)
+uv run python -m utils.preprocess_ingredients_matrix
+```
+
+**📊 Fichiers générés** :
+- `data/ingredients_cooccurrence_matrix.csv` (~15-20 MB) : Matrice 300×300
+- `data/ingredients_list.csv` (~10 KB) : Liste des 300 ingrédients avec fréquences
 
 ## 🧪 Tests & Qualité
 
@@ -159,6 +184,7 @@ uv run pytest --cov=src --cov-report=html
 
 # Tests spécifiques
 uv run pytest tests/test_ingredients_clustering_page.py
+uv run pytest tests/test_preprocess_ingredients_matrix.py
 
 # Mode verbose
 uv run pytest -v

@@ -173,8 +173,11 @@ class TestAppExtended:
             # Vérifier la configuration de la page
             mock_streamlit.set_page_config.assert_called_once_with(page_title=app.config.page_title, layout=app.config.layout)
 
-            # Vérifier la création et l'exécution de la page
-            mock_clustering_page.assert_called_once_with(str(app.config.default_recipes_path))
+            # Vérifier la création et l'exécution de la page (nouvelle API avec matrice précalculée)
+            mock_clustering_page.assert_called_once_with(
+                matrix_path='data/ingredients_cooccurrence_matrix.csv',
+                ingredients_list_path='data/ingredients_list.csv'
+            )
             mock_page_instance.run.assert_called_once()
 
     @patch("app.PopularityAnalysisPage")

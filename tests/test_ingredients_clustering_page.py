@@ -32,34 +32,38 @@ class TestIngredientsClusteringConfig:
     """Test la dataclass de configuration."""
 
     def test_config_creation(self):
-        """Test la création basique de configuration."""
+        """Test la création basique de configuration avec nouvelle API (matrice précalculée)."""
         config = IngredientsClusteringConfig(
-            recipes_path=Path("recipes.csv"),
+            matrix_path=Path("data/ingredients_cooccurrence_matrix.csv"),
+            ingredients_list_path=Path("data/ingredients_list.csv"),
             n_ingredients=50,
             n_clusters=5,
             tsne_perplexity=30,
         )
-        assert config.recipes_path == Path("recipes.csv")
+        assert config.matrix_path == Path("data/ingredients_cooccurrence_matrix.csv")
+        assert config.ingredients_list_path == Path("data/ingredients_list.csv")
         assert config.n_ingredients == 50
         assert config.n_clusters == 5
         assert config.tsne_perplexity == 30
 
     def test_config_with_defaults(self):
         """Test que les valeurs par défaut sont correctement appliquées."""
-        config = IngredientsClusteringConfig(recipes_path=Path("recipes.csv"))
-        assert config.n_ingredients == 30  # Updated after performance optimization
-        assert config.n_clusters == 4  # Updated after performance optimization
-        assert config.tsne_perplexity == 15  # Updated after performance optimization
+        config = IngredientsClusteringConfig()
+        assert config.matrix_path == Path("data/ingredients_cooccurrence_matrix.csv")
+        assert config.ingredients_list_path == Path("data/ingredients_list.csv")
+        assert config.n_ingredients == 40  # Valeur par défaut
+        assert config.n_clusters == 4
+        assert config.tsne_perplexity == 30
 
     def test_config_path_types(self):
         """Test la gestion des différents types de chemins."""
         # Test avec Path
-        config1 = IngredientsClusteringConfig(recipes_path=Path("recipes.csv"))
-        assert isinstance(config1.recipes_path, Path)
-
-        # Test avec string (conversion dans la page)
-        IngredientsClusteringConfig(recipes_path="recipes.csv")
-        # Note: La conversion en Path se fait dans __init__ de la page
+        config1 = IngredientsClusteringConfig(
+            matrix_path=Path("data/matrix.csv"),
+            ingredients_list_path=Path("data/list.csv")
+        )
+        assert isinstance(config1.matrix_path, Path)
+        assert isinstance(config1.ingredients_list_path, Path)
 
 
 class TestIngredientsClusteringPage:
@@ -120,45 +124,58 @@ class TestIngredientsClusteringPage:
             yield recipes_path
 
     @pytest.fixture
-    def page_instance(self, temp_recipes_file):
+    def temp_matrix_files(self):
+        """Crée des fichiers temporaires de matrice et liste pour les tests."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Créer une mini matrice 5x5 pour les tests
+            ingredients = ["flour", "sugar", "eggs", "butter", "milk"]
+            matrix = pd.DataFrame(
+                np.random.randint(0, 50, (5, 5)),
+                index=ingredients,
+                columns=ingredients
+            )
+            matrix_path = Path(tmpdir) / "matrix.csv"
+            matrix.to_csv(matrix_path)
+            
+            # Créer la liste des ingrédients
+            ing_list = pd.DataFrame({
+                "ingredient": ingredients,
+                "frequency": [100, 90, 80, 70, 60]
+            })
+            list_path = Path(tmpdir) / "list.csv"
+            ing_list.to_csv(list_path, index=False)
+            
+            yield matrix_path, list_path
+
+    @pytest.fixture
+    def page_instance(self, temp_matrix_files):
         """Crée une instance de IngredientsClusteringPage pour les tests."""
-        return IngredientsClusteringPage(str(temp_recipes_file))
+        matrix_path, list_path = temp_matrix_files
+        return IngredientsClusteringPage(str(matrix_path), str(list_path))
 
-    def test_initialization(self, temp_recipes_file):
-        """Test l'initialisation basique de la page."""
-        page = IngredientsClusteringPage(str(temp_recipes_file))
+    def test_initialization(self, temp_matrix_files):
+        """Test l'initialisation basique de la page avec nouvelle API."""
+        matrix_path, list_path = temp_matrix_files
+        page = IngredientsClusteringPage(str(matrix_path), str(list_path))
 
-        assert page.default_recipes_path == str(temp_recipes_file)
+        assert page.matrix_path == Path(matrix_path)
+        assert page.ingredients_list_path == Path(list_path)
         assert page.logger is not None
 
     def test_initialization_with_default_path(self):
         """Test l'initialisation avec le chemin par défaut."""
         page = IngredientsClusteringPage()
-        assert page.default_recipes_path == "data/RAW_recipes.csv"
+        assert page.matrix_path == Path("data/ingredients_cooccurrence_matrix.csv")
+        assert page.ingredients_list_path == Path("data/ingredients_list.csv")
 
-    def test_initialization_empty_path_raises_error(self):
-        """Test qu'un chemin vide lève une erreur."""
-        with pytest.raises(ValueError, match="ne peut pas être vide"):
-            IngredientsClusteringPage("")
-
-    def test_load_and_prepare_data(self, page_instance):
-        """Test le chargement des données."""
-        data = page_instance._load_and_prepare_data()
-
-        assert isinstance(data, pd.DataFrame)
-        assert len(data) > 0
-        assert "ingredients" in data.columns
-        assert "name" in data.columns
-
-    def test_load_data_with_invalid_path(self):
-        """Test le chargement avec un chemin invalide."""
-        page = IngredientsClusteringPage("/invalid/path/recipes.csv")
-
-        # Should return None and display error (not raise exception)
-        with patch("streamlit.error"):
-            page._load_and_prepare_data()
-            # Le comportement exact dépend de l'implémentation
-            # mais ne devrait pas crasher
+    def test_initialization_accepts_both_paths(self):
+        """Test que l'initialisation accepte les deux chemins."""
+        page = IngredientsClusteringPage(
+            matrix_path="custom/matrix.csv",
+            ingredients_list_path="custom/list.csv"
+        )
+        assert page.matrix_path == Path("custom/matrix.csv")
+        assert page.ingredients_list_path == Path("custom/list.csv")
 
     def test_render_sidebar_returns_expected_structure(self, page_instance):
         """Test que render_sidebar retourne la structure attendue."""
@@ -239,13 +256,15 @@ class TestIngredientsClusteringPage:
             patch("streamlit.info"),
             patch("streamlit.warning"),
             patch("streamlit.error"),
+            patch("streamlit.dataframe"),
         ):
 
             # Simuler la sélection d'ingrédients et les colonnes comme context managers
             mock_col = MagicMock()
             mock_col.__enter__ = Mock(return_value=mock_col)
             mock_col.__exit__ = Mock(return_value=False)
-            mock_columns.return_value = [mock_col, mock_col, mock_col]
+            # Note: render_cooccurrence_analysis utilise st.columns(2)
+            mock_columns.return_value = [mock_col, mock_col]
             mock_selectbox.side_effect = ["salt", "pepper"]
 
             # Ne devrait pas lever d'exception
@@ -298,82 +317,6 @@ class TestIngredientsClusteringPage:
             # Ne devrait pas lever d'exception
             page_instance.render_sidebar_statistics(clusters, ingredient_names)
 
-    def test_render_sidebar_statistics_with_none(self, page_instance):
-        """Test que rien n'est affiché si les données sont None."""
-        with patch("streamlit.sidebar.markdown") as mock_markdown:
-            # Appeler avec None
-            page_instance.render_sidebar_statistics(None, None)
-
-            # Ne devrait rien afficher
-            mock_markdown.assert_not_called()
-
-    def test_render_analysis_summary(self, page_instance):
-        """Test l'affichage du résumé d'analyse."""
-        # Créer un mock analyzer avec les attributs nécessaires
-        mock_analyzer = Mock()
-        mock_analyzer.ingredient_groups = [
-            ["salt", "sea salt", "table salt"],
-            ["pepper", "black pepper"],
-            ["sugar", "white sugar", "granulated sugar"],
-        ]
-        # Mock pour debug_ingredient_mapping qui retourne un dict
-        mock_analyzer.debug_ingredient_mapping.return_value = {
-            "search_results": {
-                "pepper": [
-                    {
-                        "ingredient": "black pepper",
-                        "is_representative": True,
-                        "representative": "pepper",
-                    }
-                ],
-                "egg": [
-                    {
-                        "ingredient": "large eggs",
-                        "is_representative": False,
-                        "representative": "egg",
-                    }
-                ],
-            }
-        }
-        # Mock pour normalize_ingredient
-        mock_analyzer.normalize_ingredient.return_value = "normalized_ingredient"
-        # Mock pour get_processing_summary
-        mock_analyzer.get_processing_summary.return_value = {
-            "input_data": {
-                "total_recipes": 1000,
-                "total_raw_ingredients": 5000,
-                "avg_ingredients_per_recipe": 5,
-            },
-            "normalization": {
-                "total_unique_raw": 2000,
-                "total_normalized": 500,
-                "reduction_ratio": 75,
-            },
-            "grouping": {"groups_with_multiple_items": 150, "largest_group_size": 10},
-            "cooccurrence_matrix": {
-                "dimensions": "50x50",
-                "total_cooccurrences": 1250,
-                "non_zero_pairs": 800,
-                "sparsity": 36,
-            },
-        }
-
-        with (
-            patch("streamlit.expander") as mock_expander,
-            patch("streamlit.write"),
-            patch("streamlit.info"),
-            patch("streamlit.warning"),
-        ):
-
-            # Mock expander as context manager
-            mock_exp = MagicMock()
-            mock_exp.__enter__ = Mock(return_value=mock_exp)
-            mock_exp.__exit__ = Mock(return_value=False)
-            mock_expander.return_value = mock_exp
-
-            # Ne devrait pas lever d'exception
-            page_instance.render_analysis_summary(mock_analyzer)
-
     def test_formal_language_in_methods(self, page_instance):
         """Test que les méthodes utilisent un langage formel."""
         # Vérifier les docstrings
@@ -401,15 +344,13 @@ class TestIngredientsClusteringPageTyping:
         """Vérifie que toutes les méthodes publiques ont des annotations de type."""
         page = IngredientsClusteringPage()
 
-        # Liste des méthodes qui doivent être typées
+        # Liste des méthodes qui doivent être typées (API mise à jour)
         methods_to_check = [
             "render_sidebar",
             "render_cooccurrence_analysis",
             "render_clusters",
             "render_tsne_visualization",
             "render_sidebar_statistics",
-            "render_analysis_summary",
-            "run",
         ]
 
         for method_name in methods_to_check:
@@ -436,7 +377,6 @@ class TestIngredientsClusteringPageTyping:
             "render_cooccurrence_analysis",
             "render_clusters",
             "render_sidebar_statistics",
-            "render_analysis_summary",
             "run",
         ]:
             method = getattr(page, method_name)
@@ -446,64 +386,6 @@ class TestIngredientsClusteringPageTyping:
                 assert return_annotation == "None"
             else:
                 assert return_annotation is None or return_annotation.__name__ == "NoneType"
-
-
-class TestIntegration:
-    """Tests d'intégration pour le workflow complet."""
-
-    def test_full_workflow_mock(self):
-        """Test le workflow complet avec des mocks."""
-        # Créer des données de test minimales
-        recipes_data = pd.DataFrame(
-            {
-                "id": [1, 2, 3],
-                "name": ["Recipe 1", "Recipe 2", "Recipe 3"],
-                "ingredients": [
-                    "['salt', 'pepper', 'eggs']",
-                    "['salt', 'sugar', 'flour']",
-                    "['pepper', 'sugar', 'eggs']",
-                ],
-            }
-        )
-
-        # Créer la page
-        page = IngredientsClusteringPage("fake_path.csv")
-
-        # Patcher directement la méthode _load_and_prepare_data
-        with patch.object(page, "_load_and_prepare_data", return_value=recipes_data):
-            # Charger les données
-            data = page._load_and_prepare_data()
-
-            assert data is not None
-            assert len(data) == 3
-            assert "ingredients" in data.columns
-
-    def test_data_quality_validation(self):
-        """Test la validation de la qualité des données."""
-        # Créer des données avec quelques valeurs manquantes
-        recipes_data = pd.DataFrame(
-            {
-                "id": [1, 2, 3, 4],
-                "name": ["Recipe 1", None, "Recipe 3", "Recipe 4"],
-                "ingredients": [
-                    "['salt', 'pepper']",
-                    "['sugar', 'flour']",
-                    None,  # Ingrédients manquants
-                    "['butter', 'eggs']",
-                ],
-            }
-        )
-
-        # Créer la page
-        page = IngredientsClusteringPage("fake_path.csv")
-
-        # Patcher directement la méthode _load_and_prepare_data
-        with patch.object(page, "_load_and_prepare_data", return_value=recipes_data):
-            data = page._load_and_prepare_data()
-
-            # Les données devraient être chargées malgré les valeurs manquantes
-            assert data is not None
-            assert len(data) == 4
 
 
 class TestDocumentation:

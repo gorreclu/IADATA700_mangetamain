@@ -10,7 +10,11 @@ __pycache__/
 
 # Données volumineuses ou brutes
 data/raw/
-data/
+data/*.csv
+
+# Exception : fichiers précalculés du preprocessing (petits fichiers)
+!data/ingredients_cooccurrence_matrix.csv
+!data/ingredients_list.csv
 
 
 # Build utilitaire
