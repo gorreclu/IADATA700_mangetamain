@@ -40,7 +40,8 @@ jobs:
       # Copie les fichiers statiques (SVG, etc.)
       - name: Copy static files
         run: |
-          cp Architecture_AWS_Mangetamain_Final.svg docs/source/_static/Architecture_AWS_Mangetamain.svg || echo "SVG already in place"
+          cp -f Architecture_AWS_Mangetamain_Final.svg docs/source/_static/Architecture_AWS_Mangetamain.svg
+          ls -la docs/source/_static/Architecture_AWS_Mangetamain.svg
 
       # Exécute les tests avec couverture HTML
       - name: Run tests with coverage
@@ -53,11 +54,12 @@ jobs:
         run: |
           uv run sphinx-build -b html --keep-going docs/source docs/build/html
 
-      # Vérification et copie manuelle du SVG si nécessaire
+      # Vérification et copie manuelle forcée du SVG
       - name: Ensure SVG is in output
         run: |
-          ls -la docs/build/html/_static/ || echo "No _static in output"
-          cp docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/ || echo "SVG already copied"
+          mkdir -p docs/build/html/_static/
+          cp -f docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/
+          echo "SVG copied:"
           ls -la docs/build/html/_static/Architecture_AWS_Mangetamain.svg
 
       # Copie le rapport de couverture dans la doc
@@ -99,7 +101,8 @@ jobs:
 
       - name: Copy static files
         run: |
-          cp Architecture_AWS_Mangetamain_Final.svg docs/source/_static/Architecture_AWS_Mangetamain.svg || echo "SVG already in place"
+          cp -f Architecture_AWS_Mangetamain_Final.svg docs/source/_static/Architecture_AWS_Mangetamain.svg
+          ls -la docs/source/_static/Architecture_AWS_Mangetamain.svg
 
       - name: Run tests with coverage
         run: |
@@ -113,8 +116,9 @@ jobs:
 
       - name: Ensure SVG is in output
         run: |
-          ls -la docs/build/html/_static/ || echo "No _static in output"
-          cp docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/ || echo "SVG already copied"
+          mkdir -p docs/build/html/_static/
+          cp -f docs/source/_static/Architecture_AWS_Mangetamain.svg docs/build/html/_static/
+          echo "SVG copied:"
           ls -la docs/build/html/_static/Architecture_AWS_Mangetamain.svg
 
       - name: Copy coverage report to docs
