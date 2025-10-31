@@ -97,6 +97,53 @@ Analyse des associations d'ingrédients par co-occurrence et clustering :
 - **Visualisation t-SNE** : Projection 2D interactive des groupes
 - **Analyse des groupes** : Ingrédients caractéristiques par cluster
 
+<details>
+
+<summary><b>🔎 Sélection d'ingrédients pour le clustering</b></summary>
+
+### Matrice de co-occurrence précalculée
+
+Pour accélérer l'analyse de clustering, le projet utilise un **preprocessing offline** qui génère une matrice de co-occurrence 300×300 en analysant ~230 000 recettes.
+
+#### 📍 Fichier
+`utils/preprocess_ingredients_matrix.py`
+
+#### 🎯 Pipeline de traitement
+
+1. **Chargement** : Import du dataset RAW_recipes.csv
+2. **Normalisation NLP** : 
+   - Lowercase, suppression de la ponctuation
+   - Filtrage de 50+ stop words culinaires
+   - Parsing des listes d'ingrédients JSON
+3. **Sélection** : Extraction des 300 ingrédients les plus fréquents
+4. **Co-occurrence** : Construction de la matrice symétrique 300×300
+5. **Export** : Sauvegarde en CSV optimisé
+
+#### 🚀 Exécution
+
+```bash
+# Génération de la matrice (requis à la première installation)
+uv run python -m utils.preprocess_ingredients_matrix
+```
+
+**⏱️ Durée** : ~5-10 minutes (une seule fois)
+
+#### 📊 Fichiers générés
+
+| Fichier | Taille | Description |
+|---------|--------|-------------|
+| `data/ingredients_cooccurrence_matrix.csv` | ~259 KB | Matrice de co-occurrence 300×300 |
+| `data/ingredients_list.csv` | ~5 KB | Liste des 300 ingrédients avec fréquences |
+
+#### 🔄 Quand régénérer ?
+
+- ✅ Première installation du projet
+- ✅ Après modification du dataset RAW_recipes.csv
+- ✅ Pour changer le nombre d'ingrédients (paramètre `n_ingredients`)
+
+> 💡 **Astuce** : Les fichiers générés sont versionnés dans git pour éviter de régénérer à chaque clone.
+</details>
+
 ### � Analyse de Popularité
 Relations entre popularité, notes et caractéristiques des recettes :
 - **Métriques agrégées** : Nombre d'interactions, note moyenne, temps de préparation
@@ -165,55 +212,6 @@ IADATA700_mangetamain/
 brew install plantuml                     # Installation (macOS)
 plantuml -tsvg docs/class-diagram.puml   # Génération SVG
 ```
-
-
-<details>
-<summary>## ⚡ Preprocessing - Optimisation des Performances</summary>
-
-### Matrice de co-occurrence précalculée
-
-Pour accélérer l'analyse de clustering, le projet utilise un **preprocessing offline** qui génère une matrice de co-occurrence 300×300 en analysant ~230 000 recettes.
-
-#### 📍 Fichier
-`utils/preprocess_ingredients_matrix.py`
-
-#### 🎯 Pipeline de traitement
-
-1. **Chargement** : Import du dataset RAW_recipes.csv
-2. **Normalisation NLP** : 
-   - Lowercase, suppression de la ponctuation
-   - Filtrage de 50+ stop words culinaires
-   - Parsing des listes d'ingrédients JSON
-3. **Sélection** : Extraction des 300 ingrédients les plus fréquents
-4. **Co-occurrence** : Construction de la matrice symétrique 300×300
-5. **Export** : Sauvegarde en CSV optimisé
-
-#### 🚀 Exécution
-
-```bash
-# Génération de la matrice (requis à la première installation)
-uv run python -m utils.preprocess_ingredients_matrix
-```
-
-**⏱️ Durée** : ~5-10 minutes (une seule fois)
-
-#### 📊 Fichiers générés
-
-| Fichier | Taille | Description |
-|---------|--------|-------------|
-| `data/ingredients_cooccurrence_matrix.csv` | ~259 KB | Matrice de co-occurrence 300×300 |
-| `data/ingredients_list.csv` | ~5 KB | Liste des 300 ingrédients avec fréquences |
-
-#### 🔄 Quand régénérer ?
-
-- ✅ Première installation du projet
-- ✅ Après modification du dataset RAW_recipes.csv
-- ✅ Pour changer le nombre d'ingrédients (paramètre `n_ingredients`)
-
-> 💡 **Astuce** : Les fichiers générés sont versionnés dans git pour éviter de régénérer à chaque clone.
-
-</details>
-
 
 ## 🧪 Tests
 
