@@ -1,25 +1,28 @@
 .. Mangetamain documentation master file
 
-Mangetamain - Analyse de Données de Recettes
+Mangetamain - Analyse de Données Culinaires
 ==============================================
 
-Application web interactive d'analyse de données culinaires développée dans le cadre de l'enseignement IADATA700 à Telecom Paris.
+Application web interactive développée avec Streamlit pour analyser un corpus de ~230 000 recettes et leurs interactions utilisateurs.
+
+**Projet académique** - Telecom Paris - MS Big Data Expert ML OPS - IADATA700 Kit Big Data (2025-2026)
 
 **Fonctionnalités principales :**
 
-* 🍳 **Analyse de clustering des ingrédients** - Visualisation t-SNE et classification automatique
-* 🔥 **Analyse de popularité des recettes** - Métriques d'engagement et tendances
-* 📊 **Interface Streamlit intuitive** - Navigation fluide entre les analyses
-* ⚡ **Système de cache avancé** - Optimisation des performances pour les gros datasets
-* 📥 **Téléchargement automatique S3** - Provisioning automatique des données
+* 🍳 **Clustering des ingrédients** - Matrice de co-occurrence 300×300 précalculée, K-means et visualisation t-SNE
+* � **Analyse de popularité** - Relations entre notes, interactions et caractéristiques avec preprocessing IQR
+* 🏠 **Exploration des données** - Statistiques descriptives et métriques clés
+* ⚡ **Optimisations avancées** - Preprocessing offline + système de cache pour performances optimales
+* 🌐 **Déploiement cloud** - Application disponible sur Streamlit Cloud
 
-**Technologies utilisées :**
+**Stack technique :**
 
-* Streamlit pour l'interface web
-* Scikit-learn pour l'analyse et le clustering  
-* Plotly pour les visualisations interactives
-* Pandas pour le traitement des données
-* Architecture modulaire avec cache intelligent
+* **Frontend** : Streamlit
+* **ML/Analytics** : scikit-learn (K-means, t-SNE), NLTK
+* **Data** : Pandas, NumPy
+* **Visualisation** : Plotly, Matplotlib
+* **Tests** : pytest (124 tests)
+* **Docs** : Sphinx, PlantUML
 
 .. toctree::
    :maxdepth: 2

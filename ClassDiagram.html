@@ -44,7 +44,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/modules.html">src</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
@@ -52,6 +52,7 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Diagramme de classes</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#diagramme-de-classes">Diagramme de Classes</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#composants-principaux">Composants Principaux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#architecture-simplifiee">Architecture Simplifiée</a></li>
 </ul>
 </li>
 </ul>
@@ -96,30 +97,44 @@
 <li><p><cite>AppConfig</cite> : Configuration centralisée de l’application</p></li>
 </ul>
 </dd>
-<dt><strong>Analyseurs de Données</strong></dt><dd><ul class="simple">
-<li><p><cite>DataLoader</cite> : Chargement et préprocessing des données CSV</p></li>
-<li><p><cite>DataExplorer</cite> : Exploration et analyse des datasets</p></li>
-<li><p><cite>IngredientsAnalyzer</cite> : Analyse spécialisée des ingrédients</p></li>
-<li><p><cite>InteractionsAnalyzer</cite> : Analyse des interactions utilisateur-recettes</p></li>
+<dt><strong>Modules de Données (Core)</strong></dt><dd><ul class="simple">
+<li><p><cite>DataLoader</cite> : Chargement et validation des données CSV</p></li>
+<li><p><cite>DataExplorer</cite> : Exploration et statistiques des datasets</p></li>
+<li><p><cite>InteractionsAnalyzer</cite> : Analyse des interactions utilisateur-recettes avec preprocessing IQR</p></li>
 </ul>
 </dd>
-<dt><strong>Interface Utilisateur</strong></dt><dd><ul class="simple">
-<li><p><cite>IngredientsClusteringPage</cite> : Page d’analyse de clustering des ingrédients</p></li>
-<li><p><cite>PopularityAnalysisPage</cite> : Page d’analyse de popularité des recettes</p></li>
+<dt><strong>Interface Utilisateur (Components)</strong></dt><dd><ul class="simple">
+<li><p><cite>IngredientsClusteringPage</cite> : Clustering d’ingrédients basé sur matrice de co-occurrence précalculée</p></li>
+<li><p><cite>PopularityAnalysisPage</cite> : Analyse de popularité avec détection d’outliers</p></li>
 </ul>
 </dd>
 <dt><strong>Système de Cache</strong></dt><dd><ul class="simple">
-<li><p><cite>CacheManager</cite> : Gestionnaire centralisé du cache</p></li>
+<li><p><cite>CacheManager</cite> : Gestionnaire centralisé du cache disque</p></li>
 <li><p><cite>CacheableMixin</cite> : Mixin pour l’intégration du cache dans les analyseurs</p></li>
+<li><p>Note : IngredientsClusteringPage utilise uniquement le cache Streamlit natif</p></li>
 </ul>
 </dd>
-<dt><strong>Utilitaires</strong></dt><dd><ul class="simple">
-<li><p><cite>Logger</cite> : Système de logging configuré</p></li>
-<li><p><cite>download_data</cite> : Module de téléchargement automatique des données S3</p></li>
+<dt><strong>Preprocessing &amp; Utilitaires</strong></dt><dd><ul class="simple">
+<li><p><cite>IngredientsMatrixPreprocessor</cite> : Génération offline de la matrice 300×300</p></li>
+<li><p><cite>PreprocessingConfig</cite> : Configuration du preprocessing des interactions (IQR/Z-score)</p></li>
+<li><p><cite>Logger</cite> : Système de logging structuré</p></li>
+</ul>
+</dd>
+<dt><strong>Scripts</strong></dt><dd><ul class="simple">
+<li><p><cite>download_data.py</cite> : Téléchargement automatique des données depuis S3</p></li>
+<li><p><cite>run_app.py</cite> / <cite>stop_app.py</cite> : Gestion du cycle de vie de l’application</p></li>
 </ul>
 </dd>
 </dl>
-<p>Cette architecture modulaire permet une séparation claire des responsabilités et facilite la maintenance et l’évolution du code.</p>
+</section>
+<section id="architecture-simplifiee">
+<h2>Architecture Simplifiée<a class="headerlink" href="#architecture-simplifiee" title="Lien vers cette rubrique"></a></h2>
+<p>Cette architecture a été optimisée pour :</p>
+<ul class="simple">
+<li><p><strong>Performance</strong> : Matrices précalculées + système de cache pour données lourdes</p></li>
+<li><p><strong>Modularité</strong> : Séparation claire entre core, components et utils</p></li>
+<li><p><strong>Maintenabilité</strong> : Suppression des modules inutilisés (IngredientsAnalyzer obsolète)</p></li>
+</ul>
 </section>
 </section>
 
