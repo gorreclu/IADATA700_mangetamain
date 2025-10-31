@@ -3,7 +3,7 @@ Architecture AWS
 
 Infrastructure de déploiement de l'application Mangetamain sur Amazon Web Services.
 
-.. figure:: /_static/Architecture_AWS_Mangetamain.png
+.. figure:: /_static/Architecture_AWS_Mangetamain.svg
    :alt: Architecture AWS de Mangetamain
    :align: center
    :width: 100%
