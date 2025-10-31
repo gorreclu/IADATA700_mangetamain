@@ -209,10 +209,17 @@ uv run flake8 src/ tests/
 
 ## 📖 Documentation
 
-### Sphinx
+### 🌐 Documentation en ligne
+
+La documentation complète est automatiquement déployée sur **GitHub Pages** :
+
+**🔗 [https://gorreclu.github.io/IADATA700_mangetamain/](https://gorreclu.github.io/IADATA700_mangetamain/)**
+
+### 📚 Générer localement avec Sphinx
 
 ```bash
-cd docs && uv run make html
+cd docs
+uv run sphinx-build -b html source build/html
 open build/html/index.html
 ```
 

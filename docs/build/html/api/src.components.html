@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.components package &mdash; Documentation MangetamainTESTWR 1.0</title>
+  <title>src.components package &mdash; Documentation Mangetamain 1.0</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -33,7 +33,7 @@
           
           
           <a href="../index.html" class="icon icon-home">
-            MangetamainTESTWR
+            Mangetamain
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -45,7 +45,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="src.html">src package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="src.html#subpackages">Subpackages</a><ul class="current">
@@ -72,7 +72,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">MangetamainTESTWR</a>
+          <a href="../index.html">Mangetamain</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -101,19 +101,25 @@
 <span id="src-components-ingredients-clustering-page-module"></span><h2>src.components.ingredients_clustering_page module<a class="headerlink" href="#module-src.components.ingredients_clustering_page" title="Lien vers cette rubrique"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringConfig">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.components.ingredients_clustering_page.</span></span><span class="sig-name descname"><span class="pre">IngredientsClusteringConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">recipes_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_ingredients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsne_perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig" title="Lien vers cette définition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.components.ingredients_clustering_page.</span></span><span class="sig-name descname"><span class="pre">IngredientsClusteringConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('data/ingredients_cooccurrence_matrix.csv')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ingredients_list_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">PosixPath('data/ingredients_list.csv')</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_ingredients</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsne_perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig" title="Lien vers cette définition"></a></dt>
 <dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Configuration pour l’analyse de clustering d’ingrédients.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringConfig.recipes_path">
-<span class="sig-name descname"><span class="pre">recipes_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig.recipes_path" title="Lien vers cette définition"></a></dt>
-<dd><p>Chemin vers le fichier CSV contenant les recettes.</p>
+<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringConfig.matrix_path">
+<span class="sig-name descname"><span class="pre">matrix_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig.matrix_path" title="Lien vers cette définition"></a></dt>
+<dd><p>Chemin vers la matrice de co-occurrence précalculée.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringConfig.ingredients_list_path">
+<span class="sig-name descname"><span class="pre">ingredients_list_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig.ingredients_list_path" title="Lien vers cette définition"></a></dt>
+<dd><p>Chemin vers la liste des ingrédients.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringConfig.n_ingredients">
 <span class="sig-name descname"><span class="pre">n_ingredients</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringConfig.n_ingredients" title="Lien vers cette définition"></a></dt>
-<dd><p>Nombre d’ingrédients les plus fréquents à analyser.</p>
+<dd><p>Nombre d’ingrédients à analyser (de la matrice 300x300).</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -130,38 +136,48 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id0">
-<span class="sig-name descname"><span class="pre">n_clusters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#id0" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">ingredients_list_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('data/ingredients_list.csv')</span></em><a class="headerlink" href="#id0" title="Lien vers cette définition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id1">
-<span class="sig-name descname"><span class="pre">n_ingredients</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#id1" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">matrix_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">PosixPath('data/ingredients_cooccurrence_matrix.csv')</span></em><a class="headerlink" href="#id1" title="Lien vers cette définition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id2">
-<span class="sig-name descname"><span class="pre">recipes_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></em><a class="headerlink" href="#id2" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">n_clusters</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">4</span></em><a class="headerlink" href="#id2" title="Lien vers cette définition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="id3">
-<span class="sig-name descname"><span class="pre">tsne_perplexity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">15</span></em><a class="headerlink" href="#id3" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">n_ingredients</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#id3" title="Lien vers cette définition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">tsne_perplexity</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#id4" title="Lien vers cette définition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.components.ingredients_clustering_page.</span></span><span class="sig-name descname"><span class="pre">IngredientsClusteringPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">default_recipes_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/RAW_recipes.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage" title="Lien vers cette définition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">src.components.ingredients_clustering_page.</span></span><span class="sig-name descname"><span class="pre">IngredientsClusteringPage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/ingredients_cooccurrence_matrix.csv'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ingredients_list_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'data/ingredients_list.csv'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage" title="Lien vers cette définition"></a></dt>
 <dd><p>Bases : <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Page Streamlit pour l’analyse de clustering des ingrédients.</p>
-<p>Cette classe gère l’interface utilisateur et la logique de présentation
-pour l’analyse de co-occurrence et le clustering d’ingrédients basé sur
-leurs patterns d’apparition dans les recettes.</p>
+<p>Cette classe charge une matrice de co-occurrence PRÉCALCULÉE et effectue
+le clustering et la visualisation en temps réel.</p>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.default_recipes_path">
-<span class="sig-name descname"><span class="pre">default_recipes_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.default_recipes_path" title="Lien vers cette définition"></a></dt>
-<dd><p>Chemin par défaut vers le fichier de recettes.</p>
+<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.matrix_path">
+<span class="sig-name descname"><span class="pre">matrix_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.matrix_path" title="Lien vers cette définition"></a></dt>
+<dd><p>Chemin vers la matrice de co-occurrence précalculée.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.ingredients_list_path">
+<span class="sig-name descname"><span class="pre">ingredients_list_path</span></span><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.ingredients_list_path" title="Lien vers cette définition"></a></dt>
+<dd><p>Chemin vers la liste des ingrédients.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -171,79 +187,21 @@ leurs patterns d’apparition dans les recettes.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_analysis_summary">
-<span class="sig-name descname"><span class="pre">render_analysis_summary</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analyzer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_analysis_summary"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_analysis_summary" title="Lien vers cette définition"></a></dt>
-<dd><p>Affiche le résumé détaillé du processus d’analyse.</p>
-<p>Présente des informations sur le regroupement d’ingrédients similaires,
-la normalisation effectuée et des exemples de mappings. Utile pour
-comprendre les transformations appliquées aux données brutes.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>analyzer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IngredientsAnalyzer</span></code></span>) – Instance de l’analyseur contenant les résultats du
-traitement (groupes d’ingrédients, mappings, etc.).</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>Affiche plusieurs sections extensibles:
-- Exemples de regroupements d’ingrédients similaires
-- Debug de la normalisation pour des ingrédients courants
-- Tests de normalisation en temps réel
-- Résumé complet du pipeline de traitement</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_clusters">
 <span class="sig-name descname"><span class="pre">render_clusters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ingredient_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_clusters</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_clusters"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_clusters" title="Lien vers cette définition"></a></dt>
-<dd><p>Affiche les clusters d’ingrédients de manière organisée.</p>
-<p>Présente chaque cluster dans un expander séparé avec une couleur distinctive.
-Les ingrédients sont affichés en colonnes pour une meilleure lisibilité.</p>
+<dd><p>Affiche les clusters d’ingrédients.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>clusters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – Array numpy contenant les labels de cluster pour chaque ingrédient.
-Taille = len(ingredient_names), valeurs de 0 à n_clusters-1.</p></li>
-<li><p><strong>ingredient_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Liste ordonnée des noms d’ingrédients correspondant
-aux indices dans l’array clusters.</p></li>
-<li><p><strong>n_clusters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Nombre total de clusters créés (pour l’itération).</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<p class="rubric">Exemple</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">clusters</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;salt&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;pepper&#39;</span><span class="p">,</span> <span class="s1">&#39;flour&#39;</span><span class="p">,</span> <span class="s1">&#39;honey&#39;</span><span class="p">]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">page</span><span class="o">.</span><span class="n">render_clusters</span><span class="p">(</span><span class="n">clusters</span><span class="p">,</span> <span class="n">names</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<span class="go"># Affiche 3 expanders avec les ingrédients regroupés</span>
-</pre></div>
-</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_cooccurrence_analysis">
-<span class="sig-name descname"><span class="pre">render_cooccurrence_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ingredient_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ingredients_matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_cooccurrence_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_cooccurrence_analysis" title="Lien vers cette définition"></a></dt>
+<span class="sig-name descname"><span class="pre">render_cooccurrence_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ingredient_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_cooccurrence_analysis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_cooccurrence_analysis" title="Lien vers cette définition"></a></dt>
 <dd><p>Affiche l’analyse de co-occurrence interactive.</p>
-<p>Permet à l’utilisateur de sélectionner deux ingrédients et visualise
-leur score de co-occurrence (nombre de recettes où ils apparaissent ensemble).
-Affiche également des statistiques contextuelles pour interpréter le score.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>ingredient_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – Liste des noms d’ingrédients disponibles pour la sélection.</p></li>
-<li><p><strong>ingredients_matrix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span>) – Matrice de co-occurrence (DataFrame symétrique) où
-matrix[ing1, ing2] = nombre de recettes contenant ing1 ET ing2.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Lève<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – Si les ingrédients sélectionnés ne sont pas dans la matrice.</p></li>
-<li><p><strong>IndexError</strong> – Si un accès invalide à la matrice est tenté.</p></li>
-</ul>
-</dd>
 <dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
@@ -254,23 +212,12 @@ matrix[ing1, ing2] = nombre de recettes contenant ing1 ET ing2.</p></li>
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_sidebar">
 <span class="sig-name descname"><span class="pre">render_sidebar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_sidebar"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_sidebar" title="Lien vers cette définition"></a></dt>
 <dd><p>Affiche la sidebar avec les paramètres de clustering.</p>
-<p>Crée une interface interactive dans la sidebar permettant à l’utilisateur
-de configurer les paramètres de l’analyse de clustering:
-- Nombre d’ingrédients à analyser
-- Nombre de clusters à créer
-- Paramètres de visualisation t-SNE</p>
 <dl class="field-list simple">
-<dt class="field-odd">Renvoie<span class="colon">:</span></dt>
-<dd class="field-odd"><p><ul class="simple">
-<li><p>n_ingredients: Nombre d’ingrédients les plus fréquents (10-200)</p></li>
-<li><p>n_clusters: Nombre de groupes à créer (2-20)</p></li>
-<li><p>tsne_perplexity: Paramètre de densité pour t-SNE (5-50)</p></li>
-<li><p>analyze_button: True si le bouton d’analyse a été cliqué</p></li>
-</ul>
-</p>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>]</span></p>
 </dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p>Dictionnaire contenant les paramètres sélectionnés par l’utilisateur</p>
+<dt class="field-even">Renvoie<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionnaire contenant les paramètres sélectionnés.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -278,76 +225,32 @@ de configurer les paramètres de l’analyse de clustering:
 <dl class="py method">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_sidebar_statistics">
 <span class="sig-name descname"><span class="pre">render_sidebar_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ingredient_names</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_sidebar_statistics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_sidebar_statistics" title="Lien vers cette définition"></a></dt>
-<dd><p>Affiche les statistiques de clustering dans la sidebar.</p>
-<p>Présente des métriques récapitulatives et un graphique de répartition
-des ingrédients par cluster. N’affiche rien si les données ne sont pas
-disponibles.</p>
+<dd><p>Affiche les statistiques dans la sidebar.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>clusters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span>) – Array numpy des labels de cluster, ou None si l’analyse
-n’a pas encore été effectuée.</p></li>
-<li><p><strong>ingredient_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – Liste des noms d’ingrédients, ou None si l’analyse
-n’a pas encore été effectuée.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>Cette méthode vérifie que les deux paramètres sont non-None avant
-d’afficher les statistiques. Le graphique utilise Plotly pour une
-visualisation interactive.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.render_tsne_visualization">
-<span class="sig-name descname"><span class="pre">render_tsne_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">analyzer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clusters</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tsne_perplexity</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_tsne_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_tsne_visualization" title="Lien vers cette définition"></a></dt>
-<dd><p>Affiche la visualisation t-SNE 2D des clusters d’ingrédients.</p>
-<p>Génère et affiche un graphique interactif Plotly montrant les ingrédients
-dans un espace 2D obtenu par réduction de dimensionnalité t-SNE. Les points
-sont colorés selon leur cluster et peuvent être régénérés avec de nouveaux
-paramètres.</p>
+<span class="sig-name descname"><span class="pre">render_tsne_visualization</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tsne_data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.render_tsne_visualization"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.render_tsne_visualization" title="Lien vers cette définition"></a></dt>
+<dd><p>Affiche la visualisation t-SNE.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Paramètres<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>analyzer</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">IngredientsAnalyzer</span></code></span>) – Instance de IngredientsAnalyzer utilisée pour générer la
-visualisation t-SNE à partir de la matrice de co-occurrence.</p></li>
-<li><p><strong>clusters</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – Array numpy des labels de cluster pour chaque ingrédient.</p></li>
-<li><p><strong>tsne_perplexity</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></span>) – Paramètre de perplexité pour t-SNE (5-50).
-Contrôle la densité des groupes dans la visualisation.
-Valeurs faibles = focus local, valeurs élevées = structure globale.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
-<p class="rubric">Notes</p>
-<p>La visualisation est mise en cache dans st.session_state pour éviter
-de la recalculer à chaque interaction. Un bouton permet de forcer la
-régénération avec de nouveaux paramètres aléatoires.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="src.components.ingredients_clustering_page.IngredientsClusteringPage.run">
 <span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/src/components/ingredients_clustering_page.html#IngredientsClusteringPage.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#src.components.ingredients_clustering_page.IngredientsClusteringPage.run" title="Lien vers cette définition"></a></dt>
 <dd><p>Point d’entrée principal de la page.</p>
-<p>Orchestre l’ensemble du workflow de la page de clustering:
-1. Chargement automatique des données
-2. Affichage de la sidebar avec paramètres
-3. Exécution de l’analyse (process, clustering, visualisation)
-4. Affichage des résultats interactifs</p>
-<p>Cette méthode gère également le cache de session Streamlit pour
-persister les résultats entre les interactions utilisateur.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Lève<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>Exception</strong> – Affiche les erreurs via st.error mais ne les propage pas
-    pour maintenir l’interface fonctionnelle.</p>
-</dd>
-<dt class="field-even">Type renvoyé<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dt class="field-odd">Type renvoyé<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>

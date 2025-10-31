@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>src.app &mdash; Documentation MangetamainTESTWR 1.0</title>
+  <title>src.app &mdash; Documentation Mangetamain 1.0</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
@@ -30,7 +30,7 @@
           
           
           <a href="../../index.html" class="icon icon-home">
-            MangetamainTESTWR
+            Mangetamain
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -42,7 +42,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api/modules.html">src</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
@@ -56,7 +56,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../index.html">MangetamainTESTWR</a>
+          <a href="../../index.html">Mangetamain</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -77,19 +77,40 @@
   <h1>Code source de src.app</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">urllib.request</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">streamlit</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">components.ingredients_clustering_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">IngredientsClusteringPage</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">components.popularity_analysis_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">PopularityAnalysisPage</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">core.data_explorer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataExplorer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">core.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">core.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">setup_logging</span>
+<span class="c1"># Ajouter le répertoire parent au chemin Python pour les imports</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+
+<span class="c1"># Imports des modules locaux (après modification du sys.path)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">components.ingredients_clustering_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">IngredientsClusteringPage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">components.popularity_analysis_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">PopularityAnalysisPage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.data_explorer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataExplorer</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">core.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">setup_logging</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="c1"># Fallback pour les imports absolus depuis le répertoire racine</span>
+    <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.components.ingredients_clustering_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">IngredientsClusteringPage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.components.popularity_analysis_page</span><span class="w"> </span><span class="kn">import</span> <span class="n">PopularityAnalysisPage</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.core.data_explorer</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataExplorer</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.core.data_loader</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">src.core.logger</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_logger</span><span class="p">,</span> <span class="n">setup_logging</span>
 
 <span class="n">DEFAULT_RECIPES</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/RAW_recipes.csv&quot;</span><span class="p">)</span>
 <span class="n">DEFAULT_INTERACTIONS</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data/RAW_interactions.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># S3 URLs pour les fichiers de données</span>
+<span class="n">S3_URLS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;RAW_recipes.csv&quot;</span><span class="p">:</span> <span class="s2">&quot;https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_recipes+2.csv&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RAW_interactions.csv&quot;</span><span class="p">:</span> <span class="s2">&quot;https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_interactions+3.csv&quot;</span><span class="p">,</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="AppConfig">
@@ -116,17 +137,72 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_logger</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Mangetamain application starting&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_data_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download data files from S3 if not present locally.&quot;&quot;&quot;</span>
+    <span class="nd">@staticmethod</span>
+    <span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_download_file</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">destination</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Télécharge un fichier depuis une URL vers un chemin local.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">download_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">ensure_data_files</span>
-            <span class="n">ensure_data_files</span><span class="p">()</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;⚠️ Error downloading data files: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Please check your internet connection and refresh the page.&quot;</span><span class="p">)</span>
-            <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">Request</span><span class="p">(</span>
+                <span class="n">url</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;User-Agent&quot;</span><span class="p">:</span> <span class="s2">&quot;Python-urllib/3.12 MangetamainApp/1.0&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Accept&quot;</span><span class="p">:</span> <span class="s2">&quot;*/*&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;Accept-Encoding&quot;</span><span class="p">:</span> <span class="s2">&quot;identity&quot;</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">)</span>
+
+            <span class="k">with</span> <span class="n">urllib</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">urlopen</span><span class="p">(</span><span class="n">req</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
+                <span class="n">chunk_size</span> <span class="o">=</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>  <span class="c1"># 1MB chunks</span>
+
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">destination</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                        <span class="n">chunk</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">chunk_size</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="ow">not</span> <span class="n">chunk</span><span class="p">:</span>
+                            <span class="k">break</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">chunk</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_ensure_data_files</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;S&#39;assure que tous les fichiers de données sont présents.&quot;&quot;&quot;</span>
+        <span class="n">data_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+        <span class="n">data_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">required_files</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RAW_recipes.csv&quot;</span><span class="p">,</span> <span class="s2">&quot;RAW_interactions.csv&quot;</span><span class="p">]</span>
+        <span class="n">missing_files</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">required_files</span><span class="p">:</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="n">filename</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">filepath</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">or</span> <span class="n">filepath</span><span class="o">.</span><span class="n">stat</span><span class="p">()</span><span class="o">.</span><span class="n">st_size</span> <span class="o">&lt;</span> <span class="mi">1000</span><span class="p">:</span>
+                <span class="n">missing_files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_files</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;📥 Téléchargement des données depuis AWS S3...&quot;</span><span class="p">)</span>
+        <span class="n">progress_bar</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">status_text</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span>
+
+        <span class="n">total_files</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">missing_files</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">filename</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">missing_files</span><span class="p">):</span>
+            <span class="n">status_text</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Téléchargement de </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">...&quot;</span><span class="p">)</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">i</span> <span class="o">/</span> <span class="n">total_files</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="n">progress_bar</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="n">progress</span><span class="p">)</span>
+
+            <span class="n">url</span> <span class="o">=</span> <span class="n">S3_URLS</span><span class="p">[</span><span class="n">filename</span><span class="p">]</span>
+            <span class="n">destination</span> <span class="o">=</span> <span class="n">data_dir</span> <span class="o">/</span> <span class="n">filename</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">App</span><span class="o">.</span><span class="n">_download_file</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+                <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;❌ Échec du téléchargement de </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">progress_bar</span><span class="o">.</span><span class="n">progress</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        <span class="n">status_text</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="s2">&quot;✅ Téléchargement terminé!&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">success</span><span class="p">(</span><span class="s2">&quot;Données téléchargées avec succès!&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_sidebar</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Configuration de la sidebar avec sélection des pages et datasets.&quot;&quot;&quot;</span>
@@ -184,13 +260,15 @@
 <a class="viewcode-back" href="../../api/src.html#src.app.App.run">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Point d&#39;entrée principal de l&#39;application.&quot;&quot;&quot;</span>
-        <span class="c1"># Ensure data files are downloaded from S3 if missing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_data_files</span><span class="p">()</span>
-        
         <span class="n">st</span><span class="o">.</span><span class="n">set_page_config</span><span class="p">(</span>
             <span class="n">page_title</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">page_title</span><span class="p">,</span>
             <span class="n">layout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">layout</span><span class="p">,</span>
         <span class="p">)</span>
+
+        <span class="c1"># Vérifier et télécharger les données si nécessaire</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_data_files</span><span class="p">():</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;❌ Impossible de charger les données. Veuillez réessayer.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
         <span class="c1"># Gestion du titre dynamique</span>
         <span class="n">page</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;page_select_box&quot;</span><span class="p">,</span> <span class="s2">&quot;Home&quot;</span><span class="p">)</span>
@@ -207,7 +285,13 @@
 
         <span class="c1"># Logique des pages</span>
         <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Analyse de clustering des ingrédients&quot;</span><span class="p">:</span>
-            <span class="n">clustering_page</span> <span class="o">=</span> <span class="n">IngredientsClusteringPage</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">default_recipes_path</span><span class="p">))</span>
+            <span class="c1"># IMPORTANT: Ne pas passer le chemin des recettes comme matrice.</span>
+            <span class="c1"># Utiliser les chemins des fichiers précalculés (générés par preprocessing).</span>
+            <span class="n">clustering_page</span> <span class="o">=</span> <span class="n">IngredientsClusteringPage</span><span class="p">(</span>
+                <span class="n">matrix_path</span><span class="o">=</span><span class="s2">&quot;data/ingredients_cooccurrence_matrix.csv&quot;</span><span class="p">,</span>
+                <span class="n">ingredients_list_path</span><span class="o">=</span><span class="s2">&quot;data/ingredients_list.csv&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Instantiated IngredientsClusteringPage with precomputed matrix paths&quot;</span><span class="p">)</span>
             <span class="n">clustering_page</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
             <span class="k">return</span>
         <span class="k">if</span> <span class="n">page</span> <span class="o">==</span> <span class="s2">&quot;Analyse popularité des recettes&quot;</span><span class="p">:</span>
@@ -243,10 +327,7 @@
 
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">tmp_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">uploaded</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-                        <span class="sa">f</span><span class="s2">&quot;Successfully loaded </span><span class="si">{</span><span class="n">dataset_type</span><span class="si">}</span><span class="s2"> from upload: </span><span class="si">{</span>
-<span class="w">                            </span><span class="n">tmp_df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
-                    <span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Successfully loaded </span><span class="si">{</span><span class="n">dataset_type</span><span class="si">}</span><span class="s2"> from upload: </span><span class="si">{</span><span class="n">tmp_df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Error reading uploaded file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
                     <span class="n">st</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Erreur lors de la lecture: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -260,11 +341,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Initializing DataExplorer&quot;</span><span class="p">)</span>
         <span class="n">explorer</span> <span class="o">=</span> <span class="n">DataExplorer</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">loader</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Data overview: </span><span class="si">{</span>
-<span class="w">                </span><span class="n">explorer</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> rows/cols, </span><span class="si">{</span>
-<span class="w">                </span><span class="n">explorer</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span>
-<span class="w">                    </span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-<span class="w">                </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Data overview: </span><span class="si">{</span><span class="n">explorer</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> rows/cols, &quot;</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">explorer</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1024</span><span class="o">**</span><span class="mi">2</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> MB&quot;</span>
         <span class="p">)</span>
 
         <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;📋 Aperçu des données (10 premières lignes)&quot;</span><span class="p">)</span>
@@ -277,9 +354,7 @@
             <span class="n">missing_values</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="n">memory_mb</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">memory_usage</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="mi">1024</span><span class="o">**</span><span class="mi">2</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Dataset analysis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> cols, </span><span class="si">{</span><span class="n">missing_values</span><span class="si">}</span><span class="s2"> missing values&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Dataset analysis: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="si">}</span><span class="s2"> rows, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="si">}</span><span class="s2"> cols, </span><span class="si">{</span><span class="n">missing_values</span><span class="si">}</span><span class="s2"> missing values&quot;</span><span class="p">)</span>
 
             <span class="n">col1</span><span class="p">,</span> <span class="n">col2</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">columns</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">col1</span><span class="p">:</span>

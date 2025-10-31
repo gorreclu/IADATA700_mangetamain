@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mangetamain - Analyse de Données de Recettes &mdash; Documentation MangetamainTESTWR 1.0</title>
+  <title>Mangetamain - Analyse de Données Culinaires &mdash; Documentation Mangetamain 1.0</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
@@ -20,7 +20,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Recherche" href="search.html" />
-    <link rel="next" title="IADATA700_mangetamain" href="README.html" /> 
+    <link rel="next" title="Mangetamain - Guide de Développement" href="README.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -32,7 +32,7 @@
           
           
           <a href="#" class="icon icon-home">
-            MangetamainTESTWR
+            Mangetamain
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -44,7 +44,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">IADATA700_mangetamain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mangetamain - Guide de Développement</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api/modules.html">src</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
@@ -58,7 +58,7 @@
 
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="#">MangetamainTESTWR</a>
+          <a href="#">Mangetamain</a>
       </nav>
 
       <div class="wy-nav-content">
@@ -66,7 +66,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Mangetamain - Analyse de Données de Recettes</li>
+      <li class="breadcrumb-item active">Mangetamain - Analyse de Données Culinaires</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/index.rst.txt" rel="nofollow"> Afficher la source de la page</a>
       </li>
@@ -76,30 +76,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="mangetamain-analyse-de-donnees-de-recettes">
-<h1>Mangetamain - Analyse de Données de Recettes<a class="headerlink" href="#mangetamain-analyse-de-donnees-de-recettes" title="Lien vers cette rubrique"></a></h1>
-<p>Application web interactive d’analyse de données culinaires développée dans le cadre de l’enseignement IADATA700 à Telecom Paris.</p>
+  <section id="mangetamain-analyse-de-donnees-culinaires">
+<h1>Mangetamain - Analyse de Données Culinaires<a class="headerlink" href="#mangetamain-analyse-de-donnees-culinaires" title="Lien vers cette rubrique"></a></h1>
+<p>Application web interactive développée avec Streamlit pour analyser un corpus de ~230 000 recettes et leurs interactions utilisateurs.</p>
+<p><strong>Projet académique</strong> - Telecom Paris - MS Big Data Expert ML OPS - IADATA700 Kit Big Data (2025-2026)</p>
 <p><strong>Fonctionnalités principales :</strong></p>
 <ul class="simple">
-<li><p>🍳 <strong>Analyse de clustering des ingrédients</strong> - Visualisation t-SNE et classification automatique</p></li>
-<li><p>🔥 <strong>Analyse de popularité des recettes</strong> - Métriques d’engagement et tendances</p></li>
-<li><p>📊 <strong>Interface Streamlit intuitive</strong> - Navigation fluide entre les analyses</p></li>
-<li><p>⚡ <strong>Système de cache avancé</strong> - Optimisation des performances pour les gros datasets</p></li>
-<li><p>📥 <strong>Téléchargement automatique S3</strong> - Provisioning automatique des données</p></li>
+<li><p>🍳 <strong>Clustering des ingrédients</strong> - Matrice de co-occurrence 300×300 précalculée, K-means et visualisation t-SNE</p></li>
+<li><p>� <strong>Analyse de popularité</strong> - Relations entre notes, interactions et caractéristiques avec preprocessing IQR</p></li>
+<li><p>🏠 <strong>Exploration des données</strong> - Statistiques descriptives et métriques clés</p></li>
+<li><p>⚡ <strong>Optimisations avancées</strong> - Preprocessing offline + système de cache pour performances optimales</p></li>
+<li><p>🌐 <strong>Déploiement cloud</strong> - Application disponible sur Streamlit Cloud</p></li>
 </ul>
-<p><strong>Technologies utilisées :</strong></p>
+<p><strong>Stack technique :</strong></p>
 <ul class="simple">
-<li><p>Streamlit pour l’interface web</p></li>
-<li><p>Scikit-learn pour l’analyse et le clustering</p></li>
-<li><p>Plotly pour les visualisations interactives</p></li>
-<li><p>Pandas pour le traitement des données</p></li>
-<li><p>Architecture modulaire avec cache intelligent</p></li>
+<li><p><strong>Frontend</strong> : Streamlit</p></li>
+<li><p><strong>ML/Analytics</strong> : scikit-learn (K-means, t-SNE), NLTK</p></li>
+<li><p><strong>Data</strong> : Pandas, NumPy</p></li>
+<li><p><strong>Visualisation</strong> : Plotly, Matplotlib</p></li>
+<li><p><strong>Tests</strong> : pytest (124 tests)</p></li>
+<li><p><strong>Docs</strong> : Sphinx, PlantUML</p></li>
 </ul>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="README.html">IADATA700_mangetamain</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="README.html#application-streamlit">Application Streamlit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mangetamain - Guide de Développement</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="README.html#installation-rapide">🚀 Installation Rapide</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#pages-de-l-application">📋 Pages de l’Application</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#architecture">🏗️ Architecture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#optimisations">⚡ Optimisations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#tests">🧪 Tests</a></li>
+<li class="toctree-l2"><a class="reference internal" href="README.html#documentation-complete">📖 Documentation Complète</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api/modules.html">src</a><ul>
@@ -128,7 +135,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
-        <a href="README.html" class="btn btn-neutral float-right" title="IADATA700_mangetamain" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="README.html" class="btn btn-neutral float-right" title="Mangetamain - Guide de Développement" accesskey="n" rel="next">Suivant <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
