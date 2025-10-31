@@ -40,11 +40,20 @@ class CacheManager:
         Returns:
             Clé de cache unique
         """
+        # Fonction pour trier récursivement les dictionnaires
+        def sort_dict(obj):
+            if isinstance(obj, dict):
+                return sorted((k, sort_dict(v)) for k, v in obj.items())
+            elif isinstance(obj, list):
+                return [sort_dict(item) for item in obj]
+            else:
+                return obj
+
         # Créer un dictionnaire ordonné pour une sérialisation cohérente
         cache_data = {
             "analyzer": analyzer_name,
             "operation": operation,
-            "params": params,
+            "params": sort_dict(params),
         }
 
         # Sérialiser et hasher

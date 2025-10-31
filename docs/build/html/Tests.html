@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="fr" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tests et Couverture &mdash; Documentation Mangetamain 1.0</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=7a28dfa3"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/translations.js?v=e6b791cb"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Recherche" href="search.html" />
+    <link rel="prev" title="Architecture du Projet" href="ClassDiagram.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Mangetamain
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Rechercher docs" aria-label="Rechercher docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Mangetamain - Guide de Développement</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/modules.html">src</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Architecture</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="ClassDiagram.html">Diagramme de classes</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Qualité</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tests et Couverture</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#resume-de-la-couverture">Résumé de la Couverture</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#details-par-module">Détails par Module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules-core-logique-metier">Modules Core (Logique Métier)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#composants-ui-pages-streamlit">Composants UI (Pages Streamlit)</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#executer-les-tests">Exécuter les Tests</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#tests-complets">Tests complets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tests-specifiques">Tests spécifiques</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#linting">Linting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#tests-de-preprocessing">Tests de Preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-continue">Intégration Continue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#badges">Badges</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#amelioration-continue">Amélioration Continue</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#modules-prioritaires">Modules Prioritaires</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bonnes-pratiques">Bonnes Pratiques</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#references">Références</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Mangetamain</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Tests et Couverture</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/Tests.rst.txt" rel="nofollow"> Afficher la source de la page</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tests-et-couverture">
+<h1>Tests et Couverture<a class="headerlink" href="#tests-et-couverture" title="Lien vers cette rubrique"></a></h1>
+<p>Le projet dispose d’une suite de tests complète couvrant les modules critiques.</p>
+<section id="resume-de-la-couverture">
+<h2>Résumé de la Couverture<a class="headerlink" href="#resume-de-la-couverture" title="Lien vers cette rubrique"></a></h2>
+<table class="docutils align-default" id="id1">
+<caption><span class="caption-text">Couverture par Module</span><a class="headerlink" href="#id1" title="Lien vers ce tableau"></a></caption>
+<colgroup>
+<col style="width: 30.0%" />
+<col style="width: 15.0%" />
+<col style="width: 15.0%" />
+<col style="width: 40.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Couverture</p></th>
+<th class="head"><p>Tests</p></th>
+<th class="head"><p>Statut</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Modules Core</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cache_manager.py</span></code></p></td>
+<td><p><strong>92%</strong></p></td>
+<td><p>18 tests</p></td>
+<td><p>✅ Excellent</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">cacheable_mixin.py</span></code></p></td>
+<td><p><strong>97%</strong></p></td>
+<td><p>18 tests</p></td>
+<td><p>✅ Excellent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">data_loader.py</span></code></p></td>
+<td><p><strong>100%</strong></p></td>
+<td><p>18 tests</p></td>
+<td><p>✅ Parfait</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">data_explorer.py</span></code></p></td>
+<td><p><strong>95%</strong></p></td>
+<td><p>15 tests</p></td>
+<td><p>✅ Excellent</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">logger.py</span></code></p></td>
+<td><p><strong>94%</strong></p></td>
+<td><p>11 tests</p></td>
+<td><p>✅ Excellent</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">interactions_analyzer.py</span></code></p></td>
+<td><p><strong>61%</strong></p></td>
+<td><p>18 tests</p></td>
+<td><p>⚠️ Bon</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Composants UI</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">app.py</span></code></p></td>
+<td><p><strong>63%</strong></p></td>
+<td><p>Tests intégration</p></td>
+<td><p>⚠️ Acceptable</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">ingredients_clustering_page.py</span></code></p></td>
+<td><p><strong>32%</strong></p></td>
+<td><p>18 tests</p></td>
+<td><p>⚠️ UI principalement</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">popularity_analysis_page.py</span></code></p></td>
+<td><p><strong>22%</strong></p></td>
+<td><p>15 tests</p></td>
+<td><p>⚠️ UI principalement</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Utilitaires</strong></p></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">preprocess_ingredients_matrix.py</span></code></p></td>
+<td><p>Tests fonctionnels</p></td>
+<td><p>19 tests</p></td>
+<td><p>✅ Testé</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Couverture globale : 49%</strong></p>
+<p>Total : <strong>160 tests</strong> passent avec succès</p>
+<p>📊 <strong>Rapport de couverture détaillé</strong> : <a class="reference external" href="/coverage/index.html">Voir le rapport HTML interactif</a></p>
+<blockquote>
+<div><p>Le rapport HTML complet est généré automatiquement et déployé avec cette documentation.
+Il permet de visualiser ligne par ligne le code couvert par les tests.</p>
+</div></blockquote>
+</section>
+<section id="details-par-module">
+<h2>Détails par Module<a class="headerlink" href="#details-par-module" title="Lien vers cette rubrique"></a></h2>
+<section id="modules-core-logique-metier">
+<h3>Modules Core (Logique Métier)<a class="headerlink" href="#modules-core-logique-metier" title="Lien vers cette rubrique"></a></h3>
+<p>Les modules <code class="docutils literal notranslate"><span class="pre">core/</span></code> contiennent la logique métier critique et sont <strong>excellemment testés</strong> :</p>
+<dl class="simple">
+<dt><strong>CacheManager (92%)</strong></dt><dd><ul class="simple">
+<li><p>Tests de sauvegarde/récupération du cache</p></li>
+<li><p>Tests de génération de clés cohérentes</p></li>
+<li><p>Tests de nettoyage du cache (partiel et complet)</p></li>
+<li><p>Tests de gestion d’erreurs (cache corrompu, données invalides)</p></li>
+<li><p>Tests d’informations sur le cache</p></li>
+</ul>
+</dd>
+<dt><strong>CacheableMixin (97%)</strong></dt><dd><ul class="simple">
+<li><p>Tests d’opérations cachées</p></li>
+<li><p>Tests d’activation/désactivation du cache</p></li>
+<li><p>Tests de cache hit/miss</p></li>
+<li><p>Tests avec plusieurs analyseurs</p></li>
+<li><p>Tests de préservation des types de données</p></li>
+</ul>
+</dd>
+<dt><strong>DataLoader (100%)</strong></dt><dd><ul class="simple">
+<li><p>Chargement de fichiers CSV</p></li>
+<li><p>Validation des données</p></li>
+<li><p>Préprocessing</p></li>
+<li><p>Gestion d’erreurs</p></li>
+</ul>
+</dd>
+<dt><strong>DataExplorer (95%)</strong></dt><dd><ul class="simple">
+<li><p>Exploration de datasets</p></li>
+<li><p>Statistiques descriptives</p></li>
+<li><p>Rechargement de données</p></li>
+</ul>
+</dd>
+<dt><strong>Logger (94%)</strong></dt><dd><ul class="simple">
+<li><p>Configuration multi-handlers</p></li>
+<li><p>Logs structurés (debug, info, warning, error)</p></li>
+<li><p>Fichiers de logs séparés</p></li>
+</ul>
+</dd>
+<dt><strong>InteractionsAnalyzer (61%)</strong></dt><dd><ul class="simple">
+<li><p>Agrégation des interactions</p></li>
+<li><p>Preprocessing IQR/Z-score</p></li>
+<li><p>Détection d’outliers</p></li>
+<li><p>Création de segments de popularité</p></li>
+<li><p>Catégorisation de recettes</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="composants-ui-pages-streamlit">
+<h3>Composants UI (Pages Streamlit)<a class="headerlink" href="#composants-ui-pages-streamlit" title="Lien vers cette rubrique"></a></h3>
+<p>Les pages Streamlit contiennent beaucoup de code de rendu UI difficile à tester unitairement.</p>
+<dl>
+<dt><strong>Note</strong><span class="classifier">Ces pages sont testées <strong>manuellement</strong> via :</span></dt><dd><ul class="simple">
+<li><p>Application déployée sur Streamlit Cloud</p></li>
+<li><p>Tests d’intégration end-to-end</p></li>
+<li><p>Validation utilisateur</p></li>
+</ul>
+</dd>
+</dl>
+<p>La couverture plus faible est <strong>normale et attendue</strong> pour du code UI.</p>
+</section>
+</section>
+<section id="executer-les-tests">
+<h2>Exécuter les Tests<a class="headerlink" href="#executer-les-tests" title="Lien vers cette rubrique"></a></h2>
+<section id="tests-complets">
+<h3>Tests complets<a class="headerlink" href="#tests-complets" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tous les tests</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest
+
+<span class="c1"># Tests avec couverture</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>--cov<span class="o">=</span>src<span class="w"> </span>--cov-report<span class="o">=</span>html
+
+<span class="c1"># Ouvrir le rapport HTML</span>
+open<span class="w"> </span>htmlcov/index.html
+</pre></div>
+</div>
+</section>
+<section id="tests-specifiques">
+<h3>Tests spécifiques<a class="headerlink" href="#tests-specifiques" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tests d&#39;un module spécifique</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_cache_manager.py<span class="w"> </span>-v
+
+<span class="c1"># Tests d&#39;une classe spécifique</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_cache_manager.py::TestCacheManager<span class="w"> </span>-v
+
+<span class="c1"># Tests avec affichage des print</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>-s
+</pre></div>
+</div>
+</section>
+<section id="linting">
+<h3>Linting<a class="headerlink" href="#linting" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vérification PEP8</span>
+uv<span class="w"> </span>run<span class="w"> </span>flake8<span class="w"> </span>src/<span class="w"> </span>tests/
+
+<span class="c1"># Fix automatique</span>
+uv<span class="w"> </span>run<span class="w"> </span>autopep8<span class="w"> </span>--in-place<span class="w"> </span>--recursive<span class="w"> </span>src/<span class="w"> </span>tests/
+</pre></div>
+</div>
+</section>
+<section id="tests-de-preprocessing">
+<h3>Tests de Preprocessing<a class="headerlink" href="#tests-de-preprocessing" title="Lien vers cette rubrique"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Tests du preprocessing de la matrice d&#39;ingrédients</span>
+uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_preprocess_ingredients_matrix.py<span class="w"> </span>-v
+
+<span class="c1"># Script de test du preprocessing (avec données réelles)</span>
+bash<span class="w"> </span>scripts/test_preprocessing.sh
+</pre></div>
+</div>
+</section>
+</section>
+<section id="integration-continue">
+<h2>Intégration Continue<a class="headerlink" href="#integration-continue" title="Lien vers cette rubrique"></a></h2>
+<p>Les tests sont exécutés automatiquement via <strong>GitHub Actions</strong> :</p>
+<ul class="simple">
+<li><p><strong>Workflow</strong> : <code class="docutils literal notranslate"><span class="pre">.github/workflows/test-app.yml</span></code></p></li>
+<li><p><strong>Déclenchement</strong> : À chaque push et pull request</p></li>
+<li><p><strong>Environnement</strong> : Python 3.11, Ubuntu latest</p></li>
+<li><p><strong>Durée</strong> : ~3 minutes</p></li>
+</ul>
+<section id="badges">
+<h3>Badges<a class="headerlink" href="#badges" title="Lien vers cette rubrique"></a></h3>
+<img alt="Tests Status" src="https://img.shields.io/badge/tests-160%20passed-success" />
+<img alt="Coverage" src="https://img.shields.io/badge/coverage-49%25-yellow" />
+</section>
+</section>
+<section id="amelioration-continue">
+<h2>Amélioration Continue<a class="headerlink" href="#amelioration-continue" title="Lien vers cette rubrique"></a></h2>
+<section id="modules-prioritaires">
+<h3>Modules Prioritaires<a class="headerlink" href="#modules-prioritaires" title="Lien vers cette rubrique"></a></h3>
+<p>Les modules <strong>Core</strong> étant déjà excellemment testés (92-100%), les efforts futurs devraient se concentrer sur :</p>
+<ol class="arabic simple">
+<li><p><strong>InteractionsAnalyzer</strong> : Améliorer de 61% à 80%
+- Tester les méthodes de preprocessing non couvertes
+- Ajouter des tests pour les cas limites</p></li>
+<li><p><strong>Pages Streamlit</strong> : Tests d’intégration
+- Mocker Streamlit pour tester la logique métier
+- Tests end-to-end avec Selenium/Playwright</p></li>
+</ol>
+</section>
+<section id="bonnes-pratiques">
+<h3>Bonnes Pratiques<a class="headerlink" href="#bonnes-pratiques" title="Lien vers cette rubrique"></a></h3>
+<ul class="simple">
+<li><p>✅ Tous les nouveaux modules Core doivent avoir <strong>&gt;90% de couverture</strong></p></li>
+<li><p>✅ Les bugs doivent d’abord être reproduits par un test (TDD)</p></li>
+<li><p>✅ Les tests doivent être rapides (&lt;5 secondes pour la suite complète)</p></li>
+<li><p>✅ Utiliser des fixtures pytest pour partager les données de test</p></li>
+<li><p>✅ Mocker les dépendances externes (fichiers, API, etc.)</p></li>
+</ul>
+</section>
+</section>
+<section id="references">
+<h2>Références<a class="headerlink" href="#references" title="Lien vers cette rubrique"></a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.pytest.org/">pytest Documentation</a></p></li>
+<li><p><a class="reference external" href="https://pytest-cov.readthedocs.io/">pytest-cov Documentation</a></p></li>
+<li><p><a class="reference external" href="https://coverage.readthedocs.io/">Coverage.py</a></p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Pied de page">
+        <a href="ClassDiagram.html" class="btn btn-neutral float-left" title="Architecture du Projet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Précédent</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Droits d'auteur 2025, William.</p>
+  </div>
+
+  Compilé avec <a href="https://www.sphinx-doc.org/">Sphinx</a> en utilisant un
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">thème</a>
+    fourni par <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

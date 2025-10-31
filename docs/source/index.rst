@@ -21,7 +21,7 @@ Application web interactive développée avec Streamlit pour analyser un corpus 
 * **ML/Analytics** : scikit-learn (K-means, t-SNE), NLTK
 * **Data** : Pandas, NumPy
 * **Visualisation** : Plotly, Matplotlib
-* **Tests** : pytest (124 tests)
+* **Tests** : pytest (160 tests, 49% coverage)
 * **Docs** : Sphinx, PlantUML
 
 .. toctree::
@@ -36,6 +36,13 @@ Application web interactive développée avec Streamlit pour analyser un corpus 
    :caption: Architecture
 
    Diagramme de classes <ClassDiagram>
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Qualité
+
+   Tests
+   Rapport de couverture HTML </coverage/index.html>
 
 Indices et tables
 ==================
