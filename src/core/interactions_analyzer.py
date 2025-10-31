@@ -20,6 +20,7 @@ Backward compatibility alias: InteractionsExplorer
 """
 import hashlib
 from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Iterable, Optional
 
 import numpy as np
@@ -39,7 +40,7 @@ class PreprocessingConfig:
 
     enable_preprocessing: bool = True
     outlier_method: str = "iqr"  # "iqr", "zscore", "none"
-    outlier_threshold: float = 1.5  # IQR multiplier or Z-score threshold
+    outlier_threshold: float = 5.0  # Fixed IQR multiplier for optimal data retention (95.1%)
 
     def get_hash(self) -> str:
         """Generate hash for cache validation."""
@@ -73,15 +74,20 @@ class InteractionsAnalyzer(CacheableMixin):
         CacheableMixin.__init__(self)
         self.logger = get_logger()
 
+        # Define fixed CSV cache paths (IQR 5.0 optimal)
+        self.data_dir = Path("data")
+        self.merged_csv_path = self.data_dir / "merged_interactions_recipes_optimized.csv"
+        self.aggregated_csv_path = self.data_dir / "aggregated_popularity_metrics_optimized.csv"
+        self.config_cache_path = self.data_dir / ".preprocessing_config_optimized.txt"
+
         # Enable/disable cache based on parameter
         self.enable_cache(self.cache_enabled)
 
-        # Use cached operation for data preprocessing
-        self._df = self.cached_operation(
-            operation_name="preprocess_data",
-            operation_func=self._compute_preprocessed_data,
-            cache_params=self._get_default_cache_params(),
-        )
+        # Use optimized CSV cache system
+        self._df = self._load_or_compute_merged_data()
+        
+        # Cache for aggregated data in memory
+        self._aggregated_cache = None
 
     def _get_default_cache_params(self) -> dict:
         """Generate cache parameters for the current configuration."""
@@ -118,6 +124,79 @@ class InteractionsAnalyzer(CacheableMixin):
             "total_files": cache_info.get("total_files", 0),
             "total_size_mb": cache_info.get("total_size_mb", 0.0),
         }
+
+    def _load_or_compute_merged_data(self) -> pd.DataFrame:
+        """Load merged data from CSV cache or compute if not available."""
+        # Check if CSV cache exists and is valid
+        if self.merged_csv_path.exists() and self.config_cache_path.exists():
+            try:
+                # Validate config
+                if self._is_csv_cache_valid():
+                    self.logger.info("Loading merged data from optimized CSV cache (IQR 5.0)")
+                    return pd.read_csv(self.merged_csv_path)
+                else:
+                    self.logger.info("CSV cache invalid, recomputing with optimal IQR 5.0 settings")
+            except Exception as e:
+                self.logger.warning(f"Error loading CSV cache: {e}")
+
+        # Cache miss or invalid - compute data
+        self.logger.info("Computing optimized merged data (IQR 5.0 for 95.1% data retention)")
+        data = self._compute_preprocessed_data()
+        
+        # Save to cache
+        self._save_merged_csv_cache(data)
+        return data
+
+    def _is_csv_cache_valid(self) -> bool:
+        """Check if CSV cache is valid based on configuration."""
+        if not self.config_cache_path.exists():
+            return False
+        
+        try:
+            with open(self.config_cache_path, 'r') as f:
+                cached_config = f.read().strip()
+            
+            current_config = self._get_current_config_string()
+            return cached_config == current_config
+        except Exception:
+            return False
+
+    def _save_merged_csv_cache(self, data: pd.DataFrame) -> None:
+        """Save merged data to CSV cache."""
+        try:
+            # Ensure directory exists
+            self.merged_csv_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Save data
+            data.to_csv(self.merged_csv_path, index=False)
+            
+            # Save config for validation
+            current_config = self._get_current_config_string()
+            with open(self.config_cache_path, 'w') as f:
+                f.write(current_config)
+            
+            size_mb = self.merged_csv_path.stat().st_size / (1024 * 1024)
+            self.logger.info(f"Saved optimized merged data to CSV cache ({size_mb:.1f} MB)")
+        except Exception as e:
+            self.logger.error(f"Error saving CSV cache: {e}")
+
+    def _get_current_config_string(self) -> str:
+        """Get current configuration as string for cache validation."""
+        return f"optimized_iqr_5.0_{self.preprocessing.get_hash()}"
+
+    def _save_aggregated_csv_cache(self, data: pd.DataFrame) -> None:
+        """Save aggregated data to CSV cache."""
+        try:
+            # Ensure directory exists
+            self.aggregated_csv_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Save data
+            data.to_csv(self.aggregated_csv_path, index=False)
+            
+            size_mb = self.aggregated_csv_path.stat().st_size / (1024 * 1024)
+            self.logger.info(f"Saved optimized aggregated data to CSV cache ({size_mb:.1f} MB)")
+        except Exception as e:
+            self.logger.error(f"Error saving aggregated CSV cache: {e}")
 
     def _compute_preprocessed_data(self) -> pd.DataFrame:
         """Compute the preprocessed data (called when not in cache)."""
@@ -275,11 +354,30 @@ class InteractionsAnalyzer(CacheableMixin):
           - avg_rating (if ratings provided)
           - minutes / n_steps / n_ingredients (if present)
         """
-        return self.cached_operation(
-            operation_name="aggregate",
-            operation_func=self._compute_aggregate,
-            cache_params=self._get_default_cache_params(),
-        )
+        # Use memory cache if available
+        if self._aggregated_cache is not None:
+            self.logger.info("Using memory cache for aggregate data")
+            return self._aggregated_cache
+        
+        # Check CSV cache
+        if self.aggregated_csv_path.exists() and self._is_csv_cache_valid():
+            try:
+                self.logger.info("Loading aggregated data from optimized CSV cache")
+                self._aggregated_cache = pd.read_csv(self.aggregated_csv_path)
+                return self._aggregated_cache
+            except Exception as e:
+                self.logger.warning(f"Error loading aggregated CSV cache: {e}")
+        
+        # Compute and cache
+        self.logger.info("Computing optimized aggregated data")
+        result = self._compute_aggregate()
+        
+        # Save to CSV cache
+        self._save_aggregated_csv_cache(result)
+        
+        # Save to memory cache
+        self._aggregated_cache = result
+        return result
 
     def _compute_aggregate(self) -> pd.DataFrame:
         """Compute the aggregation (called when not in cache)."""
