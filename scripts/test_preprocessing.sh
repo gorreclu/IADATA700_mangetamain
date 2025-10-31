@@ -25,7 +25,7 @@ echo "=========================================="
 if [ ! -f "data/RAW_recipes.csv" ]; then
     echo "⚠️  Fichier RAW_recipes.csv manquant"
     echo "📥 Téléchargement depuis S3..."
-    uv run python download_data.py
+    uv run python scripts/download_data.py
 else
     echo "✅ data/RAW_recipes.csv trouvé"
 fi
@@ -90,7 +90,7 @@ echo ""
 echo "📋 Prochaines étapes:"
 echo ""
 echo "1. Lancer l'application:"
-echo "   uv run python run_app.py"
+echo "   uv run python scripts/run_app.py"
 echo ""
 echo "2. Naviguer vers:"
 echo "   http://localhost:8501"

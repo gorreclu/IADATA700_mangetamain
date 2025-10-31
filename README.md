@@ -1,184 +1,344 @@
-# IADATA700_mangetamain
+# 🍳 Mangetamain - Analyse de Données Culinaires
+
+<div align="center">
 
 ![Python](https://img.shields.io/badge/Python-3.11+-3776AB?style=flat&logo=python&logoColor=white)
 ![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)
 ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat&logo=pandas&logoColor=white)
-![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat&logo=numpy&logoColor=white)
 ![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat&logo=scikit-learn&logoColor=white)
 ![Plotly](https://img.shields.io/badge/Plotly-3F4F75?style=flat&logo=plotly&logoColor=white)
-![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat&logo=pytest&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-144%20passed-success?style=flat)
-![PlantUML](https://img.shields.io/badge/PlantUML-Documentation-blue?style=flat)
-![Sphinx](https://img.shields.io/badge/Sphinx-Documentation-blue?style=flat&logo=sphinx&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-124%20passed-success?style=flat)
 
-Dans le cadre d'un enseignement à Telecom Paris, ce projet consiste en une application web interactive d'analyse de données pour une entreprise fictive : **Mangetamain** ; leader dans la recommandation B2C de recettes de cuisine à l'ancienne bio.
+**Application web d'analyse de recettes et d'interactions utilisateurs**  
+*Projet académique - Telecom Paris - IADATA700 Kit Big Data*
 
-## ⚡ Démarrage rapide
+[![Streamlit App](https://img.shields.io/badge/Streamlit-Live%20Demo-FF4B4B?style=for-the-badge&logo=streamlit&logoColor=white)](https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/)
+
+[🚀 Installation](#-installation) • [📖 Documentation](#-documentation) • [🧪 Tests](#-tests)
+
+</div>
+
+---
+
+## 📋 À propos
+
+**Mangetamain** est une application web interactive développée avec Streamlit pour analyser un large corpus de recettes de cuisine et leurs interactions utilisateurs. Le projet met en œuvre des techniques avancées de data science et de machine learning pour :
+
+- 🔍 **Explorer** plus de 230 000 recettes et leurs métadonnées
+- 🧩 **Analyser** les associations d'ingrédients par clustering et co-occurrence
+- 📊 **Visualiser** les relations entre popularité, notes et caractéristiques des recettes
+- ⚡ **Optimiser** les performances grâce à un système de preprocessing et de cache
+
+### 🌐 Démo en ligne
+
+L'application est déployée sur **Streamlit Cloud** et accessible publiquement :
+
+**🔗 [https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/](https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/)**
+
+> 💡 Essayez l'application directement dans votre navigateur sans installation !
+
+## 🚀 Installation
+
+### Prérequis
+
+- **Python 3.11+**
+- **uv** (gestionnaire de paquets) : `pip install uv`
+
+### Installation rapide
 
 ```bash
-# 1. Installation
+# 1. Cloner le repository
+git clone https://github.com/gorreclu/IADATA700_mangetamain.git
+cd IADATA700_mangetamain
+
+# 2. Installer les dépendances
 uv sync
 
-# 2. Prétraitement (PREMIÈRE FOIS UNIQUEMENT)
+# 3. Générer la matrice précalculée (première fois uniquement, ~5-10 min)
 uv run python -m utils.preprocess_ingredients_matrix
 
-# 3. Lancement de l'application
-uv run python run_app.py
+# 4. Lancer l'application
+uv run python scripts/run_app.py
 ```
 
-> 📥 **Auto-download intelligent** : Le script vérifie et télécharge automatiquement les données manquantes depuis S3.
-> 
-> ⚡ **Matrice précalculée** : Le preprocessing génère une matrice de co-occurrence 300x300 pour accélérer l'analyse de clustering (~5-10 min, 1 seule fois).
+> 📥 **Téléchargement automatique** : Les données sont automatiquement récupérées depuis S3 si manquantes.
 
-### 🎛️ Contrôle de l'application
+L'application sera accessible sur **http://localhost:8501**
 
-**Démarrage** :
+### Commandes utiles
+
 ```bash
-python run_app.py          # Lancement avec téléchargement auto des données
-```
+# Démarrer l'application (avec auto-download des données)
+python scripts/run_app.py
 
-**Arrêt** :
-- `Ctrl+C` dans le terminal de lancement
-- Ou utiliser le script d'arrêt : `python stop_app.py`
+# Arrêter l'application
+python scripts/stop_app.py
+# ou Ctrl+C dans le terminal
 
-**Alternative directe** (si les données sont déjà présentes) :
-```bash
+# Démarrage direct Streamlit (données déjà présentes)
 uv run streamlit run src/app.py
+
+# Télécharger manuellement les données
+python scripts/download_data.py
 ```
 
-## 📚 Documentation
+## ✨ Fonctionnalités
 
-- 📖 **[Documentation complète (Sphinx)](docs/build/html/index.html)** - API reference, architecture, guides
-- 🏗️ **[Diagramme de classes](docs/class-diagram.svg)** - Vue d'ensemble de l'architecture
+### 🏠 Page Home - Exploration des données
+- Aperçu interactif des datasets (recettes et interactions)
+- Métriques clés et statistiques descriptives
+- Informations sur les types de données et valeurs manquantes
 
-## 🚀 Application Streamlit
+### 🍳 Clustering des Ingrédients
+Analyse des associations d'ingrédients par co-occurrence et clustering :
+- **Matrice précalculée** : 300×300 ingrédients sur ~230k recettes
+- **Sélection dynamique** : 40 à 300 ingrédients analysables
+- **Clustering K-means** : 3 à 20 clusters configurables
+- **Visualisation t-SNE** : Projection 2D interactive des groupes
+- **Analyse des groupes** : Ingrédients caractéristiques par cluster
 
-### 📋 Pages disponibles
-1. **🏠 Home** - Exploration générale des données (recettes ou interactions)
-2. **🍳 Analyse de clustering des ingrédients** - Clustering basé sur la co-occurrence
-3. **🔥 Analyse popularité des recettes** - Popularité (nombre d'interactions) vs note moyenne & caractéristiques (minutes, n_steps, n_ingredients)
+### � Analyse de Popularité
+Relations entre popularité, notes et caractéristiques des recettes :
+- **Métriques agrégées** : Nombre d'interactions, note moyenne, temps de préparation
+- **Scatter plots interactifs** : Popularité vs notes, popularité vs features
+- **Segmentation intelligente** : Percentiles (Low/Medium/High/Viral)
+- **Filtrage configurable** : Seuil d'interactions minimales
+- **Preprocessing IQR** : Détection d'outliers avec seuil ajustable
 
-### 🛠️ Lancement
-```bash
-uv sync
-uv run streamlit run src/app.py
+## 📂 Structure du Projet
+
+```
+IADATA700_mangetamain/
+├── src/                          # Code source de l'application
+│   ├── app.py                   # Point d'entrée Streamlit
+│   ├── core/                    # Modules de base
+│   │   ├── data_loader.py      # Chargement des données CSV
+│   │   ├── data_explorer.py    # Exploration et statistiques
+│   │   ├── interactions_analyzer.py  # Analyse popularité/notes
+│   │   ├── cache_manager.py    # Système de cache disque
+│   │   ├── cacheable_mixin.py  # Mixin pour objets cacheables
+│   │   └── logger.py           # Configuration du logging
+│   └── components/              # Pages Streamlit
+│       ├── ingredients_clustering_page.py
+│       └── popularity_analysis_page.py
+├── utils/                       # Utilitaires de preprocessing
+│   └── preprocess_ingredients_matrix.py
+├── scripts/                     # Scripts d'exécution
+│   ├── run_app.py              # Lancement de l'app
+│   ├── stop_app.py             # Arrêt de l'app
+│   ├── download_data.py        # Téléchargement des données
+│   └── test_preprocessing.sh   # Test du preprocessing
+├── tests/                       # Suite de tests (124 tests)
+├── docs/                        # Documentation Sphinx + diagrammes
+├── data/                        # Données (non versionnées sauf matrices)
+├── cache/                       # Cache de calculs (temporaire)
+└── debug/                       # Logs de debug
 ```
 
-### 📂 Structure du projet
-```
-src/
-├── app.py                          # Application principale Streamlit
-├── core/                          # Modules de base
-│   ├── data_loader.py            # Chargement des données
-│   ├── data_explorer.py          # Exploration de base (accès aux données)
-│   ├── interactions_analyzer.py  # Agrégations popularité / notes / features
-│   └── ingredients_analyzer.py   # Analyse des ingrédients
-├── components/                   # Composants de l'application
-│   ├── ingredients_clustering_page.py     # Page clustering des ingrédients
-│   └── popularity_analysis_page.py         # Page analyse popularité
-└── utils/                        # Utilitaires (vide actuellement)
-```
+## 🏗️ Architecture
 
-### 📊 Données requises
-Chemins par défaut :
-- **Recettes** : `data/RAW_recipes.csv`
-- **Interactions** : `data/RAW_interactions.csv`
+### Diagramme de classes
 
-> 💡 **Prérequis** : Le fichier de données doit être présent localement dans le dossier `data/` à la racine du projet. Les données peuvent être télécharger avec le fichier download_data.py.
-
-### ✨ Fonctionnalités
-- **Page Home** : Exploration générale des données + métriques
-- **Clustering Ingrédients** :
-  - Sélection du nombre d'ingrédients à analyser
-  - Regroupement normalisé + co-occurrences
-  - Clustering K-means + t-SNE
-  - Analyse de groupes & debug mappings
-- **Popularité Recettes** :
-  - Agrégat par recette : interaction_count, avg_rating, minutes, n_steps, n_ingredients
-  - Scatter Note moyenne vs Popularité
-  - Scatter Caractéristiques vs Popularité (taille = note)
-  - Aperçu DataFrame fusionné (diagnostic)
-  - Filtre sur interactions minimales
-  - Prétraitement IQR configurable (exclut les notes pour préserver la distribution réelle)
-  - Segmentation par percentiles (Low ≤ P25, Medium ≤ P75, High ≤ P95, Viral > P95)
-
-## 📐 Architecture UML
-
-### 🖼️ Visualisation directe
-
-![Diagramme UML](docs/class-diagram.svg)
+![Architecture UML](docs/class-diagram.svg)
 
 <details>
-<summary><b>Aperçu (image PNG)</b></summary>
+<summary>📋 <b>Description de l'architecture</b></summary>
 
-![Architecture UML](docs/class-diagram.png)
+#### Core Modules
+- **DataLoader** : Chargement et validation des fichiers CSV
+- **DataExplorer** : Statistiques descriptives et exploration
+- **InteractionsAnalyzer** : Calculs d'agrégations popularité/notes (avec cache)
+- **CacheManager** : Gestion centralisée du cache disque
+- **Logger** : Système de logging structuré
 
-> ⚠️ **Si l'image ne s'affiche pas** : Générez-la avec `plantuml docs/class-diagram.puml`
+#### Components (Pages Streamlit)
+- **IngredientsClusteringPage** : Interface de clustering d'ingrédients
+- **PopularityAnalysisPage** : Interface d'analyse de popularité
+
+#### Utils
+- **IngredientsMatrixPreprocessor** : Génération offline de la matrice de co-occurrence
 
 </details>
 
 **Générer le diagramme :**
 ```bash
-# Installation PlantUML (macOS)
-brew install plantuml
-
-# Génération PNG haute résolution (200 DPI)
-plantuml docs/class-diagram.puml
-
-# Ou SVG pour zoom sans perte
-plantuml -tsvg docs/class-diagram.puml
+brew install plantuml                     # Installation (macOS)
+plantuml -tsvg docs/class-diagram.puml   # Génération SVG
 ```
 
 
-## 🔄 Preprocessing des données
+## ⚡ Preprocessing - Optimisation des Performances
 
-### Matrice de co-occurrence des ingrédients
+### Matrice de co-occurrence précalculée
 
-Le projet utilise un preprocessing offline pour optimiser les performances de la page de clustering des ingrédients.
+Pour accélérer l'analyse de clustering, le projet utilise un **preprocessing offline** qui génère une matrice de co-occurrence 300×300 en analysant ~230 000 recettes.
 
-**📍 Localisation** : `utils/preprocess_ingredients_matrix.py`
+#### 📍 Fichier
+`utils/preprocess_ingredients_matrix.py`
 
-**🎯 Objectif** :
-Générer une matrice de co-occurrence 300×300 pré-calculée analysant ~230 000 recettes pour identifier les associations fréquentes d'ingrédients.
+#### 🎯 Pipeline de traitement
 
-**⚙️ Processus** :
-1. **Normalisation NLP** : Nettoyage des ingrédients (lowercase, 50 stop words, regex)
-2. **Sélection** : Top 300 ingrédients par fréquence d'apparition
-3. **Construction** : Matrice de co-occurrence symétrique
-4. **Export** : Fichiers CSV dans `data/`
+1. **Chargement** : Import du dataset RAW_recipes.csv
+2. **Normalisation NLP** : 
+   - Lowercase, suppression de la ponctuation
+   - Filtrage de 50+ stop words culinaires
+   - Parsing des listes d'ingrédients JSON
+3. **Sélection** : Extraction des 300 ingrédients les plus fréquents
+4. **Co-occurrence** : Construction de la matrice symétrique 300×300
+5. **Export** : Sauvegarde en CSV optimisé
 
-**🚀 Exécution** :
+#### 🚀 Exécution
+
 ```bash
-# Première installation - génération requise (5-10 minutes)
+# Génération de la matrice (requis à la première installation)
 uv run python -m utils.preprocess_ingredients_matrix
 ```
 
-**📊 Fichiers générés** :
-- `data/ingredients_cooccurrence_matrix.csv` (~15-20 MB) : Matrice 300×300
-- `data/ingredients_list.csv` (~10 KB) : Liste des 300 ingrédients avec fréquences
+**⏱️ Durée** : ~5-10 minutes (une seule fois)
 
-## 🧪 Tests & Qualité
+#### 📊 Fichiers générés
 
-### Exécuter les tests
+| Fichier | Taille | Description |
+|---------|--------|-------------|
+| `data/ingredients_cooccurrence_matrix.csv` | ~259 KB | Matrice de co-occurrence 300×300 |
+| `data/ingredients_list.csv` | ~5 KB | Liste des 300 ingrédients avec fréquences |
+
+#### 🔄 Quand régénérer ?
+
+- ✅ Première installation du projet
+- ✅ Après modification du dataset RAW_recipes.csv
+- ✅ Pour changer le nombre d'ingrédients (paramètre `n_ingredients`)
+
+> 💡 **Astuce** : Les fichiers générés sont versionnés dans git pour éviter de régénérer à chaque clone.
+
+## 🧪 Tests
+
+### Suite de tests complète
+
+Le projet dispose de **124 tests** couvrant tous les modules critiques.
+
 ```bash
-# Tous les tests
+# Lancer tous les tests
 uv run pytest
 
-# Tests avec couverture
+# Tests avec rapport de couverture
 uv run pytest --cov=src --cov-report=html
 
-# Tests spécifiques
+# Tests d'un module spécifique
 uv run pytest tests/test_ingredients_clustering_page.py
 uv run pytest tests/test_preprocess_ingredients_matrix.py
+uv run pytest tests/test_interactions_analyzer.py
 
-# Mode verbose
-uv run pytest -v
+# Mode verbose avec détails
+uv run pytest -v --tb=short
 ```
 
-### Logger
-Le projet utilise un système de logging structuré dans `debug/` :
-- **`debug/debug.log`** : Logs INFO/DEBUG détaillés
-- **`debug/errors.log`** : Erreurs uniquement
+### Modules testés
+
+- ✅ **Core** : data_loader, data_explorer, interactions_analyzer, logger
+- ✅ **Components** : ingredients_clustering_page, popularity_analysis_page
+- ✅ **Utils** : preprocess_ingredients_matrix
+- ✅ **Integration** : app.py, workflows complets
+
+### Qualité du code
+
+```bash
+# Linting PEP8
+uv run flake8 src/ tests/
+
+# Vérification des types
+uv run mypy src/
+```
+
+## 📖 Documentation
+
+### Documentation Sphinx
+
+Une documentation complète de l'API est disponible :
+
+```bash
+# Générer la documentation
+cd docs
+uv run make html
+
+# Ouvrir dans le navigateur
+open build/html/index.html
+```
+
+**Contenu** :
+- 📚 API Reference complète
+- 🏗️ Guide d'architecture
+- 📝 Guide de contribution
+- 🔍 Index des modules et classes
+
+### Logging
+
+Le projet utilise un système de logging structuré :
+
+| Fichier | Niveau | Contenu |
+|---------|--------|---------|
+| `debug/debug.log` | INFO/DEBUG | Logs détaillés de tous les modules |
+| `debug/errors.log` | ERROR/CRITICAL | Erreurs uniquement |
+
+Configuration dans `src/core/logger.py`
+
+## 📊 Données
+
+### Sources
+
+Les données proviennent d'un corpus de recettes et d'interactions utilisateurs hébergé sur AWS S3.
+
+**Datasets** :
+- `RAW_recipes.csv` : ~230 000 recettes avec métadonnées (nom, ingrédients, étapes, temps, etc.)
+- `RAW_interactions.csv` : Interactions utilisateurs (notes, dates)
+
+### Téléchargement
+
+```bash
+# Téléchargement automatique via le script
+python scripts/download_data.py
+
+# Ou au lancement de l'app
+python scripts/run_app.py  # Détecte et télécharge si manquant
+```
+
+### Structure des données
+
+**RAW_recipes.csv** :
+```
+id, name, minutes, ingredients, nutrition, n_steps, description, ...
+```
+
+**RAW_interactions.csv** :
+```
+user_id, recipe_id, date, rating, review
+```
+
+## 🛠️ Technologies
+
+| Catégorie | Technologies |
+|-----------|-------------|
+| **Backend** | Python 3.11+, Pandas, NumPy |
+| **Frontend** | Streamlit |
+| **ML/Analytics** | scikit-learn (K-means, t-SNE), NLTK |
+| **Visualisation** | Plotly, Matplotlib |
+| **Tests** | pytest, pytest-cov |
+| **Documentation** | Sphinx, PlantUML |
+| **Gestion de paquets** | uv |
+
+## 🤝 Contribution
+
+Ce projet est développé dans un cadre académique.
+Sara EL MOUNTASSER, Cyprien CHARLATÉ, William ROOSE, Lucas GORREC
+Telecom Paris - MS Big Data Expert ML OPS - Promotion IADATA700 2025-2026
+
+---
+
+<div align="center">
+
+**[⬆ Retour en haut](#-mangetamain---analyse-de-données-culinaires)**
+
+</div>
 
 
 

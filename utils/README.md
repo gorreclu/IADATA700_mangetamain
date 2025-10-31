@@ -114,7 +114,7 @@ git commit -m "Add precomputed cooccurrence matrix"
 ### Erreur: "FileNotFoundError: data/RAW_recipes.csv"
 **Solution**: Téléchargez d'abord les données
 ```bash
-python download_data.py
+python scripts/download_data.py
 ```
 
 ### Erreur: "MemoryError"
