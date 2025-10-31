@@ -306,7 +306,8 @@ class PopularityAnalysisPage:
             en segments distincts plutôt qu'en progression continue. Cependant une grande majorité des recettes possède une bonne note.
             Les utilisateurs sont peut-être bienveillant entre eux ou les recettes sont peut-être toutes délicieuses.
             Nous allons donc plutôt nous focaliser dans la suite sur l'étude du nombre de fois où une recette a été faite évaluant donc
-            sa popularité pour qualifier son succés avec un autre point de vue que la note moyenne.
+            sa popularité pour qualifier son succés avec un autre point de vue que la note moyenne. Quand nous parlerons du nombre d'interactions,
+            nous parlerons du nombre de fois où la recette a été faite.
             """
             )
 
