@@ -49,6 +49,10 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../ClassDiagram.html">Diagramme de classes</a></li>
 </ul>
+<p class="caption" role="heading"><span class="caption-text">Qualité</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Tests.html">Tests et Couverture</a></li>
+</ul>
 
         </div>
       </div>
@@ -119,11 +123,20 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Clé de cache unique</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Fonction pour trier récursivement les dictionnaires</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">sort_dict</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+                <span class="k">return</span> <span class="nb">sorted</span><span class="p">((</span><span class="n">k</span><span class="p">,</span> <span class="n">sort_dict</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">return</span> <span class="p">[</span><span class="n">sort_dict</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">obj</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">obj</span>
+
         <span class="c1"># Créer un dictionnaire ordonné pour une sérialisation cohérente</span>
         <span class="n">cache_data</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;analyzer&quot;</span><span class="p">:</span> <span class="n">analyzer_name</span><span class="p">,</span>
             <span class="s2">&quot;operation&quot;</span><span class="p">:</span> <span class="n">operation</span><span class="p">,</span>
-            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">params</span><span class="p">,</span>
+            <span class="s2">&quot;params&quot;</span><span class="p">:</span> <span class="n">sort_dict</span><span class="p">(</span><span class="n">params</span><span class="p">),</span>
         <span class="p">}</span>
 
         <span class="c1"># Sérialiser et hasher</span>
