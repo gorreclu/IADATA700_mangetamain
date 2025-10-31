@@ -30,13 +30,21 @@
 - 📊 **Visualiser** les relations entre popularité, notes et caractéristiques des recettes
 - ⚡ **Optimiser** les performances grâce à un système de preprocessing et de cache
 
-### 🌐 Démo en ligne
+### 🌐 Démonstration en ligne
 
-L'application est déployée sur **Streamlit Cloud** et accessible publiquement :
+L'application est accessible sur **Streamlit Cloud** :
 
 **🔗 [https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/](https://iadata700mangetamain-uwgeofayxcifcmeisuesrb.streamlit.app/)**
 
+- ✅ Hébergement gratuit
+- ✅ Déploiement automatique depuis GitHub
+- ✅ Accessible 24/7
+
 > 💡 Essayez l'application directement dans votre navigateur sans installation !
+
+**Note** : Un déploiement sur AWS EC2 a été testé pour comparaison (infrastructure dédiée avec contrôle total), 
+mais a été désactivé pour éviter les coûts (~30€/mois). La documentation de cette architecture AWS est disponible 
+pour référence.
 
 ## 🚀 Installation
 
@@ -131,7 +139,7 @@ IADATA700_mangetamain/
 │   ├── stop_app.py             # Arrêt de l'app
 │   ├── download_data.py        # Téléchargement des données
 │   └── test_preprocessing.sh   # Test du preprocessing
-├── tests/                       # Suite de tests (124 tests)
+├── tests/                       # Suite de tests (160 tests)
 ├── docs/                        # Documentation Sphinx + diagrammes
 ├── data/                        # Données (non versionnées sauf matrices)
 ├── cache/                       # Cache de calculs (temporaire)
@@ -169,7 +177,7 @@ uv run python -m utils.preprocess_ingredients_matrix
 - `data/ingredients_cooccurrence_matrix.csv` (259 KB)
 - `data/ingredients_list.csv` (5 KB)
 
-> � Voir `utils/preprocess_ingredients_matrix.py` pour plus de détails
+> 📄 Voir `utils/preprocess_ingredients_matrix.py` pour plus de détails
 
 ---
 
@@ -192,7 +200,7 @@ Nettoyage automatique des données pour l'analyse de popularité avec détection
 
 ## 🧪 Tests
 
-**124 tests** couvrant tous les modules (core, components, utils, intégration)
+**160 tests** couvrant tous les modules (core, components, utils, intégration)
 
 ```bash
 # Tous les tests
