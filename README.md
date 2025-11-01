@@ -46,6 +46,20 @@ L'application est accessible sur **Streamlit Cloud** :
 mais a été désactivé pour éviter les coûts (~30€/mois). La documentation de cette architecture AWS est disponible 
 pour référence.
 
+
+## 🚀 Découvrez notre infrastructure
+
+Envie de voir comment notre infrastructure aws fonctionne ?
+
+Envie d'une démonstration en live de bout en bout ?
+
+Consultez nos vidéos 🥳 :
+
+📺 *[Fonctionnement de notre infrastructure AWS](https://www.youtube.com/watch?v=ZSbMLyYD2fY)* - Plongez dans l'architecture cloud qui alimente notre plateforme
+
+🎯 *[Démonstration - Lancement du site](https://www.youtube.com/watch?v=U75tm8i_87c)* - Suivez en direct le déploiement et le lancement de notre nouveau site
+
+
 ## 🚀 Installation
 
 ### Prérequis
