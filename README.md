@@ -47,7 +47,7 @@ mais a été désactivé pour éviter les coûts (~30€/mois). La documentation
 pour référence.
 
 
-## 🚀 Découvrez notre infrastructure
+## 🚀 Découvrez notre infrastructure AWS !!
 
 Envie de voir comment notre infrastructure aws fonctionne ?
 
