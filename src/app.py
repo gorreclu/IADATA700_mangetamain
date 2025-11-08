@@ -31,8 +31,8 @@ DEFAULT_INTERACTIONS = Path("data/RAW_interactions.csv")
 
 # S3 URLs pour les fichiers de données
 S3_URLS = {
-    "RAW_recipes.csv": "https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_recipes+2.csv",
-    "RAW_interactions.csv": "https://iadata700-mangetamain-data.s3.eu-west-3.amazonaws.com/RAW_interactions+3.csv",
+    "RAW_recipes.csv": "https://manegtamain-bucket.s3.eu-north-1.amazonaws.com/RAW_recipes.csv",
+    "RAW_interactions.csv": "https://manegtamain-bucket.s3.eu-north-1.amazonaws.com/RAW_interactions.csv",
 }
 
 
